@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.egg-info/
+.DS_Store
+# Datos, logs y propuestas: solo en el Mac. Lo público es docs/ (dashboard saneado).
+/data/
+/logs/
+/.run/
+/proposals/*
+!/proposals/.gitkeep
+# Tema de ntfy (quien lo conozca puede leer y enviar alertas)
+config/ntfy_tema.txt
+# Páginas completas de portales usadas como datos de prueba: no se re-publican
+tests/fixtures/*.html

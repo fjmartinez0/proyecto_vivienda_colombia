@@ -1,0 +1,246 @@
+# Proyecto Vivienda Colombia — configuración central
+# Todo lo que cambie con frecuencia (filtros, sectores, pausas) vive aquí, no en el código.
+
+[proyecto]
+nombre = "Proyecto Vivienda Colombia"
+
+[filtros]
+precio_max = 600_000_000   # COP, precio total
+area_min = 30              # m²; excluye apartaestudios muy pequeños
+
+[agente]
+# Claude Code en modo headless (ubicación y enriquecimiento de proyectos).
+# REGLA DEL PROYECTO: usar siempre el modelo que menos consuma la suscripción.
+# Solo se sube de modelo (sonnet, luego opus) si la calidad medida no alcanza,
+# y de forma puntual con `vivienda ubicar --modelo sonnet`, no cambiando este valor.
+modelo = "haiku"
+max_turns = 150
+max_proyectos = 15        # proyectos por corrida (los más prioritarios primero)
+timeout_minutos = 45
+
+[diario]
+# `vivienda diario`: nuevos -> geocodificar -> (ubicar si hay proyectos nuevos) -> usados -> exportar
+# -> publicar -> alertas. `vivienda programar` la deja en launchd a esta hora.
+hora = "06:30"
+max_paginas_usados = 8      # tope diario por barrio: alcanza para lo publicado ese día (orden "más recientes")
+max_paginas_profundo = 40   # un día a la semana: vuelve a ver el inventario viejo. Sin esto, lo que está
+dia_profundo = 6            #   más allá de la página 8 deja de estar "vigente" a los 7 días (0 = lunes … 6 = domingo; -1 = nunca)
+ubicar_max = 3              # proyectos nuevos que se mandan al agente (haiku). 0 = nunca en la rutina
+publicar = true             # copia saneada en docs/ + git commit/push a github.com/fjmartinez0/proyecto_vivienda_colombia
+url_dashboard = "https://fjmartinez0.github.io/proyecto_vivienda_colombia/web/"   # enlace de las alertas
+alerta_bajas_precio = true
+alerta_usados_baratos = true
+umbral_usado_barato = 0.15  # usado nuevo de hoy con $/m² ≥15 % bajo la mediana de su zona y habitaciones
+alerta_fallas = true
+# El tema de ntfy NO va aquí (este archivo se versiona): config/ntfy_tema.txt o VIVIENDA_NTFY_TEMA.
+
+[verificacion]
+# Nominatim (OpenStreetMap) exige un User-Agent que identifique la aplicación
+nominatim_user_agent = "ProyectoViviendaColombia/0.2 (uso personal, educativo)"
+
+[estrenar]
+base_url = "https://www.estrenarvivienda.com/proyectos-vivienda/"
+pausa_segundos = 3         # pausa entre peticiones (cortesía con el sitio)
+timeout_segundos = 30
+user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+
+# Sectores del sitio y zona(s) del Radar a la que pertenecen.
+# verificado = true  -> la URL existe (confirmada)
+# verificado = false -> candidata; si da 404 se reporta, pero NO impide que la corrida cuente como completa.
+[[estrenar.sectores]]
+ruta = "bogota/nororiente/chapinero"
+zonas = ["chu", "c72"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/nororiente/chapinero-alto"
+zonas = ["chu", "c72"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/norte/chico"
+zonas = ["cor"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/polo-club"
+zonas = ["cor"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/la-castellana"
+zonas = ["cor"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/norte/santa-bibiana"
+zonas = ["cor"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/pasadena"
+zonas = ["pas"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/puente-largo"
+zonas = ["pas"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/morato"
+zonas = ["mor"]
+verificado = true
+
+# --- Zona El Lago – San Felipe (lag) ---
+[[estrenar.sectores]]
+ruta = "bogota/nororiente/san-felipe"
+zonas = ["lag"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/nororiente/lago-gaitan"     # candidato
+zonas = ["lag"]
+verificado = false
+
+# --- Zona Teusaquillo – Galerías (teu) ---
+[[estrenar.sectores]]
+ruta = "bogota/occidente/galerias"
+zonas = ["teu"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/centro/palermo"
+zonas = ["teu"]
+verificado = true
+
+[[estrenar.sectores]]
+ruta = "bogota/centro/teusaquillo"         # candidato
+zonas = ["teu"]
+verificado = false
+
+[[estrenar.sectores]]
+ruta = "floridablanca/urbana/canaveral"
+zonas = ["can"]
+verificado = true
+
+# ---------------------------------------------------------------------------
+# Vivienda usada — Fincaraíz (lógica del proyecto anterior, ver sources/fincaraiz)
+# ---------------------------------------------------------------------------
+[fincaraiz]
+max_paginas = 8            # por barrio; orden "más recientes", así que lo nuevo entra primero
+dias_vigencia = 7          # un anuncio no visto en 7 días deja de mostrarse (no se borra del historial)
+pausa_segundos = [3, 6]    # entre páginas; cada 10 páginas, una pausa larga de 15–25 s
+
+# Barrios a recorrer. `ruta` es el tramo de URL de Fincaraíz:
+#   Bogotá        -> https://www.fincaraiz.com.co/venta/{ruta}/bogota
+#   Floridablanca -> https://www.fincaraiz.com.co/venta/apartamentos/{ruta}/floridablanca/floridablanca
+# La ruta NO siempre es el nombre corto: 'san-felipe' lleva a otro lugar del país; la buena es
+# 'san-felipe/zona-noroccidente'. verificado = true -> la ruta respondió y trajo anuncios dentro de zonas
+# (prueba del 2026-10-25). Una ruta nueva se prueba con `vivienda usados --probar --barrio <ruta>`.
+# Que una ruta traiga barrios vecinos no importa: el filtro real es el punto del anuncio.
+# 'el-lago' se quitó: da el mismo total que 'lago-gaitan' (397), es el mismo listado.
+# La zona de cada anuncio NO la da el barrio sino su punto en el mapa (si cae en una zona del radar).
+
+# --- Chapinero Universitario (chu)
+[[fincaraiz.barrios]]
+ruta = "chapinero-central/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "marly/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "sucre/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+# --- Calle 72 (c72)
+[[fincaraiz.barrios]]
+ruta = "quinta-camacho/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "chapinero-norte/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+# --- El Lago – San Felipe (lag)
+[[fincaraiz.barrios]]
+ruta = "san-felipe/zona-noroccidente"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "alcazares"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "lago-gaitan/zona-nororiental"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "antiguo-country/zona-nororiental"
+ciudad = "bogota"
+verificado = true
+
+# --- Corredor Cl. 80–116 (cor)
+[[fincaraiz.barrios]]
+ruta = "chico-norte/zona-nororiental"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "chico-navarra/zona-norte"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "santa-bibiana/zona-norte"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "la-castellana/zona-noroccidente"
+ciudad = "bogota"
+verificado = true
+
+# --- Pasadena (pas)
+[[fincaraiz.barrios]]
+ruta = "pasadena/zona-noroccidente"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "puente-largo/zona-noroccidente"
+ciudad = "bogota"
+verificado = true
+
+# --- Morato (mor)
+[[fincaraiz.barrios]]
+ruta = "morato/zona-noroccidente"
+ciudad = "bogota"
+verificado = true
+
+# --- Teusaquillo – Galerías (teu)
+[[fincaraiz.barrios]]
+ruta = "palermo"
+ciudad = "bogota"
+verificado = true
+
+[[fincaraiz.barrios]]
+ruta = "galerias/zona-chapinero"
+ciudad = "bogota"
+verificado = true
+
+# --- Cañaveral (can) — Floridablanca, un recorrido por tipo
+[[fincaraiz.barrios]]
+ruta = "canaveral"
+ciudad = "floridablanca"
+verificado = true

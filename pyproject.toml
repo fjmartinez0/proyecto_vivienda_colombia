@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proyecto-vivienda-colombia"
+version = "0.7.0"
+description = "Proyecto Vivienda Colombia: radar de vivienda nueva vs. usada para inversión (Bogotá y Bucaramanga)"
+requires-python = ">=3.11"
+dependencies = [
+  "requests>=2.31",
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+  "pypdf>=4.0",
+]
+
+[project.scripts]
+vivienda = "vivienda.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

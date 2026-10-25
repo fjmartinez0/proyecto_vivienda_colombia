@@ -1,0 +1,461 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "chu",
+    "nombre": "Chapinero Universitario",
+    "ciudad": "Bogotá",
+    "descripcion": "Cl. 39–60, Caracas a Circunvalar",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.069,
+       4.6245
+      ],
+      [
+       -74.059,
+       4.6245
+      ],
+      [
+       -74.06,
+       4.6455
+      ],
+      [
+       -74.068,
+       4.6455
+      ],
+      [
+       -74.069,
+       4.6245
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "c72",
+    "nombre": "Calle 72 – Lago",
+    "ciudad": "Bogotá",
+    "descripcion": "Cl. 67–76, Caracas a Cra. 5",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.065,
+       4.6505
+      ],
+      [
+       -74.053,
+       4.65
+      ],
+      [
+       -74.051,
+       4.6625
+      ],
+      [
+       -74.063,
+       4.663
+      ],
+      [
+       -74.065,
+       4.6505
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "cor",
+    "nombre": "Corredor Cl. 80–116",
+    "ciudad": "Bogotá",
+    "descripcion": "Cl. 80–116, Autopista Norte a Av. Cra. 19",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.06,
+       4.667
+      ],
+      [
+       -74.056,
+       4.668
+      ],
+      [
+       -74.0485,
+       4.685
+      ],
+      [
+       -74.045,
+       4.6985
+      ],
+      [
+       -74.0525,
+       4.699
+      ],
+      [
+       -74.0558,
+       4.685
+      ],
+      [
+       -74.06,
+       4.667
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "pas",
+    "nombre": "Pasadena",
+    "ciudad": "Bogotá",
+    "descripcion": "Pasadena y bordes inmediatos",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.064,
+       4.6855
+      ],
+      [
+       -74.057,
+       4.6855
+      ],
+      [
+       -74.054,
+       4.6965
+      ],
+      [
+       -74.0615,
+       4.6975
+      ],
+      [
+       -74.064,
+       4.6855
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "mor",
+    "nombre": "Morato",
+    "ciudad": "Bogotá",
+    "descripcion": "Morato y bordes inmediatos",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.079,
+       4.687
+      ],
+      [
+       -74.07,
+       4.6865
+      ],
+      [
+       -74.069,
+       4.696
+      ],
+      [
+       -74.0785,
+       4.6965
+      ],
+      [
+       -74.079,
+       4.687
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "can",
+    "nombre": "Cañaveral – FOSUNAB",
+    "ciudad": "Floridablanca",
+    "descripcion": "Radio de 1,5 km alrededor de la FOSUNAB",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -73.1065,
+       7.083975
+      ],
+      [
+       -73.104376,
+       7.083809
+      ],
+      [
+       -73.102304,
+       7.083315
+      ],
+      [
+       -73.100336,
+       7.082506
+      ],
+      [
+       -73.098519,
+       7.081401
+      ],
+      [
+       -73.096899,
+       7.080028
+      ],
+      [
+       -73.095515,
+       7.07842
+      ],
+      [
+       -73.094402,
+       7.076617
+      ],
+      [
+       -73.093587,
+       7.074664
+      ],
+      [
+       -73.093089,
+       7.072608
+      ],
+      [
+       -73.092922,
+       7.0705
+      ],
+      [
+       -73.093089,
+       7.068392
+      ],
+      [
+       -73.093587,
+       7.066336
+      ],
+      [
+       -73.094402,
+       7.064383
+      ],
+      [
+       -73.095515,
+       7.06258
+      ],
+      [
+       -73.096899,
+       7.060972
+      ],
+      [
+       -73.098519,
+       7.059599
+      ],
+      [
+       -73.100336,
+       7.058494
+      ],
+      [
+       -73.102304,
+       7.057685
+      ],
+      [
+       -73.104376,
+       7.057191
+      ],
+      [
+       -73.1065,
+       7.057025
+      ],
+      [
+       -73.108624,
+       7.057191
+      ],
+      [
+       -73.110696,
+       7.057685
+      ],
+      [
+       -73.112664,
+       7.058494
+      ],
+      [
+       -73.114481,
+       7.059599
+      ],
+      [
+       -73.116101,
+       7.060972
+      ],
+      [
+       -73.117485,
+       7.06258
+      ],
+      [
+       -73.118598,
+       7.064383
+      ],
+      [
+       -73.119413,
+       7.066336
+      ],
+      [
+       -73.119911,
+       7.068392
+      ],
+      [
+       -73.120078,
+       7.0705
+      ],
+      [
+       -73.119911,
+       7.072608
+      ],
+      [
+       -73.119413,
+       7.074664
+      ],
+      [
+       -73.118598,
+       7.076617
+      ],
+      [
+       -73.117485,
+       7.07842
+      ],
+      [
+       -73.116101,
+       7.080028
+      ],
+      [
+       -73.114481,
+       7.081401
+      ],
+      [
+       -73.112664,
+       7.082506
+      ],
+      [
+       -73.110696,
+       7.083315
+      ],
+      [
+       -73.108624,
+       7.083809
+      ],
+      [
+       -73.1065,
+       7.083975
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "lag",
+    "nombre": "El Lago – San Felipe",
+    "ciudad": "Bogotá",
+    "descripcion": "Cl. 72–82, Av. Caracas a Cra. 24 (El Lago, Lago Gaitán, San Felipe, Héroes)",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.065,
+       4.656
+      ],
+      [
+       -74.0628,
+       4.664
+      ],
+      [
+       -74.0605,
+       4.67
+      ],
+      [
+       -74.065,
+       4.6715
+      ],
+      [
+       -74.0715,
+       4.666
+      ],
+      [
+       -74.074,
+       4.6575
+      ],
+      [
+       -74.065,
+       4.656
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "type": "Feature",
+   "properties": {
+    "id": "teu",
+    "nombre": "Teusaquillo – Galerías",
+    "ciudad": "Bogotá",
+    "descripcion": "Cl. 45–57, Av. Caracas a Cra. 28 (Palermo, Galerías, Teusaquillo)",
+    "aproximado": true
+   },
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -74.07,
+       4.629
+      ],
+      [
+       -74.068,
+       4.647
+      ],
+      [
+       -74.079,
+       4.6475
+      ],
+      [
+       -74.082,
+       4.629
+      ],
+      [
+       -74.07,
+       4.629
+      ]
+     ]
+    ]
+   }
+  }
+ ]
+}

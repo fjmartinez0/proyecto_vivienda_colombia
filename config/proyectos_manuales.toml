@@ -1,0 +1,125 @@
+# Proyectos que no aparecen en los portales escaneados, o que llegaron por otro canal
+# (brochure, cotización, valla, referido). Se integran solos en cada comando de `vivienda`.
+#
+# Campos del proyecto:
+#   id               único, sin espacios (no lo cambies después: es la llave del proyecto)
+#   zonas            id de zona en config/zonas.toml
+#   direccion        placa ("Calle 52 # 17-41") o cruce ("Carrera 53 con Calle 100")
+#   direccion_origen "manual" (dato oficial: brochure, cotización) o "agregador" (portal / sala de ventas)
+#   fuente           URL o archivo de donde salen los datos
+#   opcionales: estrato, ascensor (true/false), renta_corta ("permitida"/"prohibida"),
+#               entrega ("AAAA-MM"), acabados ("full"/"semi"/"obra gris"), notas
+# Tipologías: habs, banos, area (construida), area_privada, precio (opcional), nombre
+# Si quitas un proyecto de este archivo, queda inactivo (no se borra su historial).
+
+[[proyecto]]
+id = "lumina-77"
+nombre = "Lumina 77"
+constructora = "Oikos"
+ciudad = "Bogotá"
+sector = "El Lago"
+zonas = ["lag"]
+direccion = "Carrera 16A # 76-38"
+direccion_origen = "manual"
+fuente = "file://brochure/lumina77_brochure.pdf"
+ascensor = true
+notas = "Coliving: 320 apartaestudios en 21 pisos, renovación urbana. El brochure no publica precios."
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo A"
+  habs = 1
+  banos = 1
+  area = 37.95
+  area_privada = 33.37
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo E"
+  habs = 1
+  banos = 1
+  area = 36.03
+  area_privada = 30.26
+
+[[proyecto]]
+id = "la-cite"
+nombre = "La Cité"
+constructora = "La Cité Apartamentos"
+ciudad = "Bogotá"
+sector = "Lago Gaitán"
+zonas = ["lag"]
+direccion = "Calle 80 # 19-07"
+direccion_origen = "agregador"      # es la sala de ventas, publicada en Ciencuadras
+fuente = "https://www.ciencuadras.com/proyecto-de-vivienda/la-cite-apartamentos-la-cite-apartamentos-bogota-2719"
+estrato = 5
+ascensor = true
+entrega = "2027-10"
+notas = "Datos de Ciencuadras. Áreas aproximadas (el portal mezcla 32–35 m² y 29,5–42,5 m²)."
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba (menor)"
+  habs = 1
+  banos = 1
+  area = 32.0
+  precio = 416_240_000
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba (mayor)"
+  habs = 1
+  banos = 1
+  area = 35.0
+  precio = 428_570_000
+
+[[proyecto]]
+id = "street-52"
+nombre = "Street 52"
+constructora = "Constructora Santa Lucía"
+ciudad = "Bogotá"
+sector = "Chapinero / Teusaquillo"
+zonas = ["teu"]
+direccion = "Calle 52 # 17-41"
+direccion_origen = "manual"
+fuente = "file://brochure/street52_brochure.pdf"
+ascensor = true
+renta_corta = "permitida"           # el brochure lo plantea para operación de renta corta (Airbnb/Booking)
+notas = "20 apartamentos de 1 alcoba en 6 pisos. El brochure no publica precios ni entrega."
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba 34,53"
+  habs = 1
+  banos = 1
+  area = 34.53
+  area_privada = 34.53
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba 34,85"
+  habs = 1
+  banos = 1
+  area = 34.85
+  area_privada = 34.85
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba 37"
+  habs = 1
+  banos = 1
+  area = 37.0
+  area_privada = 37.0
+
+[[proyecto]]
+id = "distrito-kb"
+nombre = "Distrito KB"
+constructora = "Distrito KB"
+ciudad = "Bogotá"
+sector = "Palermo"
+zonas = ["teu"]
+direccion = "Carrera 24 # 45C-33"
+direccion_origen = "manual"
+fuente = "file://cotizacion/distritoKB_cotizacion_Apto605.pdf"
+entrega = "2028-12"                 # saldo financiado pagadero el 31/12/2028
+notas = "54 aparta-estudios en 7 pisos. Precio de la cotización del apto 605 (tipo 3)."
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo 3 (apto 605)"
+  habs = 1
+  banos = 1
+  area = 30.41
+  area_privada = 27.11
+  precio = 362_000_000

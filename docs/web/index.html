@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Radar Vivienda</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f4f0;--panel:#fff;--ink:#1b1d1f;--muted:#6b7075;--line:#e4e2dc;--soft:#f0efea;
+--accent:#1f6f5c;--accent-soft:#e3f0ec;--warn:#b7791f;--warn-soft:#fbf1dc;--bad:#b23a3a;--bad-soft:#f7e1e1;
+--good:#2f7d4a;--good-soft:#e2f2e7;--new:#1f4e8c;--new-soft:#e2eaf6;--used:#7d838a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121416;--panel:#1b1e21;--ink:#e8e6e1;--muted:#9aa0a6;--line:#2c3035;--soft:#23272b;
+--accent:#5fb89e;--accent-soft:#1d332d;--warn:#e0a84a;--warn-soft:#3a2f1a;--bad:#e07070;--bad-soft:#3a2020;
+--good:#6cc48a;--good-soft:#1c3324;--new:#7aa8ea;--new-soft:#1d2a3d;--used:#8b9097}}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:13.5px;display:flex;flex-direction:column}
+.mono{font-family:'JetBrains Mono',monospace;font-size:12px}
+.muted{color:var(--muted)}
+header{display:flex;align-items:center;gap:20px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+.brand{font-weight:700;font-size:16px;letter-spacing:-.01em}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:12px;margin-top:2px}
+.tag{font-size:10px;font-weight:600;letter-spacing:.06em;background:var(--warn-soft);color:var(--warn);padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:6px}
+.tabs{display:flex;gap:2px;background:var(--soft);padding:3px;border-radius:8px}
+.tabs button{border:0;background:none;color:var(--muted);font:500 13px Inter;padding:6px 10px;border-radius:6px;cursor:pointer}
+.tabs button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.kpis{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap}
+.kpi b{display:block;font-size:17px;font-weight:700}
+.kpi span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+main{flex:1;min-height:0;position:relative}
+.view{display:none;height:100%;overflow:auto}
+.view.active{display:block}
+#v-mapa.active{display:grid;grid-template-columns:270px 1fr 0;overflow:hidden}
+#v-mapa.active.open{grid-template-columns:270px 1fr 440px}
+#map{height:100%;min-height:300px}
+.filters{border-right:1px solid var(--line);background:var(--panel);padding:14px;overflow:auto}
+.filters h4{margin:16px 0 8px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.filters h4:first-child{margin-top:0}
+.seg{display:flex;background:var(--soft);border-radius:7px;padding:3px}
+.seg button{flex:1;border:0;background:none;padding:6px;border-radius:5px;font:500 12.5px Inter;color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:4px 10px;font:500 12px Inter;cursor:pointer;display:flex;align-items:center;gap:6px}
+.chip i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.chip.off{opacity:.45}
+.chk{display:flex;align-items:center;gap:8px;margin:6px 0;cursor:pointer}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.legend{font-size:12px;color:var(--muted);line-height:1.9}
+.legend .sw{display:inline-block;width:22px;height:12px;border-radius:6px;vertical-align:middle;margin-right:6px}
+.detail{border-left:1px solid var(--line);background:var(--panel);overflow:auto;padding:16px}
+.dhead{display:flex;justify-content:space-between;gap:10px}
+.dhead h2{margin:0;font-size:18px;letter-spacing:-.01em}
+.x{border:0;background:var(--soft);color:var(--ink);width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:16px;flex:none}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.b{font-size:11px;font-weight:600;padding:3px 7px;border-radius:5px;background:var(--soft);color:var(--muted)}
+.b.new{background:var(--new-soft);color:var(--new)}
+.b.ok{background:var(--good-soft);color:var(--good)}
+.b.warn{background:var(--warn-soft);color:var(--warn)}
+.b.bad{background:var(--bad-soft);color:var(--bad)}
+.tipos{display:flex;gap:6px;margin:12px 0}
+.tipos button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:7px;font:500 12px Inter;cursor:pointer;text-align:left}
+.tipos button.on{border-color:var(--accent);background:var(--accent-soft)}
+.tipos small{display:block;color:var(--muted);font-weight:400}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--soft);border-radius:8px;padding:9px 10px}
+.stat span{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.stat b{font-size:15px}
+.stat.hl{background:var(--accent-soft)}
+.stat.hl.hi{background:var(--bad-soft)}.stat.hl.mid{background:var(--warn-soft)}.stat.hl.lo{background:var(--good-soft)}
+h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:18px 0 8px}
+.bars .row{display:grid;grid-template-columns:150px 1fr 70px;gap:8px;align-items:center;margin:5px 0;font-size:12px}
+.bars .track{height:10px;background:var(--soft);border-radius:5px;overflow:hidden}
+.bars .fill{height:100%;border-radius:5px}
+.flags{margin:0;padding:0;list-style:none}
+.flags li{font-size:12.5px;padding:7px 9px;border-radius:6px;background:var(--warn-soft);color:var(--ink);margin-bottom:5px;border-left:3px solid var(--warn)}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:6px 7px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;background:var(--panel)}
+td.n,th.n{text-align:right}
+.ctab{font-size:12px;overflow:auto}
+.pos{color:var(--bad)}.neg{color:var(--good)}
+.page{max-width:1200px;margin:0 auto;padding:20px 16px}
+.page h2{margin:0 0 4px;font-size:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.toolbar input[type=search],.toolbar select{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:7px;padding:7px 10px;font:13px Inter}
+#tbl tr.ex td{opacity:.45}
+#tbl th,#utbl th{cursor:pointer}
+#utbl th.sorted::after{content:' ▾'}
+.zres{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin:12px 0}
+.zres .card{padding:10px 12px;cursor:pointer}
+.zres .card.on{outline:2px solid var(--accent)}
+.zres b{font-size:15px}
+#utbl a{color:inherit;text-decoration:underline dotted}
+#tbl th.sorted::after{content:' ▾'}
+.feedday{margin:18px 0 8px;font-weight:600}
+.fitem{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px}
+.fitem .p{font-weight:700;text-align:right}
+.fitem small{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:16px;margin-top:14px}
+.prow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.prow small{display:block;color:var(--muted);font-size:12px}
+.inp{display:flex;align-items:center;gap:6px}
+.inp input{width:120px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;padding:6px 8px;font:13px 'JetBrains Mono',monospace;text-align:right}
+.btn{border:0;background:var(--accent);color:#fff;font:600 13px Inter;padding:8px 14px;border-radius:7px;cursor:pointer}
+.pinwrap{background:none;border:none}
+.pin{display:flex;align-items:center;justify-content:center;height:24px;padding:0 9px;border-radius:12px;color:#fff;font:700 12px Inter;box-shadow:0 2px 6px rgba(0,0,0,.35);border:2px solid #fff;white-space:nowrap;position:relative;width:max-content;margin:0 auto;cursor:pointer}
+.pin::after{content:'';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}
+.pin.hi{background:#b23a3a}.pin.mid{background:#c58a22}.pin.lo{background:#2f7d4a}.pin.na{background:#5a5f66}
+.pin.sel{outline:3px solid #1f4e8c;outline-offset:1px}
+.ucl{width:30px;height:30px;border-radius:50%;background:rgba(90,95,102,.85);color:#fff;font:600 11.5px Inter;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.dot.usel{width:16px;height:16px;border:3px solid #111;box-shadow:0 0 0 2px #fff}
+.dot{width:10px;height:10px;border-radius:50%;background:#7d838a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+.dot.ex{background:transparent;border:2px dashed #7d838a}
+.leaflet-popup-content{font:12.5px Inter;margin:10px 12px}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+@media (max-width:900px){
+ #v-mapa.active,#v-mapa.active.open{display:block;overflow:auto}
+ #map{height:55vh}
+ .filters,.detail{border:0;border-top:1px solid var(--line)}
+ .kpis{margin-left:0}
+ .grid2{grid-template-columns:1fr}
+ .bars .row{grid-template-columns:110px 1fr 64px}
+}
+#tbl a,.ctab a{color:inherit;text-decoration:underline dotted}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Radar Vivienda <span class="tag" id="modo">DEMO · DATOS FICTICIOS</span>
+    <small id="subtitulo">Nuevos vs. usados ≤ $600 M · Bogotá y Bucaramanga</small></div>
+  <nav class="tabs" id="tabs">
+    <button data-v="mapa" class="on">Mapa</button>
+    <button data-v="tabla">Tabla</button>
+    <button data-v="usados">Usados</button>
+    <button data-v="feed">Detectados</button>
+    <button data-v="sup">Supuestos</button>
+  </nav>
+  <div class="kpis" id="kpis"></div>
+</header>
+<main>
+  <section class="view active" id="v-mapa">
+    <aside class="filters" id="filters"></aside>
+    <div id="map"></div>
+    <aside class="detail" id="detail"></aside>
+  </section>
+  <section class="view" id="v-tabla"></section>
+  <section class="view" id="v-usados"></section>
+  <section class="view" id="v-feed"></section>
+  <section class="view" id="v-sup"></section>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
+<script>
+/* =========================================================
+   CONTRATO DE DATOS
+   En producción, ZONAS / PROYECTOS / USADOS vendrán de data.json
+   que el proceso diario reescribe. Aquí van embebidos y ficticios.
+   ========================================================= */
+let HOY = '2026-10-25';   // en modo real se reemplaza por la fecha del dashboard.json
+
+const PARAMS = {
+  precio_max: 600e6, desc_neg: 0.07, tasa_ea: 0.10, cuota_ini: 0.30, renta_perdida: true,
+  acabados_m2: 900000, factor_privada: 0.88, tol_area: 0.15, max_antig: 15, exigir_parq: false,
+  com_plataforma: 0.15, gestion: 0.20, servicios_mes: 450000, predial: 0.006
+};
+
+const PARAM_META = [
+  ['precio_max','Tope de precio total','cop','Incluye parqueadero y depósito.'],
+  ['desc_neg','Descuento de negociación (usados)','pct','Precio de oferta → cierre esperado.'],
+  ['tasa_ea','Tasa de oportunidad E.A.','pct','Trae a valor presente los pagos sobre planos.'],
+  ['cuota_ini','Cuota inicial durante obra','pct','Pagada en cuotas durante la obra; el saldo, a la entrega.'],
+  ['renta_perdida','Sumar arriendo no percibido durante obra','bool','El usado renta desde el día 1; el nuevo no.'],
+  ['acabados_m2','Acabados para obra gris (por m²)','cop','Se suma al precio del proyecto.'],
+  ['factor_privada','Factor área privada / construida','pct','Se usa cuando el anuncio solo trae área construida.'],
+  ['tol_area','Tolerancia de área (±)','pct','Para considerar un usado comparable.'],
+  ['max_antig','Antigüedad máxima del usado','num','Años.'],
+  ['exigir_parq','Exigir mismo número de parqueaderos','bool','Apagado = parqueadero flexible.'],
+  ['com_plataforma','Comisión plataforma (renta corta)','pct',''],
+  ['gestion','Gestión + aseo (renta corta)','pct','Sobre ingreso bruto.'],
+  ['servicios_mes','Servicios + internet (renta corta, mes)','cop',''],
+  ['predial','Predial anual (% del precio)','pct','']
+];
+
+function circ(c, rm, n = 40) {
+  const o = [];
+  for (let i = 0; i < n; i++) {
+    const a = 2 * Math.PI * i / n;
+    o.push([c[0] + rm / 111320 * Math.cos(a), c[1] + rm / (111320 * Math.cos(c[0] * Math.PI / 180)) * Math.sin(a)]);
+  }
+  return o;
+}
+
+/* Polígonos APROXIMADOS: placeholder para ajustar */
+const ZONAS = [
+  {id:'chu', nombre:'Chapinero Universitario', ciudad:'Bogotá', color:'#7b5ea7', estrato:4, base_m2:7.2e6, admin_m2:5800, arriendo_m2:38000, adr:{1:180000,2:250000,3:320000}, ocup:.64,
+   desc:'Cl. 39–60, Caracas a Circunvalar (Javeriana, Católica, Pedagógica)',
+   poly:[[4.6245,-74.0690],[4.6245,-74.0590],[4.6455,-74.0600],[4.6455,-74.0680]]},
+  {id:'c72', nombre:'Calle 72 – Lago', ciudad:'Bogotá', color:'#1f6f8c', estrato:5, base_m2:8.6e6, admin_m2:7000, arriendo_m2:45000, adr:{1:220000,2:300000,3:380000}, ocup:.66,
+   desc:'Cl. 67–76, Caracas a Cra. 5 (zona de oficinas)',
+   poly:[[4.6505,-74.0650],[4.6500,-74.0530],[4.6625,-74.0510],[4.6630,-74.0630]]},
+  {id:'cor', nombre:'Corredor Cl. 80–116', ciudad:'Bogotá', color:'#c0662b', estrato:5, base_m2:9.0e6, admin_m2:7200, arriendo_m2:46000, adr:{1:210000,2:290000,3:370000}, ocup:.60,
+   desc:'Cl. 80–116, Autopista Norte a Av. Cra. 19',
+   poly:[[4.6670,-74.0600],[4.6680,-74.0560],[4.6850,-74.0485],[4.6985,-74.0450],[4.6990,-74.0525],[4.6850,-74.0558]]},
+  {id:'pas', nombre:'Pasadena', ciudad:'Bogotá', color:'#3f8a4f', estrato:4, base_m2:7.4e6, admin_m2:5600, arriendo_m2:39000, adr:{1:150000,2:210000,3:270000}, ocup:.52,
+   desc:'Pasadena y bordes inmediatos',
+   poly:[[4.6855,-74.0640],[4.6855,-74.0570],[4.6965,-74.0540],[4.6975,-74.0615]]},
+  {id:'mor', nombre:'Morato', ciudad:'Bogotá', color:'#a63d5a', estrato:4, base_m2:6.6e6, admin_m2:5000, arriendo_m2:35000, adr:{1:140000,2:190000,3:250000}, ocup:.48,
+   desc:'Morato y bordes inmediatos',
+   poly:[[4.6870,-74.0790],[4.6865,-74.0700],[4.6960,-74.0690],[4.6965,-74.0785]]},
+  {id:'lag', nombre:'El Lago – San Felipe', ciudad:'Bogotá', color:'#9a6b12', estrato:4, base_m2:8.0e6, admin_m2:6200, arriendo_m2:42000, adr:{1:200000,2:270000,3:340000}, ocup:.62,
+   desc:'Cl. 72–82, Av. Caracas a Cra. 24 (El Lago, Lago Gaitán, San Felipe, Héroes)',
+   poly:[[4.6560,-74.0650],[4.6640,-74.0628],[4.6700,-74.0605],[4.6715,-74.0650],[4.6660,-74.0715],[4.6575,-74.0740]]},
+  {id:'teu', nombre:'Teusaquillo – Galerías', ciudad:'Bogotá', color:'#4f7a28', estrato:4, base_m2:6.8e6, admin_m2:5200, arriendo_m2:36000, adr:{1:170000,2:230000,3:300000}, ocup:.58,
+   desc:'Cl. 45–57, Av. Caracas a Cra. 28 (Palermo, Galerías, Teusaquillo)',
+   poly:[[4.6290,-74.0700],[4.6470,-74.0680],[4.6475,-74.0790],[4.6290,-74.0820]]},
+  {id:'can', nombre:'Cañaveral – FOSUNAB', ciudad:'Bucaramanga', color:'#2b6cb0', estrato:5, base_m2:5.4e6, admin_m2:4300, arriendo_m2:28000, adr:{1:170000,2:230000,3:290000}, ocup:.55,
+   desc:'Radio de 1,5 km alrededor de la FOSUNAB (Floridablanca)',
+   poly:circ([7.0705,-73.1065],1500)}
+];
+const Z = Object.fromEntries(ZONAS.map(z => [z.id, z]));
+
+let PROYECTOS = [
+  {id:'P01',nombre:'Altos de la 45',constructora:'Constructora Ficticia A',zona:'chu',lat:4.6330,lng:-74.0640,estado:'Sobre planos',entrega:'2028-12',acabados:'Full acabados',area_tipo:'construida',renta_corta:'permitida',admin_m2:6500,fuente:'Web constructora',detectado:'2026-10-12',
+   tipologias:[{habs:1,banos:1,area:38,parq:0,precio:349e6},{habs:2,banos:2,area:55,parq:1,precio:509e6}]},
+  {id:'P02',nombre:'Campus 57 Living',constructora:'Grupo Ficticio B',zona:'chu',lat:4.6410,lng:-74.0625,estado:'En construcción',entrega:'2027-09',acabados:'Full acabados',area_tipo:'privada',renta_corta:'permitida',admin_m2:7200,fuente:'Metrocuadrado',detectado:'2026-10-03',
+   tipologias:[{habs:1,banos:1,area:32,parq:0,precio:318e6},{habs:2,banos:2,area:48,parq:1,precio:468e6}]},
+  {id:'P03',nombre:'Lago 74 Residences',constructora:'Ficticia Urbana C',zona:'c72',lat:4.6575,lng:-74.0590,estado:'Sobre planos',entrega:'2029-03',acabados:'Obra gris',area_tipo:'construida',renta_corta:'desconocida',admin_m2:7800,fuente:'Búsqueda web (Claude)',detectado:'2026-10-24',
+   tipologias:[{habs:1,banos:1,area:36,parq:1,precio:405e6},{habs:2,banos:2,area:50,parq:1,precio:575e6}]},
+  {id:'P04',nombre:'Quinta Camacho Park',constructora:'Constructora Ficticia A',zona:'c72',lat:4.6545,lng:-74.0560,estado:'En construcción',entrega:'2027-06',acabados:'Full acabados',area_tipo:'privada',renta_corta:'prohibida',admin_m2:8100,fuente:'Fincaraíz',detectado:'2026-09-28',
+   tipologias:[{habs:1,banos:1,area:40,parq:1,precio:452e6},{habs:2,banos:2,area:49,parq:1,precio:569e6}]},
+  {id:'P05',nombre:'Polo 85',constructora:'Desarrollos Ficticios D',zona:'cor',lat:4.6740,lng:-74.0565,estado:'Sobre planos',entrega:'2028-08',acabados:'Full acabados',area_tipo:'construida',renta_corta:'permitida',admin_m2:7500,fuente:'Búsqueda web (Claude)',detectado:'2026-10-20',
+   tipologias:[{habs:1,banos:1,area:39,parq:1,precio:455e6},{habs:2,banos:2,area:50,parq:1,precio:592e6}]},
+  {id:'P06',nombre:'Cl 106 Urban',constructora:'Grupo Ficticio B',zona:'cor',lat:4.6900,lng:-74.0505,estado:'Entrega inmediata',entrega:'2026-11',acabados:'Full acabados',area_tipo:'privada',renta_corta:'permitida',admin_m2:7000,fuente:'Ciencuadras',detectado:'2026-10-25',
+   tipologias:[{habs:1,banos:1,area:42,parq:1,precio:478e6},{habs:2,banos:2,area:49,parq:1,precio:560e6}]},
+  {id:'P07',nombre:'Pasadena Verde',constructora:'Ficticia Urbana C',zona:'pas',lat:4.6920,lng:-74.0590,estado:'Sobre planos',entrega:'2028-10',acabados:'Obra gris',area_tipo:'construida',renta_corta:'desconocida',admin_m2:6200,fuente:'Metrocuadrado',detectado:'2026-10-15',
+   tipologias:[{habs:1,banos:1,area:42,parq:1,precio:409e6},{habs:2,banos:2,area:58,parq:1,precio:566e6}]},
+  {id:'P08',nombre:'Morato Terrazas',constructora:'Desarrollos Ficticios D',zona:'mor',lat:4.6915,lng:-74.0745,estado:'En construcción',entrega:'2027-12',acabados:'Full acabados',area_tipo:'privada',renta_corta:'prohibida',admin_m2:5600,fuente:'Fincaraíz',detectado:'2026-10-08',
+   tipologias:[{habs:2,banos:2,area:58,parq:1,precio:495e6},{habs:3,banos:2,area:68,parq:1,precio:582e6}]},
+  {id:'P09',nombre:'Cañaveral Salud',constructora:'Constructora Santander Ficticia',zona:'can',lat:7.0715,lng:-73.1050,estado:'Sobre planos',entrega:'2028-06',acabados:'Full acabados',area_tipo:'construida',renta_corta:'permitida',admin_m2:4800,fuente:'Búsqueda web (Claude)',detectado:'2026-10-18',
+   tipologias:[{habs:2,banos:2,area:65,parq:1,precio:462e6},{habs:3,banos:2,area:80,parq:2,precio:570e6}]},
+  {id:'P10',nombre:'Torre FOSUNAB Plaza',constructora:'Constructora Santander Ficticia',zona:'can',lat:7.0690,lng:-73.1085,estado:'Entrega inmediata',entrega:'2026-12',acabados:'Obra gris',area_tipo:'privada',renta_corta:'permitida',admin_m2:5000,fuente:'Ciencuadras',detectado:'2026-10-25',
+   tipologias:[{habs:1,banos:1,area:45,parq:1,precio:318e6},{habs:2,banos:2,area:64,parq:1,precio:445e6}]}
+];
+PROYECTOS.forEach(p => p.ciudad = Z[p.zona].ciudad);
+
+/* ---------- Generador de usados ficticios (determinístico) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd = mulberry32(42);
+function pip(pt, poly){const x=pt[1],y=pt[0];let ins=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i][1],yi=poly[i][0],xj=poly[j][1],yj=poly[j][0];if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))ins=!ins}return ins}
+function diasAntes(k){const d=new Date(HOY+'T12:00:00');d.setDate(d.getDate()-k);return d.toISOString().slice(0,10)}
+const FUENTES = ['Fincaraíz','Metrocuadrado','Ciencuadras'];
+
+function genUsados(){
+  const out=[]; let k=1;
+  for (const z of ZONAS){
+    const la=z.poly.map(p=>p[0]), ln=z.poly.map(p=>p[1]);
+    const bb=[Math.min(...la),Math.max(...la),Math.min(...ln),Math.max(...ln)];
+    for (let i=0;i<40;i++){
+      let pt; do { pt=[bb[0]+rnd()*(bb[1]-bb[0]), bb[2]+rnd()*(bb[3]-bb[2])]; } while(!pip(pt,z.poly));
+      const r=rnd(); const habs=r<.3?1:r<.8?2:3;
+      const priv = habs===1?32+rnd()*18 : habs===2?48+rnd()*24 : 68+rnd()*30;
+      const at=rnd(); const area_tipo = at<.7?'privada':at<.9?'construida':'desconocida';
+      const area = Math.round(area_tipo==='construida'? priv/0.88 : priv);
+      const antig = 1+Math.floor(Math.pow(rnd(),1.4)*34);
+      const m2 = z.base_m2*1.22*(1-0.007*antig)*(0.9+0.2*rnd())*(habs===3?.96:1);
+      const precio = Math.round(priv*m2/1e6)*1e6;
+      const er=rnd(); const estrato = er<.85?z.estrato:(er<.93?z.estrato-1:z.estrato+1);
+      const ascensor = antig>20 ? rnd()<.5 : rnd()<.93;
+      const pr=rnd(); const parq = habs===1?(pr<.45?0:1):habs===2?(pr<.12?0:1):(pr<.55?1:2);
+      const admin = Math.round(priv*z.admin_m2*(antig<10?1.15:antig<20?1:.85)*(0.85+.3*rnd())/1000)*1000;
+      let rc; if(antig>15){rc=rnd()<.7?'prohibida':'desconocida'} else {const q=rnd(); rc=q<.35?'permitida':q<.8?'desconocida':'prohibida'}
+      const nf=1+Math.floor(Math.pow(rnd(),2)*3), f0=Math.floor(rnd()*3);
+      const fuentes=[...Array(nf)].map((_,j)=>FUENTES[(f0+j)%3]);
+      out.push({id:'U'+String(k++).padStart(3,'0'), zona:z.id, ciudad:z.ciudad, lat:pt[0], lng:pt[1], estrato, habs, banos:habs===1?1:2,
+        area, area_tipo, parq, precio, admin, ascensor, antiguedad:antig, piso:2+Math.floor(rnd()*13), renta_corta:rc, fuentes,
+        detectado: diasAntes(Math.floor(Math.pow(rnd(),1.6)*30))});
+    }
+  }
+  return out;
+}
+let USADOS = genUsados();
+let MODO = 'demo', PENDIENTES = {sin_ubicar:[], fuera:[]}, GENERADO = null;
+
+/* ---------- Motor de comparación ---------- */
+const median = a => { if(!a.length) return null; const s=[...a].sort((x,y)=>x-y), m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+const areaPriv = (a, tipo) => tipo==='construida' ? a*PARAMS.factor_privada : a;
+// área privada real (brochure) si existe; si no, estimada desde la construida
+const apNuevo = (p, t) => t.area_privada || areaPriv(t.area, p.area_tipo);
+function mesesA(e){if(!e)return 0;const [y,m]=e.split('-').map(Number);return Math.max(0,(y-2026)*12+(m-10))}
+
+function ajusteNuevo(p,t){
+  const z=Z[p.zona], ap=apNuevo(p,t), m=mesesA(p.entrega), r=PARAMS.tasa_ea;
+  const acab = p.acabados==='Obra gris' ? PARAMS.acabados_m2*ap : 0;
+  const cuota=t.precio*PARAMS.cuota_ini, saldo=t.precio-cuota;
+  const pv = cuota*Math.pow(1+r,-m/24) + (saldo+acab)*Math.pow(1+r,-m/12);
+  const rentaPerd = PARAMS.renta_perdida ? z.arriendo_m2*ap*m : 0;
+  const efectivo = pv + rentaPerd;
+  return {ap, m, acab, pv, rentaPerd, efectivo, m2:efectivo/ap, m2_lista:t.precio/ap, total:t.precio+acab};
+}
+function ajusteUsado(u){
+  const ap=areaPriv(u.area,u.area_tipo), neto=u.precio*(1-PARAMS.desc_neg);
+  return {ap, neto, m2:neto/ap, m2_lista:u.precio/ap};
+}
+function elegible(u){return u.ascensor===true && u.precio<=PARAMS.precio_max}
+function comparables(p,t){
+  const ap=apNuevo(p,t);
+  const est = p.estrato || Z[p.zona].estrato;
+  return USADOS.filter(u => u.zona===p.zona && (u.estrato==null || u.estrato===est) && u.habs===t.habs && elegible(u)
+    && (u.antiguedad==null || u.antiguedad<=PARAMS.max_antig) && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=PARAMS.tol_area
+    && (!PARAMS.exigir_parq || u.parq===t.parq));
+}
+function rentab(precio, ap, habs, z, adminMes, rc){
+  const largo = z.arriendo_m2*ap;
+  const cortoB = z.adr[Math.min(habs,3)]*30*z.ocup;
+  const cortoN = cortoB*(1-PARAMS.com_plataforma-PARAMS.gestion) - PARAMS.servicios_mes;
+  const predialMes = precio*PARAMS.predial/12;
+  return {largo, cortoN, yL:(largo-adminMes-predialMes)*12/precio, yC: rc==='prohibida'?null:(cortoN-adminMes-predialMes)*12/precio};
+}
+function analisis(p,ti){
+  const t=p.tipologias[ti], n=ajusteNuevo(p,t);
+  const comps=comparables(p,t).map(u=>({u,a:ajusteUsado(u)}));
+  const med=median(comps.map(c=>c.a.m2)), medL=median(comps.map(c=>c.a.m2_lista));
+  const conPrecio = !!t.precio;
+  return {t,n,comps,med,medL, prima:comps.length&&conPrecio?n.m2/med-1:null, primaL:comps.length&&conPrecio?n.m2_lista/medL-1:null};
+}
+function primaProyecto(p){const v=p.tipologias.map((_,i)=>analisis(p,i).prima).filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+const desde = p => { const v=p.tipologias.map(t=>t.precio).filter(x=>x); return v.length?Math.min(...v):null; };
+const clsPrima = v => v===null?'na':v>.30?"hi":v>.15?"mid":"lo";
+
+/* ---------- Formato ---------- */
+const fM = v => (v==null||isNaN(v))?'—':'$'+Math.round(v/1e6).toLocaleString('es-CO')+' M';
+const fM1 = v => (v==null||isNaN(v))?'—':'$'+(v/1e6).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})+' M';
+const fK = v => (v==null||isNaN(v))?'—':'$'+Math.round(v/1000).toLocaleString('es-CO')+' k';
+const pct = (v,s=true) => v===null||v===undefined?'—':((s&&v>=0)?'+':'')+(v*100).toFixed(1)+'%';
+const rcBadge = rc => rc==='permitida'?'<span class="b ok">Renta corta: sí</span>':rc==='prohibida'?'<span class="b bad">Renta corta: no</span>':'<span class="b warn">Renta corta: ¿?</span>';
+const areaFlag = t => t==='construida'?' <span title="Área anunciada es construida; privada estimada">⚠</span>':t==='desconocida'?' <span title="Tipo de área no especificado">?</span>':'';
+const $ = s => document.querySelector(s);
+const nombreUsado = u => `${u.tipo==='apartaestudio'?'Apartaestudio':'Apto'} ${u.habs??'?'} hab`;
+const antig = u => u.antiguedad==null ? 'antig. s/d' : (u.antiguedad_texto || u.antiguedad+' años');
+const ascNota = u => u.ascensor===true && (u.ascensor_fuente||'').startsWith('probable') ? ' · ascensor probable (6+ pisos)' : u.ascensor!==true ? ' · ascensor sin confirmar' : '';
+
+/* ---------- Estado ---------- */
+const state = {ciudad:'Bogotá', zonas:new Set(ZONAS.map(z=>z.id)), estados:new Set(['Sobre planos','En construcción','Entrega inmediata','Sin dato']),
+  habs:new Set([1,2,3]), soloRC:false, soloRCok:false, capa:'nuevos', selU:null, precioMax:600e6, sel:null, tip:0, sort:{k:'detectado',d:-1}, q:'', tipo:'Todos', excl:false};
+
+function proyFiltrados(){
+  return PROYECTOS.filter(p => p.ciudad===state.ciudad && state.zonas.has(p.zona) && state.estados.has(p.estado)
+    && p.tipologias.some(t=>state.habs.has(t.habs) && (!t.precio || t.precio<=Math.min(state.precioMax,PARAMS.precio_max)))
+    && (!state.soloRC || p.renta_corta!=='prohibida')
+    && (!state.soloRCok || p.renta_corta==='permitida'));
+}
+function usadosFiltrados(){
+  return USADOS.filter(u => u.ciudad===state.ciudad && state.zonas.has(u.zona) && state.habs.has(u.habs) && u.precio<=Math.min(state.precioMax,PARAMS.precio_max) && u.ascensor===true
+    && (!state.soloRC || u.renta_corta!=='prohibida'));
+}
+
+/* ---------- Mapa ---------- */
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+const map = L.map('map',{zoomControl:true});
+/* Mapas base gratuitos, sin API key. Se prueba el primero; si sus teselas fallan
+   (p. ej. OSM exige un Referer y el archivo se abrió con doble clic), se pasa al siguiente. */
+const BASEMAPS = [
+  {url:`https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/${dark?'World_Dark_Gray_Base':'World_Light_Gray_Base'}/MapServer/tile/{z}/{y}/{x}`,
+   opt:{attribution:'Tiles &copy; Esri', maxZoom:16}},
+  {url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png', opt:{attribution:'&copy; OpenStreetMap', maxZoom:19}}
+];
+let baseIdx = 0, baseLayer = null, baseErr = 0;
+function setBase(i){
+  if(baseLayer) map.removeLayer(baseLayer);
+  baseIdx = i; baseErr = 0;
+  baseLayer = L.tileLayer(BASEMAPS[i].url, BASEMAPS[i].opt)
+    .on('tileerror', () => { if(++baseErr > 3 && baseIdx < BASEMAPS.length-1) setBase(baseIdx+1); })
+    .addTo(map);
+  baseLayer.bringToBack();
+}
+setBase(0);
+const zoneLayer=L.layerGroup().addTo(map), projLayer=L.layerGroup().addTo(map), compLayer=L.layerGroup().addTo(map);
+// grupos en gris neutro: el verde/rojo queda reservado para el precio de cada punto
+const usedLayer=L.markerClusterGroup({maxClusterRadius:40,showCoverageOnHover:false,disableClusteringAtZoom:16,
+  iconCreateFunction:c=>L.divIcon({className:'pinwrap',html:`<div class="ucl">${c.getChildCount()}</div>`,iconSize:[30,30]})});
+function dibujarZonas(){zoneLayer.clearLayers();ZONAS.forEach(z => L.polygon(z.poly,{color:z.color,weight:1.2,opacity:.7,fillOpacity:.04,dashArray:'4 4'}).bindTooltip(`<b>${z.nombre}</b><br>${z.desc}`,{sticky:true}).addTo(zoneLayer));}
+
+function fitCiudad(){const pts=ZONAS.filter(z=>z.ciudad===state.ciudad).flatMap(z=>z.poly);map.fitBounds(pts,{padding:[30,30]})}
+
+function renderMapa(){
+  projLayer.clearLayers(); usedLayer.clearLayers(); compLayer.clearLayers();
+  if(state.capa!=='usados') proyFiltrados().forEach(p=>{
+    const pr=primaProyecto(p), c=clsPrima(pr);
+    const icon=L.divIcon({className:'pinwrap',html:`<div class="pin ${c} ${state.sel===p.id?'sel':''}">${pr!==null?pct(pr):desde(p)===null?'s/precio':USADOS.length?'s/c':fM(desde(p))}</div>`,iconSize:[80,30],iconAnchor:[40,34]});
+    L.marker([p.lat,p.lng],{icon,zIndexOffset:1000}).on('click',()=>selProyecto(p.id))
+      .bindTooltip(`<b>${p.nombre}</b><br>${p.estado} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
+  });
+  if(state.capa!=='nuevos'){
+    const us=usadosFiltrados(), medZ={};
+    Object.keys(Z).forEach(z=>medZ[z]=median(us.filter(u=>u.zona===z).map(u=>ajusteUsado(u).m2_lista)));
+    us.forEach(u=>{
+      const a=ajusteUsado(u), dv=medZ[u.zona]?a.m2_lista/medZ[u.zona]-1:0;
+      const col=dv<=-0.10?'#2f7d4a':dv>=0.10?'#b23a3a':'#7d838a';
+      const selU=state.selU===u.id;
+      L.marker([u.lat,u.lng],{icon:L.divIcon({className:'pinwrap',html:`<div class="dot ${selU?'usel':''}" style="background:${col}"></div>`,iconSize:selU?[18,18]:[10,10]}),zIndexOffset:selU?900:0})
+        .on('click',()=>selUsado(u.id))
+        .bindTooltip(`<b>${nombreUsado(u)} · ${u.area} m²</b>${u.barrio?' · '+u.barrio:''}<br>${fM(u.precio)} · ${fM1(a.m2_lista)}/m² <small>(${pct(dv)} vs. zona)</small><br><small class="muted">clic para ver detalle</small>`,{direction:'top'})
+        .addTo(usedLayer);
+    });
+    if(!map.hasLayer(usedLayer)) usedLayer.addTo(map);
+  } else if(map.hasLayer(usedLayer)) map.removeLayer(usedLayer);
+
+  const p=PROYECTOS.find(x=>x.id===state.sel);
+  if(p){
+    analisis(p,state.tip).comps.forEach(({u,a})=>{
+      L.polyline([[p.lat,p.lng],[u.lat,u.lng]],{color:'#1f4e8c',weight:1.2,dashArray:'3 4',opacity:.7}).addTo(compLayer);
+      L.circleMarker([u.lat,u.lng],{radius:6,color:'#fff',weight:2,fillColor:'#1f4e8c',fillOpacity:1})
+        .bindTooltip(`${u.id} · ${fM1(a.m2)}/m² aj. · clic para ver`).on('click',()=>selUsado(u.id)).addTo(compLayer);
+    });
+  }
+}
+
+/* ---------- Filtros ---------- */
+function renderFiltros(){
+  const zs=ZONAS.filter(z=>z.ciudad===state.ciudad);
+  $('#filters').innerHTML=`
+  <h4>Ciudad</h4>
+  <div class="seg">${['Bogotá','Bucaramanga'].map(c=>`<button data-c="${c}" class="${state.ciudad===c?'on':''}">${c}</button>`).join('')}</div>
+  <h4>Zonas</h4>
+  <div class="chips">${zs.map(z=>`<button class="chip ${state.zonas.has(z.id)?'':'off'}" data-z="${z.id}"><i style="background:${z.color}"></i>${z.nombre}</button>`).join('')}</div>
+  <h4>Ver en el mapa</h4>
+  <div class="seg">${[['nuevos','Nuevos'],['usados','Usados'],['ambos','Ambos']].map(([k,l])=>`<button data-capa="${k}" class="${state.capa===k?'on':''}">${l}</button>`).join('')}</div>
+  ${state.capa==='usados'?'':`<h4>Estado del proyecto</h4>
+  <div class="chips">${['Sobre planos','En construcción','Entrega inmediata','Sin dato'].map(e=>`<button class="chip ${state.estados.has(e)?'':'off'}" data-e="${e}">${e}</button>`).join('')}</div>`}
+  <h4>Habitaciones</h4>
+  <div class="chips">${[1,2,3].map(h=>`<button class="chip ${state.habs.has(h)?'':'off'}" data-h="${h}">${h} hab</button>`).join('')}</div>
+  <h4>Precio máximo · <span class="mono">${fM(state.precioMax)}</span></h4>
+  <input type="range" id="pmax" min="250" max="600" step="10" value="${state.precioMax/1e6}">
+  <h4>Capas y reglas</h4>
+  <label class="chk"><input type="checkbox" id="rc" ${state.soloRC?'checked':''}> Excluir renta corta prohibida</label>
+  <label class="chk"><input type="checkbox" id="rcok" ${state.soloRCok?'checked':''}> Solo aptos para renta corta</label>
+  <p class="muted" style="font-size:12px;margin:8px 0 0">Siempre excluidos: sin ascensor y &gt; ${fM(PARAMS.precio_max)}.</p>
+  <h4>Lectura del ${state.capa==='usados'?'punto':'pin'}</h4>
+  ${state.capa!=='nuevos'?`<div class="legend">Usados (círculos grises = grupos; acércate para ver cada uno): $/m² de anuncio vs. la mediana de su zona<br>
+    <span class="sw" style="background:#2f7d4a"></span>10 % o más barato<br>
+    <span class="sw" style="background:#7d838a"></span>en la mediana (±10 %)<br>
+    <span class="sw" style="background:#b23a3a"></span>10 % o más caro</div>`:''}
+  ${state.capa==='usados'?'':`<div class="legend">
+    Cuánto más cuesta el nuevo que sus usados comparables, ya ajustado (sobreprecio real):<br>
+    <span class="sw" style="background:#2f7d4a"></span>&lt; 15%<br>
+    <span class="sw" style="background:#c58a22"></span>15–30%<br>
+    <span class="sw" style="background:#b23a3a"></span>&gt; 30%<br>
+    <span class="sw" style="background:#5a5f66"></span>${USADOS.length?'sin comparables':'sin usados aún (muestra precio desde)'}
+  </div>`}
+  ${MODO==='real'&&PENDIENTES.sin_ubicar.length?`<h4>Sin ubicar (${PENDIENTES.sin_ubicar.length})</h4><div class="legend">${PENDIENTES.sin_ubicar.map(x=>x.nombre).join('<br>')}<br><span class="mono">vivienda ubicar</span></div>`:''}
+  ${MODO==='real'&&PENDIENTES.fuera.length?`<h4>Fuera de zonas (${PENDIENTES.fuera.length})</h4><div class="legend">${PENDIENTES.fuera.map(x=>x.nombre).join('<br>')}</div>`:''}`;
+  $('#filters').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{state.ciudad=b.dataset.c;state.sel=null;renderAll();fitCiudad()});
+  $('#filters').querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{tog(state.zonas,b.dataset.z);renderAll()});
+  $('#filters').querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{tog(state.estados,b.dataset.e);renderAll()});
+  $('#filters').querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{tog(state.habs,+b.dataset.h);renderAll()});
+  $('#pmax').oninput=e=>{state.precioMax=e.target.value*1e6;renderAll()};
+  $('#filters').querySelectorAll('[data-capa]').forEach(b=>b.onclick=()=>{state.capa=b.dataset.capa;if(state.capa==='usados')state.sel=null;renderFiltros();renderMapa();renderDetalle()});
+  $('#rc').onchange=e=>{state.soloRC=e.target.checked;renderAll()};
+  $('#rcok').onchange=e=>{state.soloRCok=e.target.checked;renderAll()};
+}
+function tog(set,v){set.has(v)?set.delete(v):set.add(v)}
+
+/* ---------- Panel de detalle / comparador ---------- */
+function selProyecto(id){state.sel=id;state.selU=null;state.tip=0;renderDetalle();renderMapa();setTimeout(()=>map.invalidateSize(),50)}
+function selUsado(id){state.selU=id;state.sel=null;renderDetalle();renderMapa();setTimeout(()=>map.invalidateSize(),50)}
+
+function renderDetalle(){
+  const v=$('#v-mapa'), el=$('#detail'), p=PROYECTOS.find(x=>x.id===state.sel);
+  const uSel=!p && state.selU ? USADOS.find(x=>x.id===state.selU) : null;
+  if(uSel){ v.classList.add('open'); renderDetalleUsado(uSel, el); return; }
+  if(!p){v.classList.remove('open');el.innerHTML='';setTimeout(()=>map.invalidateSize(),50);return}
+  v.classList.add('open');
+  const z=Z[p.zona], A=analisis(p,state.tip), n=A.n, t=A.t;
+  const flags=[];
+  if(MODO==='real'){
+    if(p.notas) flags.push(`Nota: ${p.notas}`);
+    if(!t.precio) flags.push('Precio no publicado: no se puede calcular el sobreprecio.');
+    if(p.ubicacion_agregador) flags.push(`Ubicación tomada de la dirección publicada por el agregador${p.direccion?` (${p.direccion})`:''}: <b>pendiente de confirmar</b> con una fuente oficial.`);
+    else if(p.precision==='baja') flags.push('Ubicación <b>no verificada</b>: ni la dirección en la fuente ni la calle en OpenStreetMap coincidieron.');
+    else if(p.precision==='media') flags.push('Ubicación con una sola verificación (dirección oficial, calle en OpenStreetMap o enlace de mapa).');
+    if(p.zona_nota) flags.push(`Zona asignada por el sector del sitio: ${p.zona_nota}.`);
+    if(p.renta_corta==='permitida' && p.renta_corta_agregador) flags.push('Renta corta: el portal clasifica el proyecto en la categoría <b>Renta Corta</b>. Es mercadeo, no el reglamento: confirmar en el reglamento de propiedad horizontal.');
+    if(!p.admin_m2) flags.push('Administración sin dato: la rentabilidad no la descuenta.');
+    if(p.ascensor===false) flags.push('<b>Sin ascensor</b> según la fuente: no cumple tu regla.');
+    else if(p.ascensor==null) flags.push('Ascensor sin confirmar.');
+  }
+  if(t.area_privada) flags.push(`Área privada <b>${t.area_privada} m²</b> tomada del brochure del proyecto.`);
+  else if(p.area_tipo==='construida') flags.push(`Área anunciada es <b>construida</b>: privada estimada × ${PARAMS.factor_privada} = ${n.ap.toFixed(1)} m².`);
+  if(p.acabados==='Obra gris') flags.push(`Obra gris: se suman ${fK(PARAMS.acabados_m2)}/m² de acabados (${fM(n.acab)}).`);
+  if(p.renta_corta==='desconocida') flags.push('Renta corta sin confirmar: revisar el reglamento de propiedad horizontal.');
+  if(n.m>0) flags.push(`Entrega en ${n.m} meses: precio llevado a valor presente${PARAMS.renta_perdida?` + ${fM(n.rentaPerd)} de arriendo no percibido`:''}.`);
+  const nf=A.comps.filter(c=>c.u.area_tipo!=='privada').length;
+  if(nf) flags.push(`${nf} de ${A.comps.length} comparables con área no confirmada como privada.`);
+
+  const adminN=p.admin_m2?p.admin_m2*n.ap:null, rN=rentab(n.total,n.ap,t.habs,z,adminN||0,p.renta_corta);
+  const rC=A.comps.map(c=>rentab(c.a.neto,c.a.ap,c.u.habs,z,c.u.admin,c.u.renta_corta));
+  const yLc=median(rC.map(r=>r.yL)), yCc=median(rC.map(r=>r.yC).filter(x=>x!==null));
+  const mx=Math.max(n.m2_lista,n.m2,A.medL||0,A.med||0);
+  const bar=(l,v,c)=>`<div class="row"><span>${l}</span><div class="track"><div class="fill" style="width:${v?v/mx*100:0}%;background:${c}"></div></div><span class="mono" style="text-align:right">${v?fM1(v):'—'}</span></div>`;
+
+  el.innerHTML=`
+  <div class="dhead"><div><h2>${p.nombre}</h2><div class="muted">${p.constructora} · ${z.nombre}${p.direccion?` · ${p.direccion}`:""}</div>${p.url?`<a href="${p.url}" target="_blank" rel="noopener" style="font-size:12px;color:var(--accent)">Ver ficha ↗</a>`:""}${p.brochure?` · <a href="${p.brochure}" target="_blank" rel="noopener" style="font-size:12px;color:var(--accent)">Brochure ↗</a>`:""}</div><button class="x" id="cls">×</button></div>
+  <div class="meta"><span class="b new">${p.estado==="Sin dato"?"Estado s/d":p.estado}</span><span class="b">Entrega ${p.entrega||"s/d"}</span><span class="b">Estrato ${MODO==="real"?(p.estrato??"s/d"):z.estrato}</span><span class="b">${p.acabados==="Sin dato"?"Acabados s/d":p.acabados}</span><span class="b">Ascensor ${MODO==="real"?(p.ascensor===true?"✓":p.ascensor===false?"✗":"¿?"):"✓"}</span>${rcBadge(p.renta_corta)}<span class="b">Fuente: ${p.fuente}</span>${(p.categorias||[]).filter(c=>c!=='Renta Corta').map(c=>`<span class="b">${c}</span>`).join('')}</div>
+  <div class="tipos">${p.tipologias.map((x,i)=>`<button data-t="${i}" class="${i===state.tip?'on':''}"><b>${x.habs} hab · ${x.area} m²${x.area_privada?' ✓':areaFlag(p.area_tipo)}</b><small>${fM(x.precio)} · ${x.parq} parq.</small></button>`).join('')}</div>
+  <div class="grid3">
+    <div class="stat"><span>Precio total</span><b>${t.precio?fM(n.total):"Sin precio"}</b></div>
+    <div class="stat"><span>Área privada</span><b>${n.ap.toFixed(1)} m²</b></div>
+    <div class="stat"><span>Admin. estimada</span><b>${adminN?fK(adminN):'Sin dato'}</b></div>
+    <div class="stat" title="Comparando precios de anuncio tal cual, sin ajustes"><span>Sobreprecio aparente</span><b class="${A.primaL>0?'pos':'neg'}">${pct(A.primaL)}</b></div>
+    <div class="stat hl ${clsPrima(A.prima)}" style="grid-column:span 2"><span>Sobreprecio real vs. usados</span><b>${pct(A.prima)}</b> <small class="muted">· ${A.comps.length} comparables</small></div>
+  </div>
+  <p class="muted" style="font-size:11.5px;margin:8px 0 0"><b>Aparente:</b> precio de anuncio vs. precio de anuncio. <b>Real:</b> el nuevo se trae a valor presente y se le suman acabados y el arriendo que dejas de recibir durante la obra; al usado se le descuenta la negociación esperada.</p>
+  <h3>Precio por m² de área privada</h3>
+  <div class="bars">
+    ${bar('Nuevo · lista',n.m2_lista,'#7aa8ea')}
+    ${bar('Nuevo · efectivo',n.m2,'#1f4e8c')}
+    ${bar('Usados · lista (med.)',A.medL,'#b9bdc2')}
+    ${bar('Usados · ajustado (med.)',A.med,'#7d838a')}
+  </div>
+  ${flags.length?`<h3>Banderas</h3><ul class="flags">${flags.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}
+  <h3>Rentabilidad neta estimada</h3>
+  <table class="ctab"><thead><tr><th></th><th class="n">Este proyecto</th><th class="n">Usados (med.)</th></tr></thead><tbody>
+    <tr><td>Arriendo largo / mes</td><td class="n">${fK(rN.largo)}</td><td class="n">${rC.length?fK(median(rC.map(r=>r.largo))):'—'}</td></tr>
+    <tr><td>Yield neto largo</td><td class="n"><b>${pct(rN.yL,false)}</b></td><td class="n"><b>${pct(yLc,false)}</b></td></tr>
+    <tr><td>Renta corta neta / mes</td><td class="n">${p.renta_corta==='prohibida'?'No permitida':fK(rN.cortoN)}</td><td class="n">${rC.length?fK(median(rC.map(r=>r.cortoN))):'—'}</td></tr>
+    <tr><td>Yield neto corto</td><td class="n"><b>${pct(rN.yC,false)}</b></td><td class="n"><b>${pct(yCc,false)}</b> <small class="muted">(${rC.filter(r=>r.yC!==null).length} habilitados)</small></td></tr>
+  </tbody></table>
+  <p class="muted" style="font-size:11.5px">${MODO==="real"?"<b>Arriendo y ADR por zona aún son supuestos, no datos de mercado.</b> ":""}Netos de administración y predial. Renta corta: ADR ${fK(z.adr[Math.min(t.habs,3)])} × ocupación ${(z.ocup*100).toFixed(0)}% − plataforma, gestión y servicios.</p>
+  <h3>Comparables usados (${A.comps.length})</h3>
+  ${A.comps.length?`<div class="ctab"><table><thead><tr><th>ID</th><th class="n">Área</th><th class="n">Antig.</th><th class="n">Parq</th><th class="n">Adm</th><th class="n">$/m² aj.</th><th class="n">Sobreprecio</th><th>RC</th><th class="n">Fuentes</th></tr></thead><tbody>
+    ${A.comps.sort((a,b)=>a.a.m2-b.a.m2).map(({u,a})=>`<tr><td class="mono">${u.url?`<a href="${u.url}" target="_blank" rel="noopener">${u.id}</a>`:u.id}</td><td class="n">${a.ap.toFixed(0)}${areaFlag(u.area_tipo)}</td><td class="n">${u.antiguedad??'?'}</td><td class="n">${u.parq??'?'}${u.parq!=null&&u.parq!==t.parq?'*':''}</td><td class="n">${fK(u.admin)}</td><td class="n mono">${fM1(a.m2)}</td><td class="n ${n.m2/a.m2-1>0?'pos':'neg'}">${pct(n.m2/a.m2-1)}</td><td>${u.renta_corta==='permitida'?'✓':u.renta_corta==='prohibida'?'✗':'?'}</td><td class="n" title="${u.fuentes.join(', ')}">${u.fuentes.length}</td></tr>`).join('')}
+  </tbody></table></div><p class="muted" style="font-size:11.5px">* parqueaderos distintos a la tipología (permitido: regla flexible).</p>`
+  :`<div class="empty">${USADOS.length?"Sin comparables con los criterios actuales. Ajusta tolerancia de área o antigüedad en Supuestos.":"Los usados comparables se agregan en el siguiente módulo."}</div>`}`;
+  $('#cls').onclick=()=>{state.sel=null;renderDetalle();renderMapa()};
+  el.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{state.tip=+b.dataset.t;renderDetalle();renderMapa()});
+}
+
+/* ---------- Panel de un usado ---------- */
+function diasDesde(f){ if(!f) return null; return Math.round((new Date(HOY+'T12:00:00')-new Date(f.slice(0,10)+'T12:00:00'))/864e5); }
+function similaresUsado(u){
+  const ap=areaPriv(u.area,u.area_tipo);
+  return USADOS.filter(x=>x.id!==u.id && x.zona===u.zona && x.habs===u.habs && x.ascensor===true
+    && Math.abs(areaPriv(x.area,x.area_tipo)/ap-1)<=PARAMS.tol_area);
+}
+function renderDetalleUsado(u, el){
+  const z=Z[u.zona], a=ajusteUsado(u);
+  const sim=similaresUsado(u), simM2=sim.map(x=>ajusteUsado(x).m2_lista);
+  const zonaM2=USADOS.filter(x=>x.zona===u.zona && x.ascensor===true).map(x=>ajusteUsado(x).m2_lista);
+  const medSim=median(simM2), medZona=median(zonaM2);
+  const masCaros = simM2.length ? simM2.filter(v=>v>a.m2_lista).length/simM2.length : null;
+  const admM2 = u.admin? u.admin/a.ap : null;
+  const admZona = median(USADOS.filter(x=>x.zona===u.zona && x.admin).map(x=>x.admin/areaPriv(x.area,x.area_tipo)));
+  const dPub=diasDesde(u.creado_portal), dRadar=diasDesde(u.detectado);
+  const hist=(u.precios||[]).filter(x=>x.precio);
+  const cambio=u.precio_inicial && u.precio_inicial!==u.precio ? u.precio/u.precio_inicial-1 : null;
+  const r=rentab(a.neto,a.ap,u.habs||1,z,u.admin||0,u.antiguedad>PARAMS.max_antig?'prohibida':u.renta_corta);
+  const flags=[];
+  if(u.area_tipo==='construida') flags.push(`El anuncio solo trae área <b>construida</b> (${u.area} m²): privada estimada × ${PARAMS.factor_privada} = ${a.ap.toFixed(1)} m².`);
+  if(u.ascensor===false) flags.push('<b>Sin ascensor</b> según el anuncio: no cumple tu regla.');
+  else if(u.ascensor==null) flags.push('Ascensor <b>sin dato</b>: no cumple la regla hasta confirmarlo.');
+  else if((u.ascensor_fuente||'').startsWith('probable')) flags.push(`Ascensor <b>probable</b>, no confirmado: ${u.ascensor_fuente.replace(/^probable \((.*)\)$/,'$1')}.`);
+  if(!u.admin) flags.push('Administración sin dato: la rentabilidad no la descuenta.');
+  else if(admZona && admM2>admZona*1.25) flags.push(`Administración alta: ${fK(admM2)}/m² vs. ${fK(admZona)}/m² mediana de la zona (+${((admM2/admZona-1)*100).toFixed(0)} %).`);
+  if(u.antiguedad!=null && u.antiguedad>PARAMS.max_antig) flags.push(`Antigüedad ${antig(u)}: fuera de tu máximo para comparables (${PARAMS.max_antig} años) y en edificios viejos la renta corta suele estar prohibida.`);
+  if(cambio!==null && cambio<0) flags.push(`Bajó de precio ${pct(cambio)} desde que entró al radar: señal de vendedor dispuesto a negociar.`);
+  if(dPub!=null && dPub>90) flags.push(`Publicado hace ${dPub} días: lleva tiempo sin venderse, hay margen para negociar.`);
+  if(u.publicador==='owner'||/due[nñ]o|particular/i.test(u.publicador||'')) flags.push('Publicado por el dueño: sin comisión inmobiliaria de por medio.');
+  if(u.parq===0) flags.push('Sin parqueadero.');
+  const mx=Math.max(a.m2_lista,medSim||0,medZona||0);
+  const bar=(l,v,c)=>`<div class="row"><span>${l}</span><div class="track"><div class="fill" style="width:${v?v/mx*100:0}%;background:${c}"></div></div><span class="mono" style="text-align:right">${v?fM1(v):'—'}</span></div>`;
+  // proyectos nuevos de la misma zona con tipología del mismo número de habitaciones
+  const nuevos=PROYECTOS.filter(p=>p.zona===u.zona).flatMap(p=>p.tipologias.map((t,i)=>({p,t,i})).filter(x=>x.t.habs===u.habs && x.t.precio).slice(0,1))
+    .map(({p,t,i})=>{const n=ajusteNuevo(p,t);return {p,i,t,n,dif:n.m2/a.m2-1};}).sort((x,y)=>x.dif-y.dif);
+  const pubTxt = u.publicador ? ({inmobiliaria:'Inmobiliaria',owner:'Dueño',agent:'Agente',builder:'Constructora'}[u.publicador]||u.publicador) : null;
+
+  el.innerHTML=`
+  <div class="dhead"><div><h2>${nombreUsado(u)} · ${a.ap.toFixed(0)} m²</h2><div class="muted">${u.barrio||'Barrio s/d'} · ${z.nombre}</div>${u.url?`<a href="${u.url}" target="_blank" rel="noopener" style="font-size:12px;color:var(--accent)">Ver anuncio en ${u.fuentes[0]} ↗</a>`:''}</div><button class="x" id="cls">×</button></div>
+  <div class="meta"><span class="b">USADO</span><span class="b">Estrato ${u.estrato??'s/d'}</span><span class="b">${antig(u)}</span><span class="b">Piso ${u.piso??'s/d'}${u.pisos_edificio?' de '+u.pisos_edificio:''}</span>
+   <span class="b ${u.ascensor===true?'ok':u.ascensor===false?'bad':'warn'}">Ascensor ${u.ascensor===true?((u.ascensor_fuente||'').startsWith('probable')?'probable':'✓'):u.ascensor===false?'✗':'¿?'}</span>
+   <span class="b">${u.parq==null?'Parq. s/d':u.parq+' parq.'}</span><span class="b">${u.banos??'?'} baños</span>${pubTxt?`<span class="b">Publica: ${pubTxt}</span>`:''}
+   ${dPub!=null?`<span class="b">Publicado hace ${dPub} d</span>`:''}<span class="b">En el radar hace ${dRadar??0} d</span></div>
+  <div class="grid3">
+    <div class="stat"><span>Precio anuncio</span><b>${fM(u.precio)}</b>${cambio!==null?` <small class="${cambio<0?'neg':'pos'}">${pct(cambio)}</small>`:''}</div>
+    <div class="stat"><span>Área privada</span><b>${a.ap.toFixed(1)} m²</b>${areaFlag(u.area_tipo)}</div>
+    <div class="stat"><span>Administración</span><b>${fK(u.admin)}</b> <small class="muted">${admM2?fK(admM2)+'/m²':''}</small></div>
+    <div class="stat"><span>$/m² anuncio</span><b>${fM1(a.m2_lista)}</b></div>
+    <div class="stat" title="Precio de anuncio menos el descuento de negociación de Supuestos"><span>Precio negociado (−${(PARAMS.desc_neg*100).toFixed(0)} %)</span><b>${fM(a.neto)}</b></div>
+    <div class="stat hl ${medSim==null?'na':a.m2_lista/medSim-1<=-0.1?'lo':a.m2_lista/medSim-1>=0.1?'hi':'mid'}"><span>vs. similares</span><b>${medSim?pct(a.m2_lista/medSim-1):'—'}</b> <small class="muted">· ${sim.length}</small></div>
+  </div>
+  <p class="muted" style="font-size:11.5px;margin:8px 0 0"><b>Similares:</b> misma zona, ${u.habs} hab, área privada ±${(PARAMS.tol_area*100).toFixed(0)} % y ascensor.${masCaros!=null?` Este anuncio es más barato por m² que el <b>${(masCaros*100).toFixed(0)} %</b> de ellos.`:''}</p>
+  <h3>Precio por m² de área privada</h3>
+  <div class="bars">
+    ${bar('Este apartamento',a.m2_lista,'#1f4e8c')}
+    ${bar(`Similares (med., ${sim.length})`,medSim,'#7d838a')}
+    ${bar(`Zona completa (med., ${zonaM2.length})`,medZona,'#b9bdc2')}
+  </div>
+  ${flags.length?`<h3>Banderas</h3><ul class="flags">${flags.map(f=>`<li>${f}</li>`).join('')}</ul>`:''}
+  <h3>Rentabilidad neta estimada</h3>
+  <table class="ctab"><tbody>
+    <tr><td>Arriendo largo / mes</td><td class="n">${fK(r.largo)}</td><td>Yield neto largo</td><td class="n"><b>${pct(r.yL,false)}</b></td></tr>
+    <tr><td>Renta corta neta / mes</td><td class="n">${r.yC===null?'No aplica':fK(r.cortoN)}</td><td>Yield neto corto</td><td class="n"><b>${pct(r.yC,false)}</b></td></tr>
+  </tbody></table>
+  <p class="muted" style="font-size:11.5px">Sobre el precio negociado. ${MODO==="real"?"<b>Arriendo y ADR por zona aún son supuestos, no datos de mercado.</b> ":""}Renta corta sin confirmar en el reglamento${u.antiguedad>PARAMS.max_antig?'; se asume prohibida por antigüedad':''}.</p>
+  ${hist.length>1?`<h3>Historial de precio</h3><div class="ctab"><table><tbody>${hist.map(h=>`<tr><td class="mono">${h.fecha}</td><td class="n">${fM(h.precio)}</td></tr>`).join('')}</tbody></table></div>`:''}
+  ${nuevos.length?`<h3>Proyectos nuevos en la zona (${u.habs} hab)</h3><div class="ctab"><table><thead><tr><th>Proyecto</th><th class="n">Área priv.</th><th class="n">Precio</th><th class="n">$/m² efectivo</th><th class="n">vs. este</th></tr></thead><tbody>
+    ${nuevos.map(x=>`<tr data-p="${x.p.id}" style="cursor:pointer"><td>${x.p.nombre}</td><td class="n">${x.n.ap.toFixed(0)}</td><td class="n">${fM(x.t.precio)}</td><td class="n mono">${fM1(x.n.m2)}</td><td class="n ${x.dif>0?'pos':'neg'}">${pct(x.dif)}</td></tr>`).join('')}
+  </tbody></table></div><p class="muted" style="font-size:11.5px">Cuánto más cuesta el m² del nuevo (ya en valor presente) frente al m² negociado de este usado. Clic para abrir el proyecto.</p>`:''}
+  ${sim.length?`<h3>Similares en la zona (${sim.length})</h3><div class="ctab"><table><thead><tr><th>Barrio</th><th class="n">Área</th><th class="n">Precio</th><th class="n">$/m²</th><th class="n">Antig.</th><th class="n">Adm</th></tr></thead><tbody>
+    ${sim.map(x=>({x,m:ajusteUsado(x)})).sort((p,q)=>p.m.m2_lista-q.m.m2_lista).slice(0,8).map(({x,m})=>`<tr data-u="${x.id}" style="cursor:pointer"><td>${x.barrio||'—'}</td><td class="n">${m.ap.toFixed(0)}${areaFlag(x.area_tipo)}</td><td class="n">${fM(x.precio)}</td><td class="n mono">${fM1(m.m2_lista)}</td><td class="n">${x.antiguedad??'?'}</td><td class="n">${fK(x.admin)}</td></tr>`).join('')}
+  </tbody></table></div><p class="muted" style="font-size:11.5px">Los 8 más baratos por m². Clic para abrir.</p>`:''}
+  ${(u.amenidades||[]).length?`<h3>Amenidades</h3><div class="meta">${u.amenidades.map(x=>`<span class="b">${x}</span>`).join('')}</div>`:''}
+  ${u.descripcion?`<h3>Descripción del anuncio</h3><p style="font-size:12.5px;line-height:1.5;margin:0">${u.descripcion.replace(/</g,'&lt;')}${u.descripcion.length>=700?'…':''}</p>`:''}`;
+  $('#cls').onclick=()=>{state.selU=null;renderDetalle();renderMapa()};
+  el.querySelectorAll('[data-u]').forEach(r=>r.onclick=()=>selUsado(r.dataset.u));
+  el.querySelectorAll('[data-p]').forEach(r=>r.onclick=()=>{ if(state.capa==='usados'){state.capa='ambos';renderFiltros();} selProyecto(r.dataset.p); });
+}
+
+/* ---------- Tabla ---------- */
+function filasTabla(){
+  const rows=[];
+  PROYECTOS.filter(p=>p.ciudad===state.ciudad).forEach(p=>p.tipologias.forEach((t,i)=>{
+    const n=ajusteNuevo(p,t);
+    rows.push({tipo:'Nuevo',id:p.id+'-'+(i+1),nombre:p.nombre,zona:Z[p.zona].nombre,estrato:Z[p.zona].estrato,habs:t.habs,area:t.area,area_tipo:t.area_privada?'privada':p.area_tipo,ap:n.ap,parq:t.parq,ascensor:true,
+      admin:p.admin_m2?p.admin_m2*n.ap:null,precio:t.precio,m2:n.m2_lista,edad:'Entrega '+p.entrega,rc:p.renta_corta,fuentes:[p.fuente],detectado:p.detectado,excl:t.precio>PARAMS.precio_max?'Sobre tope':''});
+  }));
+  USADOS.filter(u=>u.ciudad===state.ciudad).forEach(u=>{
+    const a=ajusteUsado(u);
+    rows.push({tipo:'Usado',id:u.id,url:u.url,nombre:`${nombreUsado(u)}${u.piso?' · piso '+u.piso:''}${u.barrio?' · '+u.barrio:''}`,zona:Z[u.zona].nombre,estrato:u.estrato,habs:u.habs,area:u.area,area_tipo:u.area_tipo,ap:a.ap,parq:u.parq,ascensor:u.ascensor,
+      admin:u.admin,precio:u.precio,m2:a.m2_lista,edad:antig(u),rc:u.renta_corta,fuentes:u.fuentes,detectado:u.detectado,excl:u.ascensor===false?'Sin ascensor':u.ascensor!==true?'Ascensor sin confirmar':u.precio>PARAMS.precio_max?'Sobre tope':''});
+  });
+  return rows;
+}
+const COLS=[['tipo','Tipo'],['id','ID'],['nombre','Inmueble'],['zona','Zona'],['estrato','Estr.',1],['habs','Hab',1],['ap','Á. priv',1],['parq','Parq',1],['admin','Admin',1],['adm2','Adm/m²',1],['precio','Precio',1],['m2','$/m²',1],['edad','Antig./Entrega'],['rc','R. corta'],['fuentes','Fuentes',1],['detectado','Detectado']];
+function renderTabla(){
+  let rows=filasTabla().map(r=>({...r,adm2:r.admin?r.admin/r.ap:null}));
+  const ex=rows.filter(r=>r.excl).length;
+  if(!state.excl) rows=rows.filter(r=>!r.excl);
+  if(state.tipo!=='Todos') rows=rows.filter(r=>r.tipo===state.tipo);
+  if(state.q){const q=state.q.toLowerCase();rows=rows.filter(r=>(r.nombre+r.zona+r.id).toLowerCase().includes(q))}
+  const {k,d}=state.sort; rows.sort((a,b)=>{const x=k==='fuentes'?a.fuentes.length:a[k], y=k==='fuentes'?b.fuentes.length:b[k]; return (x>y?1:x<y?-1:0)*d});
+  $('#v-tabla').innerHTML=`<div class="page"><h2>Inventario · ${state.ciudad}</h2>
+  <p class="muted">Una fila por tipología (nuevos) o por anuncio deduplicado (usados). ${ex} excluidos por reglas duras.</p>
+  <div class="toolbar"><input type="search" id="q" placeholder="Buscar nombre, zona o ID" value="${state.q}">
+   <select id="tp">${['Todos','Nuevo','Usado'].map(o=>`<option ${o===state.tipo?'selected':''}>${o}</option>`).join('')}</select>
+   <label class="chk"><input type="checkbox" id="ex" ${state.excl?'checked':''}> Mostrar excluidos</label>
+   <span class="muted">${rows.length} filas</span></div>
+  <div class="card" style="padding:0;overflow:auto;max-height:70vh"><table id="tbl"><thead><tr>${COLS.map(([c,l,num])=>`<th data-k="${c}" class="${num?'n':''} ${state.sort.k===c?'sorted':''}">${l}</th>`).join('')}</tr></thead><tbody>
+  ${rows.map(r=>`<tr class="${r.excl?'ex':''}" title="${r.excl}">
+   <td><span class="b ${r.tipo==='Nuevo'?'new':''}">${r.tipo}</span></td><td class="mono">${r.url?`<a href="${r.url}" target="_blank" rel="noopener">${r.id}</a>`:r.id}</td><td>${r.nombre}${r.excl?` <span class="b bad">${r.excl}</span>`:''}</td><td>${r.zona}</td>
+   <td class="n">${r.estrato??'?'}</td><td class="n">${r.habs??'?'}</td><td class="n">${r.ap.toFixed(0)}${areaFlag(r.area_tipo)}</td><td class="n">${r.parq??'?'}</td>
+   <td class="n">${fK(r.admin)}</td><td class="n">${fK(r.adm2)}</td><td class="n">${fM(r.precio)}</td><td class="n mono">${fM1(r.m2)}</td><td>${r.edad}</td>
+   <td>${r.rc==='permitida'?'✓':r.rc==='prohibida'?'✗':'?'}</td><td class="n" title="${r.fuentes.join(', ')}">${r.fuentes.length}</td><td class="mono">${r.detectado}</td></tr>`).join('')}
+  </tbody></table></div></div>`;
+  $('#q').oninput=e=>{state.q=e.target.value;renderTabla();const i=$('#q');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
+  $('#tp').onchange=e=>{state.tipo=e.target.value;renderTabla()};
+  $('#ex').onchange=e=>{state.excl=e.target.checked;renderTabla()};
+  $('#tbl').querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;state.sort={k,d:state.sort.k===k?-state.sort.d:-1};renderTabla()});
+}
+
+/* ---------- Usados (inventario de mercado, independiente de los proyectos) ---------- */
+const US = {zona:'Todas', habs:'Todas', asc:'ok', precioMax:600e6, q:'', sort:{k:'m2',d:1}};
+function usadosVista(){
+  return USADOS.filter(u => u.ciudad===state.ciudad).map(u => {
+    const a = ajusteUsado(u);
+    const cambio = u.precio_inicial && u.precio_inicial!==u.precio ? u.precio/u.precio_inicial-1 : null;
+    const asc = u.ascensor===true ? ((u.ascensor_fuente||'').startsWith('probable')?'probable':'sí') : u.ascensor===false?'no':'¿?';
+    return {...u, ap:a.ap, m2:a.m2_lista, adm2:u.admin? u.admin/a.ap : null, cambio, asc,
+            zonaN: Z[u.zona].nombre};
+  });
+}
+function filtrarUsados(rows){
+  return rows.filter(r => (US.zona==='Todas' || r.zona===US.zona)
+    && (US.habs==='Todas' || (US.habs==='3+' ? r.habs>=3 : r.habs===+US.habs))
+    && r.precio<=US.precioMax
+    && (US.asc==='todos' || (US.asc==='ok' ? r.ascensor===true : r.asc==='sí'))
+    && (!US.q || ((r.barrio||'')+' '+r.zonaN+' '+r.id).toLowerCase().includes(US.q.toLowerCase())));
+}
+function renderUsados(){
+  const el = $('#v-usados'); if(!el) return;
+  const todas = usadosVista(), rows = filtrarUsados(todas);
+  const zonasC = ZONAS.filter(z => z.ciudad===state.ciudad);
+  // resumen por zona (con los filtros de habitaciones, precio y ascensor, sin el de zona)
+  const prev = US.zona; US.zona='Todas'; const paraResumen = filtrarUsados(todas); US.zona=prev;
+  const resumen = zonasC.map(z => { const r = paraResumen.filter(x=>x.zona===z.id);
+    return {z, n:r.length, m2:median(r.map(x=>x.m2)), adm2:median(r.filter(x=>x.adm2).map(x=>x.adm2)), precio:median(r.map(x=>x.precio))}; });
+  const {k,d} = US.sort;
+  rows.sort((a,b)=>{const x=a[k], y=b[k]; if(x==null&&y==null) return 0; if(x==null) return 1; if(y==null) return -1; return (x>y?1:x<y?-1:0)*d});
+  const C = [['zonaN','Zona'],['barrio','Barrio'],['tipo','Tipo'],['habs','Hab',1],['banos','Baños',1],['ap','Á. priv',1],['precio','Precio',1],['m2','$/m²',1],
+             ['admin','Admin',1],['adm2','Adm/m²',1],['estrato','Estr.',1],['piso','Piso',1],['antiguedad','Antig.',1],['parq','Parq',1],['asc','Ascensor'],['cambio','Δ precio',1],['detectado','Visto desde']];
+  const MAXF = 500;
+  el.innerHTML = `<div class="page"><h2>Usados · ${state.ciudad}</h2>
+  <p class="muted">Inventario de mercado en las zonas del radar (Fincaraíz), sin cruzarlo con los proyectos nuevos. Clic en una fila para verla en el mapa con su detalle. $/m² sobre área privada (⚠ = estimada desde la construida × ${PARAMS.factor_privada}). Precio de anuncio, sin descuento de negociación.</p>
+  <div class="zres">${resumen.map(r=>`<div class="card ${US.zona===r.z.id?'on':''}" data-z="${r.z.id}"><div class="muted" style="font-size:12px"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${r.z.color}"></i> ${r.z.nombre}</div>
+     <b>${r.n}</b> <small class="muted">anuncios</small><br><small>${fM1(r.m2)}/m² · adm ${fK(r.adm2)}/m²<br>precio mediano ${fM(r.precio)}</small></div>`).join('')}</div>
+  <div class="toolbar">
+   <select id="uz"><option value="Todas">Todas las zonas</option>${zonasC.map(z=>`<option value="${z.id}" ${US.zona===z.id?'selected':''}>${z.nombre}</option>`).join('')}</select>
+   <select id="uh">${['Todas','1','2','3+'].map(o=>`<option ${US.habs===o?'selected':''}>${o}</option>`).join('')}</select>
+   <select id="ua"><option value="ok" ${US.asc==='ok'?'selected':''}>Con ascensor (confirmado o probable)</option><option value="si" ${US.asc==='si'?'selected':''}>Solo ascensor confirmado</option><option value="todos" ${US.asc==='todos'?'selected':''}>Todos (incluye sin ascensor / sin dato)</option></select>
+   <label class="muted">Hasta $<input type="number" id="up" value="${US.precioMax/1e6}" step="10" style="width:70px"> M</label>
+   <input type="search" id="uq" placeholder="Buscar barrio o ID" value="${US.q}">
+   <span class="muted">${rows.length} anuncios${rows.length>MAXF?` (se muestran ${MAXF}; ordena o filtra)`:''}</span>
+   <button id="ucsv" class="b" style="cursor:pointer;border:1px solid var(--line)">Descargar CSV</button></div>
+  ${USADOS.length?`<div class="card" style="padding:0;overflow:auto;max-height:65vh"><table id="utbl"><thead><tr>${C.map(([c,l,num])=>`<th data-k="${c}" class="${num?'n':''} ${k===c?'sorted':''}">${l}</th>`).join('')}<th></th></tr></thead><tbody>
+  ${rows.slice(0,MAXF).map(r=>`<tr data-id="${r.id}" style="cursor:pointer" title="Clic: ver en el mapa con su detalle"><td>${r.zonaN}</td><td>${r.barrio||'—'}</td><td>${r.tipo==='apartaestudio'?'Apartaestudio':'Apto'}</td><td class="n">${r.habs??'?'}</td><td class="n">${r.banos??'?'}</td>
+   <td class="n">${r.ap.toFixed(0)}${areaFlag(r.area_tipo)}</td><td class="n">${fM(r.precio)}</td><td class="n mono">${fM1(r.m2)}</td><td class="n">${fK(r.admin)}</td><td class="n">${fK(r.adm2)}</td>
+   <td class="n">${r.estrato??'?'}</td><td class="n">${r.piso??'?'}</td><td class="n" title="${r.antiguedad_texto||''}">${r.antiguedad==null?'?':r.antiguedad_texto||r.antiguedad}</td><td class="n">${r.parq??'?'}</td>
+   <td title="${r.ascensor_fuente||'sin dato'}">${r.asc==='sí'?'✓':r.asc==='probable'?'probable':r.asc==='no'?'✗':'¿?'}</td>
+   <td class="n ${r.cambio<0?'neg':r.cambio>0?'pos':''}">${r.cambio==null?'':pct(r.cambio)}</td><td class="mono">${r.detectado}</td>
+   <td>${r.url?`<a href="${r.url}" target="_blank" rel="noopener">ver ↗</a>`:''}</td></tr>`).join('')}
+  </tbody></table></div>`:`<div class="empty">Aún no hay usados. Corre <code>vivienda usados</code> y recarga.</div>`}</div>`;
+  const rer = () => renderUsados();
+  el.querySelectorAll('.zres .card').forEach(c=>c.onclick=()=>{US.zona = US.zona===c.dataset.z?'Todas':c.dataset.z; rer();});
+  el.querySelectorAll('#utbl tbody tr[data-id]').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('a')) return;
+    if(state.capa==='nuevos'){state.capa='usados';renderFiltros();}
+    $('#tabs button[data-v="mapa"]').click(); selUsado(tr.dataset.id);
+    const u=USADOS.find(x=>x.id===tr.dataset.id); if(u) setTimeout(()=>map.setView([u.lat,u.lng],16),80); });
+  $('#uz').onchange=e=>{US.zona=e.target.value;rer()};
+  $('#uh').onchange=e=>{US.habs=e.target.value;rer()};
+  $('#ua').onchange=e=>{US.asc=e.target.value;rer()};
+  $('#up').onchange=e=>{US.precioMax=(+e.target.value||600)*1e6;rer()};
+  $('#uq').oninput=e=>{US.q=e.target.value;rer();const i=$('#uq');i.focus();i.setSelectionRange(i.value.length,i.value.length)};
+  el.querySelectorAll('#utbl th[data-k]').forEach(th=>th.onclick=()=>{const k=th.dataset.k;US.sort={k,d:US.sort.k===k?-US.sort.d:1};rer()});
+  $('#ucsv').onclick=()=>{
+    const cols=['id','zonaN','barrio','tipo','habs','banos','area','area_tipo','ap','precio','m2','admin','adm2','estrato','piso','antiguedad_texto','parq','asc','cambio','detectado','url'];
+    const esc=v=>v==null?'':/[",;\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':String(v);
+    const txt=[cols.join(',')].concat(rows.map(r=>cols.map(c=>esc(typeof r[c]==='number'?Math.round(r[c]*100)/100:r[c])).join(','))).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+txt],{type:'text/csv'}));
+    a.download=`usados_${state.ciudad}_${HOY}.csv`; a.click();
+  };
+}
+
+/* ---------- Feed de detectados ---------- */
+function renderFeed(){
+  const lim=diasAntes(6), items=[];
+  PROYECTOS.filter(p=>p.detectado>=lim).forEach(p=>items.push({d:p.detectado,html:`<span class="b new">PROYECTO NUEVO</span>
+    <div><b>${p.nombre}</b> · ${Z[p.zona].nombre} <small>(${p.ciudad})</small><br><small>${p.estado} · entrega ${p.entrega||'s/d'} · ${p.tipologias.map(t=>t.habs+'h '+t.area+'m²').join(' / ')} · ${p.acabados}${p.area_tipo==='construida'?' · ⚠ área construida':''} · fuente: ${p.fuente}</small></div>
+    <div class="p">${desde(p)?'desde '+fM(desde(p)):'sin precio'}<br><small>sobreprecio ${pct(primaProyecto(p))}</small></div>`}));
+  USADOS.filter(u=>u.detectado>=lim && elegible(u)).forEach(u=>{const a=ajusteUsado(u);items.push({d:u.detectado,html:`<span class="b">USADO</span>
+    <div><b>${nombreUsado(u)} · ${a.ap.toFixed(0)} m²${areaFlag(u.area_tipo)}</b> · ${Z[u.zona].nombre} <small>(${u.ciudad})</small><br><small>Estrato ${u.estrato??'?'} · ${antig(u)} · ${u.parq??'?'} parq · adm ${fK(u.admin)} · ${u.fuentes.length>1?`visto en ${u.fuentes.join(' + ')} (deduplicado)`:u.fuentes[0]}</small></div>
+    <div class="p">${fM(u.precio)}<br><small>${fM1(a.m2_lista)}/m²</small></div>`})});
+  const byDay={}; items.forEach(i=>(byDay[i.d]=byDay[i.d]||[]).push(i.html));
+  const hoyP=PROYECTOS.filter(p=>p.detectado===HOY).length, hoyU=USADOS.filter(u=>u.detectado===HOY&&elegible(u)).length;
+  $('#v-feed').innerHTML=`<div class="page"><h2>Detectados · últimos 7 días</h2>
+   <p class="muted">Hoy: <b>${hoyP}</b> proyectos nuevos y <b>${hoyU}</b> usados que cumplen las reglas duras (ascensor, ≤ ${fM(PARAMS.precio_max)}). Ambas ciudades.</p>
+   ${Object.keys(byDay).sort().reverse().map(d=>`<div class="feedday">${d===HOY?'Hoy · ':''}${new Date(d+'T12:00:00').toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})} <span class="muted">· ${byDay[d].length}</span></div>${byDay[d].map(h=>`<div class="fitem">${h}</div>`).join('')}`).join('')}</div>`;
+}
+
+/* ---------- Supuestos ---------- */
+function renderSup(){
+  const rows=PARAM_META.map(([k,l,t,h])=>{
+    const inp = t==='bool' ? `<input type="checkbox" data-k="${k}" data-t="bool" ${PARAMS[k]?'checked':''}>`
+      : `<div class="inp"><input type="number" data-k="${k}" data-t="${t}" value="${t==='pct'?+(PARAMS[k]*100).toFixed(2):PARAMS[k]}" step="${t==='pct'?0.5:t==='cop'?10000:1}"><span class="muted">${t==='pct'?'%':t==='cop'?'COP':''}</span></div>`;
+    return `<label class="prow"><div><b>${l}</b><small>${h}</small></div>${inp}</label>`;}).join('');
+  $('#v-sup').innerHTML=`<div class="page"><h2>Supuestos del modelo</h2>
+  <p class="muted">Editables; recalculan mapa, comparador, tabla y feed al instante.</p>
+  <div class="grid2"><div class="card">${rows}</div>
+  <div><div class="card"><b>Parámetros por zona (ficticios)</b>
+   <div class="ctab" style="margin-top:8px"><table><thead><tr><th>Zona</th><th class="n">Estr.</th><th class="n">Arr. $/m²</th><th class="n">ADR 1/2/3h</th><th class="n">Ocup.</th></tr></thead><tbody>
+   ${ZONAS.map(z=>`<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${z.color}"></i> ${z.nombre}<br><small class="muted">${z.desc}</small></td><td class="n">${z.estrato}</td><td class="n">${fK(z.arriendo_m2)}</td><td class="n">${[1,2,3].map(h=>Math.round(z.adr[h]/1000)).join('/')}k</td><td class="n">${(z.ocup*100).toFixed(0)}%</td></tr>`).join('')}
+   </tbody></table></div>
+   <p class="muted" style="font-size:12px">Polígonos aproximados; se ajustan en <span class="mono">ZONAS</span>.</p></div>
+   <div class="card" style="margin-top:16px"><b>Contrato de datos</b><p class="muted" style="font-size:12.5px">Lo que el proceso diario debe producir. Descarga el JSON de ejemplo para ver la estructura de zonas, proyectos y usados.</p>
+   <button class="btn" id="dl">Descargar data.json de ejemplo</button></div></div></div></div>`;
+  $('#v-sup').querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{
+    const k=i.dataset.k,t=i.dataset.t;
+    PARAMS[k]= t==='bool'?i.checked : t==='pct'?(+i.value)/100 : +i.value;
+    renderAll(false);
+  });
+  $('#dl').onclick=()=>{const b=new Blob([JSON.stringify({generado:HOY,zonas:ZONAS,proyectos:PROYECTOS,usados:USADOS},null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='data.json';a.click()};
+}
+
+/* ---------- KPIs y orquestación ---------- */
+function renderKPIs(){
+  const ps=proyFiltrados(), pr=ps.map(primaProyecto).filter(x=>x!==null);
+  const hoy=PROYECTOS.filter(p=>p.detectado===HOY).length+USADOS.filter(u=>u.detectado===HOY&&elegible(u)).length;
+  $('#kpis').innerHTML=`<div class="kpi"><b>${ps.length}</b><span>Proyectos</span></div>
+   <div class="kpi"><b>${usadosFiltrados().length}</b><span>Usados elegibles</span></div>
+   <div class="kpi"><b>${pct(median(pr))}</b><span>Sobreprecio real med.</span></div>
+   <div class="kpi"><b>${hoy}</b><span>Detectados hoy</span></div>`;
+}
+function renderAll(withSup=true){
+  renderKPIs(); renderFiltros(); renderMapa(); renderDetalle(); renderTabla(); renderUsados(); renderFeed(); if(withSup) renderSup();
+}
+$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  $('#tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
+  if(b.dataset.v==='mapa') setTimeout(()=>map.invalidateSize(),50);
+});
+async function cargarDatos(){
+  if(new URLSearchParams(location.search).has('demo') || location.protocol==='file:') return;
+  try{
+    const r = await fetch('../data/processed/dashboard.json', {cache:'no-store'});
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    (d.zonas?.features||[]).forEach(f=>{ const z=Z[f.properties.id];
+      if(z){ z.poly = f.geometry.coordinates[0].slice(0,-1).map(([lng,lat])=>[lat,lng]);
+             if(f.properties.descripcion) z.desc = f.properties.descripcion; } });
+    PROYECTOS = (d.proyectos||[]).filter(p=>Z[p.zona]).map(p=>({...p, ciudad:Z[p.zona].ciudad}));
+    USADOS = (d.usados||[]).filter(u=>Z[u.zona]).map(u=>({...u, ciudad:Z[u.zona].ciudad}));
+    if(d.generado) HOY = d.generado.slice(0,10);
+    PENDIENTES = {sin_ubicar:d.sin_ubicar||[], fuera:d.fuera_de_zonas||[]};
+    GENERADO = d.generado; MODO = 'real';
+    $('#modo').textContent = USADOS.length ? 'DATOS REALES' : 'DATOS REALES · USADOS PENDIENTES';
+    $('#subtitulo').textContent = `≤ ${fM(PARAMS.precio_max)} · ${USADOS.length} usados · act. ${new Date(GENERADO).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}`;
+  }catch(e){ console.warn('Sin dashboard.json: modo demo.', e); }
+}
+cargarDatos().then(()=>{ dibujarZonas(); renderAll(); fitCiudad(); });
+</script>
+</body>
+</html>

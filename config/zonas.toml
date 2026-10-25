@@ -1,0 +1,97 @@
+# Zonas del radar: un centro y un radio por zona (círculo). Es lo que se usa por defecto.
+# La zona de un proyecto nuevo la decide el sector del sitio (o `zonas` en proyectos_manuales.toml);
+# la de un usado, el punto del anuncio dentro de la figura de la zona.
+# Para mover o agrandar una zona, cambia centro [lat, lng] o radio_m (metros).
+#
+# OPCIONAL — esquinas: cruces de vías EN ORDEN (recorriendo el borde). `vivienda zonas` las ubica una
+# sola vez en OpenStreetMap (lento: ~1 min por esquina) y desde ahí la zona es ese polígono.
+# Si una esquina falla, la zona sigue como círculo y el comando dice cuál ajustar.
+# Formato de cada esquina: "Calle 39 con Avenida Caracas", "Calle 60 con Carrera 5".
+
+[[zona]]
+id = "chu"
+nombre = "Chapinero Universitario"
+ciudad = "Bogotá"
+descripcion = "Cl. 39–60, Av. Caracas a Circunvalar"
+centro = [4.6350, -74.0640]
+radio_m = 1300
+esquinas = [
+  "Calle 39 con Avenida Caracas",
+  "Calle 60 con Avenida Caracas",
+  "Calle 60 con Carrera 5",
+  "Calle 39 con Carrera 5",
+]
+
+[[zona]]
+id = "c72"
+nombre = "Calle 72 – Lago"
+ciudad = "Bogotá"
+descripcion = "Cl. 67–76, Av. Caracas a Cra. 5"
+centro = [4.6565, -74.0580]
+radio_m = 900
+esquinas = [
+  "Calle 67 con Avenida Caracas",
+  "Calle 76 con Avenida Caracas",
+  "Calle 76 con Carrera 5",
+  "Calle 67 con Carrera 5",
+]
+
+[[zona]]
+id = "cor"
+nombre = "Corredor Cl. 80–116"
+ciudad = "Bogotá"
+descripcion = "Cl. 80–116, Autopista Norte a Av. Cra. 19"
+centro = [4.6830, -74.0530]
+radio_m = 1800
+
+[[zona]]
+id = "pas"
+nombre = "Pasadena"
+ciudad = "Bogotá"
+descripcion = "Pasadena y alrededores"
+centro = [4.6920, -74.0610]
+radio_m = 900
+
+[[zona]]
+id = "mor"
+nombre = "Morato"
+ciudad = "Bogotá"
+descripcion = "Morato y alrededores"
+centro = [4.6930, -74.0740]
+radio_m = 1000
+
+[[zona]]
+id = "lag"
+nombre = "El Lago – San Felipe"
+ciudad = "Bogotá"
+descripcion = "Cl. 72–82, Av. Caracas a Cra. 24"
+centro = [4.6630, -74.0660]
+radio_m = 900
+esquinas = [
+  "Calle 72 con Carrera 24",
+  "Calle 80 con Carrera 24",
+  "Calle 80 con Avenida Caracas",
+  "Calle 72 con Avenida Caracas",
+]
+
+[[zona]]
+id = "teu"
+nombre = "Teusaquillo – Galerías"
+ciudad = "Bogotá"
+descripcion = "Cl. 45–57, Av. Caracas a Cra. 28"
+centro = [4.6380, -74.0740]
+radio_m = 1000
+esquinas = [
+  "Calle 45 con Carrera 28",
+  "Calle 57 con Carrera 28",
+  "Calle 57 con Avenida Caracas",
+  "Calle 45 con Avenida Caracas",
+]
+
+[[zona]]
+id = "can"
+nombre = "Cañaveral – FOSUNAB"
+ciudad = "Floridablanca"
+descripcion = "Radio de 1,5 km alrededor de la FOSUNAB"
+centro = [7.0705, -73.1065]
+radio_m = 1500
