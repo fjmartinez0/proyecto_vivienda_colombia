@@ -139,6 +139,13 @@ puro: **no consumen Claude**.
   vs. m² de usados comparables con descuento de negociación (7 %). Supuestos editables en la pestaña Supuestos.
 - Comparables: misma zona, estrato (del proyecto si se conoce), habitaciones, área privada ±15 %, antigüedad ≤ 15
   años (si se conoce), con ascensor. Parqueadero flexible.
+- **Escalera de comparables (v0.7.1):** misma zona → si hay < `min_comps` (5), radio de 1 km alrededor del proyecto
+  (cualquier zona de la ciudad) → radio 1,5 km con área ±25 % y antigüedad ≤ 25. Con < 3 al final: `s/c`. Pin con `≈` =
+  comparables ampliados. El estrato solo filtra si el proyecto lo tiene confirmado (el "típico" de zona dejaba en 0 a
+  Calle 72, que mezcla estratos 4/5/6). Motivo: los nuevos son 1 hab de ~30 m² y el usado así con ascensor y ≤ 15 años casi
+  no existe en zonas viejas. Ojo: ampliar área hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
+- Pin de proyecto = nombre + valor (v0.7.2), siempre visible.
+- Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
 - Color de usados en el mapa: $/m² vs. mediana de su zona (verde ≤ −10 %, rojo ≥ +10 %). Grupos en gris.
 
 ## 7. Limitaciones conocidas

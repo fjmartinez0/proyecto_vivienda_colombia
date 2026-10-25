@@ -111,6 +111,10 @@ td.n,th.n{text-align:right}
 .pin::after{content:'';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:5px solid transparent;border-top-color:#fff}
 .pin.hi{background:#b23a3a}.pin.mid{background:#c58a22}.pin.lo{background:#2f7d4a}.pin.na{background:#5a5f66}
 .pin.sel{outline:3px solid #1f4e8c;outline-offset:1px}
+/* pin de proyecto: nombre + valor, centrado sobre el punto aunque sea más ancho que el ícono */
+.pinwrap .pin.proy{position:absolute;left:50%;top:0;transform:translateX(-50%);margin:0;gap:6px}
+.pin.proy .pn{font-weight:500;font-size:11px;opacity:.92;max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.pin.proy .pv{font-weight:700}
 .ucl{width:30px;height:30px;border-radius:50%;background:rgba(90,95,102,.85);color:#fff;font:600 11.5px Inter;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .dot.usel{width:16px;height:16px;border:3px solid #111;box-shadow:0 0 0 2px #fff}
 .dot{width:10px;height:10px;border-radius:50%;background:#7d838a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -166,7 +170,8 @@ let HOY = '2026-10-25';   // en modo real se reemplaza por la fecha del dashboar
 const PARAMS = {
   precio_max: 600e6, desc_neg: 0.07, tasa_ea: 0.10, cuota_ini: 0.30, renta_perdida: true,
   acabados_m2: 900000, factor_privada: 0.88, tol_area: 0.15, max_antig: 15, exigir_parq: false,
-  com_plataforma: 0.15, gestion: 0.20, servicios_mes: 450000, predial: 0.006
+  com_plataforma: 0.15, gestion: 0.20, servicios_mes: 450000, predial: 0.006,
+  min_comps: 5, radio_amplio: 1000, tol_area_amplia: 0.25, max_antig_amplia: 25
 };
 
 const PARAM_META = [
@@ -180,6 +185,10 @@ const PARAM_META = [
   ['tol_area','Tolerancia de área (±)','pct','Para considerar un usado comparable.'],
   ['max_antig','Antigüedad máxima del usado','num','Años.'],
   ['exigir_parq','Exigir mismo número de parqueaderos','bool','Apagado = parqueadero flexible.'],
+  ['min_comps','Comparables mínimos antes de ampliar','num','Si la zona tiene menos, se busca por distancia al proyecto.'],
+  ['radio_amplio','Radio de búsqueda ampliada (m)','num','Paso 1: este radio, mismos criterios. Paso 2: radio × 1,5 con área y antigüedad ampliadas.'],
+  ['tol_area_amplia','Tolerancia de área ampliada (±)','pct','Solo en el paso 2.'],
+  ['max_antig_amplia','Antigüedad máxima ampliada','num','Años. Solo en el paso 2.'],
   ['com_plataforma','Comisión plataforma (renta corta)','pct',''],
   ['gestion','Gestión + aseo (renta corta)','pct','Sobre ingreso bruto.'],
   ['servicios_mes','Servicios + internet (renta corta, mes)','cop',''],
@@ -307,12 +316,28 @@ function ajusteUsado(u){
   return {ap, neto, m2:neto/ap, m2_lista:u.precio/ap};
 }
 function elegible(u){return u.ascensor===true && u.precio<=PARAMS.precio_max}
-function comparables(p,t){
-  const ap=apNuevo(p,t);
-  const est = p.estrato || Z[p.zona].estrato;
-  return USADOS.filter(u => u.zona===p.zona && (u.estrato==null || u.estrato===est) && u.habs===t.habs && elegible(u)
-    && (u.antiguedad==null || u.antiguedad<=PARAMS.max_antig) && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=PARAMS.tol_area
+const distM=(a,b,c,d)=>6371000*Math.hypot((c-a)*Math.PI/180,(d-b)*Math.PI/180*Math.cos(a*Math.PI/180));
+// En datos reales el estrato solo filtra si el proyecto lo tiene confirmado: el "típico" de la zona es un
+// supuesto y en zonas mixtas (Calle 72: estratos 4, 5 y 6) dejaba sin comparables a casi todos.
+function filtroComp(p,t,o){
+  const ap=apNuevo(p,t), est = MODO==='real' ? p.estrato : (p.estrato || Z[p.zona].estrato), ciudad=Z[p.zona].ciudad;
+  return USADOS.filter(u => (o.radio ? (Z[u.zona] && Z[u.zona].ciudad===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
+    && (est==null || u.estrato==null || u.estrato===est) && u.habs===t.habs && elegible(u)
+    && (u.antiguedad==null || u.antiguedad<=o.antig) && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=o.tol
     && (!PARAMS.exigir_parq || u.parq===t.parq));
+}
+// Escalera: misma zona → radio alrededor del proyecto → radio mayor con área y antigüedad ampliadas.
+// Se queda en el primer paso con al menos `min_comps`. Con menos de 3 al final no se calcula sobreprecio.
+function comparables(p,t){
+  const r=PARAMS.radio_amplio, r2=Math.round(r*1.5);
+  const pasos=[
+    {nivel:0, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:0, desc:'misma zona'},
+    {nivel:1, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:r, desc:`ampliado a ${r} m alrededor del proyecto`},
+    {nivel:2, tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:r2,
+     desc:`ampliado a ${r2} m, área ±${Math.round(PARAMS.tol_area_amplia*100)} % y antigüedad ≤ ${PARAMS.max_antig_amplia} años`}];
+  let l;
+  for(const o of pasos){ l=filtroComp(p,t,o); l.nivel=o.nivel; l.desc=o.desc; if(l.length>=PARAMS.min_comps) break; }
+  return l;
 }
 function rentab(precio, ap, habs, z, adminMes, rc){
   const largo = z.arriendo_m2*ap;
@@ -323,12 +348,17 @@ function rentab(precio, ap, habs, z, adminMes, rc){
 }
 function analisis(p,ti){
   const t=p.tipologias[ti], n=ajusteNuevo(p,t);
-  const comps=comparables(p,t).map(u=>({u,a:ajusteUsado(u)}));
+  const L=comparables(p,t), comps=L.map(u=>({u,a:ajusteUsado(u)}));
   const med=median(comps.map(c=>c.a.m2)), medL=median(comps.map(c=>c.a.m2_lista));
-  const conPrecio = !!t.precio;
-  return {t,n,comps,med,medL, prima:comps.length&&conPrecio?n.m2/med-1:null, primaL:comps.length&&conPrecio?n.m2_lista/medL-1:null};
+  const ok = !!t.precio && comps.length>=3;
+  return {t,n,comps,med,medL,nivel:L.nivel,desc:L.desc, prima:ok?n.m2/med-1:null, primaL:ok?n.m2_lista/medL-1:null};
 }
-function primaProyecto(p){const v=p.tipologias.map((_,i)=>analisis(p,i).prima).filter(x=>x!==null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+function infoProyecto(p){
+  const as=p.tipologias.map((_,i)=>analisis(p,i)), v=as.filter(a=>a.prima!==null);
+  return {prima: v.length?v.reduce((s,a)=>s+a.prima,0)/v.length:null, nivel: v.length?Math.max(...v.map(a=>a.nivel)):null,
+          maxComps: Math.max(0,...as.map(a=>a.comps.length))};
+}
+function primaProyecto(p){return infoProyecto(p).prima}
 const desde = p => { const v=p.tipologias.map(t=>t.precio).filter(x=>x); return v.length?Math.min(...v):null; };
 const clsPrima = v => v===null?'na':v>.30?"hi":v>.15?"mid":"lo";
 
@@ -390,10 +420,15 @@ function fitCiudad(){const pts=ZONAS.filter(z=>z.ciudad===state.ciudad).flatMap(
 function renderMapa(){
   projLayer.clearLayers(); usedLayer.clearLayers(); compLayer.clearLayers();
   if(state.capa!=='usados') proyFiltrados().forEach(p=>{
-    const pr=primaProyecto(p), c=clsPrima(pr);
-    const icon=L.divIcon({className:'pinwrap',html:`<div class="pin ${c} ${state.sel===p.id?'sel':''}">${pr!==null?pct(pr):desde(p)===null?'s/precio':USADOS.length?'s/c':fM(desde(p))}</div>`,iconSize:[80,30],iconAnchor:[40,34]});
+    const I=infoProyecto(p), pr=I.prima, c=clsPrima(pr);
+    const etiqueta = pr!==null ? (I.nivel>0?'≈':'')+pct(pr) : desde(p)===null ? 's/precio' : USADOS.length ? 's/c' : fM(desde(p));
+    const motivo = pr!==null ? (I.nivel>0?'Sobreprecio con comparables ampliados (pocos usados así en la zona)':`Sobreprecio real vs. usados comparables`)
+      : desde(p)===null ? 'Precio no publicado: no se puede comparar'
+      : USADOS.length ? `Sin comparables suficientes (${I.maxComps} de 3 mínimos, aun ampliando la búsqueda)` : '';
+    const estadoTxt = p.estado && p.estado!=='Sin dato' ? p.estado : `Entrega ${p.entrega||'s/d'}`;
+    const icon=L.divIcon({className:'pinwrap',html:`<div class="pin proy ${c} ${state.sel===p.id?'sel':''}"><span class="pn">${p.nombre}</span><span class="pv">${etiqueta}</span></div>`,iconSize:[80,30],iconAnchor:[40,34]});
     L.marker([p.lat,p.lng],{icon,zIndexOffset:1000}).on('click',()=>selProyecto(p.id))
-      .bindTooltip(`<b>${p.nombre}</b><br>${p.estado} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
+      .bindTooltip(`<b>${p.nombre}</b><br>${estadoTxt} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}${motivo?`<br><span style="color:#666">${etiqueta} = ${motivo}</span>`:''}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
   });
   if(state.capa!=='nuevos'){
     const us=usadosFiltrados(), medZ={};
@@ -450,7 +485,7 @@ function renderFiltros(){
     <span class="sw" style="background:#2f7d4a"></span>&lt; 15%<br>
     <span class="sw" style="background:#c58a22"></span>15–30%<br>
     <span class="sw" style="background:#b23a3a"></span>&gt; 30%<br>
-    <span class="sw" style="background:#5a5f66"></span>${USADOS.length?'sin comparables':'sin usados aún (muestra precio desde)'}
+    <span class="sw" style="background:#5a5f66"></span>${USADOS.length?'s/c = menos de 3 comparables · s/precio = precio no publicado<br><b>≈</b> = pocos usados en la zona: comparables buscados por distancia (ver Supuestos)':'sin usados aún (muestra precio desde)'}
   </div>`}
   ${MODO==='real'&&PENDIENTES.sin_ubicar.length?`<h4>Sin ubicar (${PENDIENTES.sin_ubicar.length})</h4><div class="legend">${PENDIENTES.sin_ubicar.map(x=>x.nombre).join('<br>')}<br><span class="mono">vivienda ubicar</span></div>`:''}
   ${MODO==='real'&&PENDIENTES.fuera.length?`<h4>Fuera de zonas (${PENDIENTES.fuera.length})</h4><div class="legend">${PENDIENTES.fuera.map(x=>x.nombre).join('<br>')}</div>`:''}`;
@@ -494,6 +529,8 @@ function renderDetalle(){
   if(p.acabados==='Obra gris') flags.push(`Obra gris: se suman ${fK(PARAMS.acabados_m2)}/m² de acabados (${fM(n.acab)}).`);
   if(p.renta_corta==='desconocida') flags.push('Renta corta sin confirmar: revisar el reglamento de propiedad horizontal.');
   if(n.m>0) flags.push(`Entrega en ${n.m} meses: precio llevado a valor presente${PARAMS.renta_perdida?` + ${fM(n.rentaPerd)} de arriendo no percibido`:''}.`);
+  if(A.nivel>0 && A.comps.length) flags.push(`Pocos usados comparables en la zona: búsqueda <b>${A.desc}</b>. Tómalo como referencia, no como precio de mercado.`);
+  if(A.comps.length && A.comps.length<3) flags.push(`Solo ${A.comps.length} comparable(s) aun ampliando la búsqueda: no alcanza para calcular sobreprecio.`);
   const nf=A.comps.filter(c=>c.u.area_tipo!=='privada').length;
   if(nf) flags.push(`${nf} de ${A.comps.length} comparables con área no confirmada como privada.`);
 
@@ -512,7 +549,7 @@ function renderDetalle(){
     <div class="stat"><span>Área privada</span><b>${n.ap.toFixed(1)} m²</b></div>
     <div class="stat"><span>Admin. estimada</span><b>${adminN?fK(adminN):'Sin dato'}</b></div>
     <div class="stat" title="Comparando precios de anuncio tal cual, sin ajustes"><span>Sobreprecio aparente</span><b class="${A.primaL>0?'pos':'neg'}">${pct(A.primaL)}</b></div>
-    <div class="stat hl ${clsPrima(A.prima)}" style="grid-column:span 2"><span>Sobreprecio real vs. usados</span><b>${pct(A.prima)}</b> <small class="muted">· ${A.comps.length} comparables</small></div>
+    <div class="stat hl ${clsPrima(A.prima)}" style="grid-column:span 2"><span>Sobreprecio real vs. usados</span><b>${pct(A.prima)}</b> <small class="muted">· ${A.comps.length} comparables${A.nivel>0?' (ampliados)':''}</small></div>
   </div>
   <p class="muted" style="font-size:11.5px;margin:8px 0 0"><b>Aparente:</b> precio de anuncio vs. precio de anuncio. <b>Real:</b> el nuevo se trae a valor presente y se le suman acabados y el arriendo que dejas de recibir durante la obra; al usado se le descuenta la negociación esperada.</p>
   <h3>Precio por m² de área privada</h3>
