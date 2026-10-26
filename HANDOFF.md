@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.8.1, 26-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.8.2, 26-oct-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -127,7 +127,7 @@ puro: **no consumen Claude**.
 - `san-felipe` corto lleva a otro lugar del país → usar `san-felipe/zona-noroccidente`.
 - Pausas 3–6 s, pausa larga 15–25 s cada 10 páginas; si dos barrios seguidos dan bloqueo (403/429/captcha), se detiene.
 - **Usados de entorno (v0.8):** los anuncios fuera de toda zona se guardan con `zona = null`: no son inventario de
-  ninguna zona (no salen en mapa/tabla de usados) pero sí comparables por distancia (pasos 1–2 de la escalera).
+  ninguna zona (no salen en mapa/tabla de usados) pero sí referencia fuera de zona (informativa).
   Sin esto, con zonas ajustadas, Country y Chapinero quedaban sin comparables.
 - **La zona la da el punto del anuncio, no el barrio** (la URL de barrio trae vecinos). Zonas traslapadas:
   gana la de menor distancia/radio (si no, el corredor se tragaba a Pasadena).
@@ -146,21 +146,14 @@ puro: **no consumen Claude**.
   vs. m² de usados comparables con descuento de negociación (7 %). Supuestos editables en la pestaña Supuestos.
 - Comparables: misma zona, estrato (del proyecto si se conoce), habitaciones, área privada ±15 %, antigüedad ≤ 15
   años (si se conoce), con ascensor. Parqueadero flexible.
-- **Escalera de comparables (v0.7.1):** misma zona → si hay < `min_comps` (5), radio de 1 km alrededor del proyecto
-  (cualquier zona de la ciudad) → radio 1,5 km con área ±25 % y antigüedad ≤ 25. Con < 3 al final: `s/c`. Pin con `≈` =
-  comparables ampliados. El estrato solo filtra si el proyecto lo tiene confirmado (el "típico" de zona dejaba en 0 a
-  Calle 72, que mezcla estratos 4/5/6). Motivo: los nuevos son 1 hab de ~30 m² y el usado así con ascensor y ≤ 15 años casi
-  no existe en zonas viejas. Ojo: ampliar área hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
+- **Comparables (v0.8.2): SOLO de la misma zona** (las zonas son submercados; antes Morato tomaba comparables de
+  Pasadena, 14 % más cara, y el sobreprecio salía bajo). Paso 0 estricto; si hay < `min_comps` (5), paso 1 dentro de
+  la zona con área ±25 %, antigüedad ≤ 25 y estrato ±1 (pin con `≈`). < 3 → `s/c`. El estrato solo filtra si el
+  proyecto lo tiene confirmado. Usados de otras zonas o del entorno a ≤ 1,5 km se muestran como **referencia
+  informativa** en el panel/tooltip, nunca en el pin. Se probó y descartó un ajuste por ubicación con medianas de
+  zona: con 40–60 anuncios por zona las medianas son ruido (Morato salía más cara que Pasadena).
+  Ojo: área ampliada hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
 - Pin de proyecto = nombre + valor (v0.7.2), siempre visible.
-- `vivienda zonas` (v0.7.3): UNA consulta Overpass por zona (todas las calles con nombre de la caja, sin regex en el
-  servidor) y los cruces se resuelven localmente. Antes: una consulta con regex por esquina (16), lentas y con 502/504.
-- Usados se re-zonifican desde su punto en cada exportación (v0.8.0): cambiar una zona no exige volver a descargar. Ampliar una zona sí necesita la siguiente corrida (lo que caía fuera nunca se guardó).
-- Zonas dibujadas (v0.7.4): `config/zonas_dibujadas.geojson` (geojson.io, properties.id) > esquinas > círculo.
-- Escalera de comparables, paso 2 acepta estrato ±1 (La Cité, estrato 5 confirmado, quedaba con 2 comparables).
-- Cotizaciones cargadas en proyectos_manuales.toml (sin datos personales): La Cité tipo B $416,04 M con bono, 32 m²
-  privados, admin $13.000/m²; Lumina 77 tipo A $375 M, 33,37 m² privados, entrega inferida 2029-04.
-- La Cité (s/c): no es falta de cobertura (310 usados a 1 km); es producto: 1 hab de ~28 m² privados casi no existe
-  en usado con ascensor. Lumina 77 es `s/precio` (manual sin precios), no `s/c`: tiene ~10 comparables.
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
 - Color de usados en el mapa: $/m² vs. mediana de su zona (verde ≤ −10 %, rojo ≥ +10 %). Grupos en gris.
 
