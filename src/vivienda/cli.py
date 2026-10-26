@@ -165,7 +165,7 @@ def _exportar(prys=None, registros=None) -> None:
     cfg = cfgmod.cargar()
     if cfg.fincaraiz:
         datos["usados"] = usados_mod.para_dashboard(usados_mod.cargar(), date.today(),
-                                                    cfg.fincaraiz.dias_vigencia, cfg.filtros.area_min)
+                                                    cfg.fincaraiz.dias_vigencia, cfg.filtros.area_min, zonas)
     exportar.guardar(datos)
     print(f"Dashboard: {len(datos['proyectos'])} proyectos en el mapa, {len(datos['sin_ubicar'])} sin ubicar, "
           f"{len(datos['fuera_de_zonas'])} fuera de zonas, {len(datos['usados'])} usados vigentes "
@@ -505,7 +505,7 @@ def cmd_usados(args) -> None:
             break
 
     todos = list({a["id"]: a for a in todos}.values())   # un anuncio puede salir en dos barrios vecinos
-    _resumen_campos(todos)
+    _resumen_campos([a for a in todos if a.get("zona")])
     fallidas = [b.ruta for b, r in resumenes if r.error and b.verificado]
     vacias = [b.ruta for b, r in resumenes if not r.error and not r.total_portal]
     if vacias:
@@ -523,7 +523,8 @@ def cmd_usados(args) -> None:
     reg = usados_mod.cargar()
     c = usados_mod.actualizar(reg, todos, hoy)
     usados_mod.guardar(reg)
-    print(f"\nUsados: {len(todos)} vistos hoy en zonas · {c['nuevos']} nuevos · {c['cambio_precio']} cambiaron de precio"
+    en_z = sum(1 for a in todos if a.get("zona"))
+    print(f"\nUsados: {en_z} vistos hoy en zonas (+{len(todos) - en_z} de entorno, solo comparables) · {c['nuevos']} nuevos · {c['cambio_precio']} cambiaron de precio"
           f" · historial {len(reg)} -> {usados_mod.ARCHIVO.relative_to(cfgmod.ROOT)}")
     if fallidas:
         print(f"⚠ Corrida parcial: fallaron barrios verificados ({', '.join(fallidas)}). "
@@ -540,7 +541,7 @@ def cmd_zonas(args) -> None:
     con = [z["id"] for z in defs if z.get("esquinas")]
     if not con:
         sys.exit("Ninguna zona tiene `esquinas` en config/zonas.toml: todas siguen como círculo.")
-    print(f"Polígonos por esquinas para: {', '.join(con)} (lento: ~1 consulta a OpenStreetMap por esquina)")
+    print(f"Polígonos por esquinas para: {', '.join(con)} (una consulta a OpenStreetMap por zona, ~1–3 min c/u)")
     res = zonas_mod.calcular(defs, Geocodificador(cfg.nominatim_user_agent), date.today(),
                              forzar=args.forzar, solo=args.zona)
     if res.calculadas:

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "proyecto-vivienda-colombia"
-version = "0.7.2"
+version = "0.8.1"
 description = "Proyecto Vivienda Colombia: radar de vivienda nueva vs. usada para inversión (Bogotá y Bucaramanga)"
 requires-python = ">=3.11"
 dependencies = [

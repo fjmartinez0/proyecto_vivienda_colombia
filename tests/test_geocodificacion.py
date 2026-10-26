@@ -104,10 +104,10 @@ class TestPasoGeocodificar(unittest.TestCase):
 
     def test_agregador_da_baja_y_asigna_zona(self):
         self.p["direccion_candidata"] = {"direccion": "Calle 73 # 13-20", "fuente": self.p["url"], "origen": "agregador"}
-        res = self._correr(GeocodificadorFalso((4.6585, -74.0615, "cruce simulado")))
+        res = self._correr(GeocodificadorFalso((4.6650, -74.0560, "cruce simulado")))
         self.assertEqual(res.ubicados, [self.p["id"]])
         self.assertEqual(self.p["ubicacion"]["precision"], "baja")
-        self.assertEqual(self.p["zona"], "c72")
+        self.assertEqual(self.p["zona"], "lag")
 
     def test_oficial_mejora_una_ubicacion_baja(self):
         self.p["ubicacion"] = {"lat": 4.0, "lng": -74.0, "precision": "baja"}

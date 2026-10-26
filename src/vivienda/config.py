@@ -120,7 +120,7 @@ def _fincaraiz(f: dict | None) -> FincaraizConfig | None:
 
 
 def cargar_zonas() -> dict:
-    """Zonas como GeoJSON desde config/zonas.toml. Usa el polígono por esquinas si `vivienda zonas`
-    ya lo calculó; si no, el círculo. Nunca consulta internet."""
-    from vivienda.pipeline.zonas import a_geojson, cargar_definiciones, cargar_poligonos
-    return a_geojson(cargar_definiciones(), cargar_poligonos())
+    """Zonas como GeoJSON desde config/zonas.toml. Prioridad: polígono dibujado a mano
+    (config/zonas_dibujadas.geojson) > polígono por esquinas (`vivienda zonas`) > círculo. Nunca consulta internet."""
+    from vivienda.pipeline.zonas import a_geojson, cargar_definiciones, cargar_dibujadas, cargar_poligonos
+    return a_geojson(cargar_definiciones(), cargar_poligonos(), cargar_dibujadas())

@@ -204,32 +204,27 @@ function circ(c, rm, n = 40) {
   return o;
 }
 
-/* Polígonos APROXIMADOS: placeholder para ajustar */
+/* Zonas: los polígonos reales llegan en dashboard.json (config/zonas_dibujadas.geojson); estos son los mismos,
+   para el modo demo. Los parámetros (estrato típico, arriendo/m², ADR, ocupación) siguen siendo SUPUESTOS. */
 const ZONAS = [
-  {id:'chu', nombre:'Chapinero Universitario', ciudad:'Bogotá', color:'#7b5ea7', estrato:4, base_m2:7.2e6, admin_m2:5800, arriendo_m2:38000, adr:{1:180000,2:250000,3:320000}, ocup:.64,
-   desc:'Cl. 39–60, Caracas a Circunvalar (Javeriana, Católica, Pedagógica)',
-   poly:[[4.6245,-74.0690],[4.6245,-74.0590],[4.6455,-74.0600],[4.6455,-74.0680]]},
-  {id:'c72', nombre:'Calle 72 – Lago', ciudad:'Bogotá', color:'#1f6f8c', estrato:5, base_m2:8.6e6, admin_m2:7000, arriendo_m2:45000, adr:{1:220000,2:300000,3:380000}, ocup:.66,
-   desc:'Cl. 67–76, Caracas a Cra. 5 (zona de oficinas)',
-   poly:[[4.6505,-74.0650],[4.6500,-74.0530],[4.6625,-74.0510],[4.6630,-74.0630]]},
-  {id:'cor', nombre:'Corredor Cl. 80–116', ciudad:'Bogotá', color:'#c0662b', estrato:5, base_m2:9.0e6, admin_m2:7200, arriendo_m2:46000, adr:{1:210000,2:290000,3:370000}, ocup:.60,
-   desc:'Cl. 80–116, Autopista Norte a Av. Cra. 19',
-   poly:[[4.6670,-74.0600],[4.6680,-74.0560],[4.6850,-74.0485],[4.6985,-74.0450],[4.6990,-74.0525],[4.6850,-74.0558]]},
+  {id:'chu', nombre:'Chapinero Central', ciudad:'Bogotá', color:'#7b5ea7', estrato:4, base_m2:7.4e6, admin_m2:6000, arriendo_m2:40000, adr:{1:190000,2:260000,3:330000}, ocup:.64,
+   desc:'Cl. 53–70, Av. Caracas a Cra. 7', poly:[[4.64679, -74.0639], [4.644, -74.06437], [4.6435, -74.06305], [4.64323, -74.06199], [4.64542, -74.06136], [4.64644, -74.06059], [4.65086, -74.05826], [4.65362, -74.05617], [4.65572, -74.0597], [4.65726, -74.06217], [4.65371, -74.06273], [4.65179, -74.06304], [4.64972, -74.06338]]},
+  {id:'c72', nombre:'Quinta Camacho – Calle 72', ciudad:'Bogotá', color:'#d4a017', estrato:5, base_m2:8.6e6, admin_m2:7000, arriendo_m2:45000, adr:{1:220000,2:300000,3:380000}, ocup:.66,
+   desc:'Cl. 70–76, Av. Caracas a Cra. 7 (Quinta Camacho, Zona G)', poly:[[4.65726, -74.06217], [4.66162, -74.06129], [4.65926, -74.05763], [4.6595, -74.0517], [4.65362, -74.05617], [4.65572, -74.0597]]},
+  {id:'lag', nombre:'Country – Chapinero Norte', ciudad:'Bogotá', color:'#1f6f8c', estrato:5, base_m2:8.8e6, admin_m2:7200, arriendo_m2:46000, adr:{1:230000,2:310000,3:390000}, ocup:.66,
+   desc:'Cl. 76–85, Av. Caracas a Cra. 11 (El Lago, Antiguo Country)', poly:[[4.66943, -74.05964], [4.66814, -74.05996], [4.66697, -74.06019], [4.66619, -74.06036], [4.66367, -74.06083], [4.66162, -74.06129], [4.65926, -74.05763], [4.66099, -74.05634], [4.66291, -74.05488], [4.66536, -74.05333], [4.66648, -74.05248], [4.6679, -74.05143], [4.66908, -74.05347], [4.6702, -74.05567], [4.67085, -74.05677], [4.67127, -74.05763], [4.67156, -74.05843], [4.67197, -74.05922], [4.67066, -74.05945]]},
+  {id:'nav', nombre:'Navarra – San Patricio', ciudad:'Bogotá', color:'#c0662b', estrato:5, base_m2:8.6e6, admin_m2:7000, arriendo_m2:44000, adr:{1:200000,2:280000,3:360000}, ocup:.58,
+   desc:'Cl. 100–116, Cra. 15 a Autopista Norte', poly:[[4.69911, -74.05283], [4.69917, -74.05473], [4.69697, -74.05516], [4.69559, -74.05543], [4.69386, -74.05564], [4.69254, -74.05585], [4.69062, -74.05616], [4.689, -74.05644], [4.68685, -74.05678], [4.68636, -74.0536], [4.6859, -74.0513], [4.68551, -74.04927], [4.68514, -74.04838], [4.68621, -74.04648], [4.68755, -74.04422], [4.68893, -74.04152], [4.68978, -74.03986], [4.69165, -74.03885], [4.69492, -74.03714], [4.69547, -74.03946], [4.69635, -74.04317], [4.697, -74.04517], [4.69753, -74.04672], [4.69832, -74.04862], [4.69865, -74.05027]]},
+  {id:'cas', nombre:'La Castellana', ciudad:'Bogotá', color:'#19a974', estrato:4, base_m2:7.6e6, admin_m2:5800, arriendo_m2:40000, adr:{1:160000,2:220000,3:290000}, ocup:.52,
+   desc:'Cl. 90–100, Av. Cra. 50 a Autopista Norte', poly:[[4.68446, -74.06209], [4.68286, -74.06301], [4.68095, -74.06431], [4.67988, -74.06494], [4.67891, -74.0654], [4.67874, -74.06404], [4.67848, -74.06209], [4.67831, -74.06059], [4.67924, -74.05957], [4.68059, -74.0587], [4.68318, -74.05826], [4.68692, -74.05754], [4.68764, -74.06081], [4.68582, -74.06122]]},
   {id:'pas', nombre:'Pasadena', ciudad:'Bogotá', color:'#3f8a4f', estrato:4, base_m2:7.4e6, admin_m2:5600, arriendo_m2:39000, adr:{1:150000,2:210000,3:270000}, ocup:.52,
-   desc:'Pasadena y bordes inmediatos',
-   poly:[[4.6855,-74.0640],[4.6855,-74.0570],[4.6965,-74.0540],[4.6975,-74.0615]]},
-  {id:'mor', nombre:'Morato', ciudad:'Bogotá', color:'#a63d5a', estrato:4, base_m2:6.6e6, admin_m2:5000, arriendo_m2:35000, adr:{1:140000,2:190000,3:250000}, ocup:.48,
-   desc:'Morato y bordes inmediatos',
-   poly:[[4.6870,-74.0790],[4.6865,-74.0700],[4.6960,-74.0690],[4.6965,-74.0785]]},
-  {id:'lag', nombre:'El Lago – San Felipe', ciudad:'Bogotá', color:'#9a6b12', estrato:4, base_m2:8.0e6, admin_m2:6200, arriendo_m2:42000, adr:{1:200000,2:270000,3:340000}, ocup:.62,
-   desc:'Cl. 72–82, Av. Caracas a Cra. 24 (El Lago, Lago Gaitán, San Felipe, Héroes)',
-   poly:[[4.6560,-74.0650],[4.6640,-74.0628],[4.6700,-74.0605],[4.6715,-74.0650],[4.6660,-74.0715],[4.6575,-74.0740]]},
-  {id:'teu', nombre:'Teusaquillo – Galerías', ciudad:'Bogotá', color:'#4f7a28', estrato:4, base_m2:6.8e6, admin_m2:5200, arriendo_m2:36000, adr:{1:170000,2:230000,3:300000}, ocup:.58,
-   desc:'Cl. 45–57, Av. Caracas a Cra. 28 (Palermo, Galerías, Teusaquillo)',
-   poly:[[4.6290,-74.0700],[4.6470,-74.0680],[4.6475,-74.0790],[4.6290,-74.0820]]},
-  {id:'can', nombre:'Cañaveral – FOSUNAB', ciudad:'Bucaramanga', color:'#2b6cb0', estrato:5, base_m2:5.4e6, admin_m2:4300, arriendo_m2:28000, adr:{1:170000,2:230000,3:290000}, ocup:.55,
-   desc:'Radio de 1,5 km alrededor de la FOSUNAB (Floridablanca)',
-   poly:circ([7.0705,-73.1065],1500)}
+   desc:'Pasadena', poly:[[4.70049, -74.06901], [4.69997, -74.06971], [4.69899, -74.06967], [4.69759, -74.06917], [4.69603, -74.06858], [4.69458, -74.06772], [4.69339, -74.06699], [4.69192, -74.06602], [4.69052, -74.06545], [4.68982, -74.06516], [4.68918, -74.0651], [4.68889, -74.06391], [4.68844, -74.06219], [4.68792, -74.06017], [4.68743, -74.05861], [4.68703, -74.05747], [4.68837, -74.05719], [4.69033, -74.05701], [4.69314, -74.05649], [4.69517, -74.05621], [4.69737, -74.05566], [4.69942, -74.05548], [4.69966, -74.05668], [4.69994, -74.05809], [4.70012, -74.05917], [4.70037, -74.06015], [4.70067, -74.06125], [4.70098, -74.06284], [4.70116, -74.06419], [4.70137, -74.0656], [4.70162, -74.06661], [4.70202, -74.06713], [4.70147, -74.06787], [4.70101, -74.06836]]},
+  {id:'mor', nombre:'Morato – Pontevedra – Potosí', ciudad:'Bogotá', color:'#a63d5a', estrato:4, base_m2:6.6e6, admin_m2:5000, arriendo_m2:35000, adr:{1:140000,2:190000,3:250000}, ocup:.48,
+   desc:'Pontevedra, Morato, Julio Flórez, Potosí', poly:[[4.69873, -74.08209], [4.69745, -74.08285], [4.69669, -74.08475], [4.69577, -74.0872], [4.69546, -74.08828], [4.69421, -74.08717], [4.69323, -74.08635], [4.69241, -74.08548], [4.69014, -74.08371], [4.68858, -74.08251], [4.68711, -74.08144], [4.68589, -74.08046], [4.68442, -74.07929], [4.68485, -74.07843], [4.68464, -74.07892], [4.6853, -74.078], [4.6869, -74.0757], [4.68868, -74.07307], [4.68969, -74.07114], [4.6899, -74.06912], [4.6893, -74.06561], [4.6905, -74.06573], [4.69179, -74.06631], [4.69395, -74.06783], [4.6965, -74.06908], [4.69853, -74.0698], [4.7, -74.07016], [4.69965, -74.0716], [4.6994, -74.07298], [4.69892, -74.07421], [4.69901, -74.07651], [4.70001, -74.07868], [4.7012, -74.0808], [4.69995, -74.08138]]},
+  {id:'teu', nombre:'Galerías – Chapinero Occidental', ciudad:'Bogotá', color:'#4f7a28', estrato:4, base_m2:6.8e6, admin_m2:5200, arriendo_m2:36000, adr:{1:170000,2:230000,3:300000}, ocup:.58,
+   desc:'Cl. 45–53, Av. Caracas a NQS', poly:[[4.64264, -74.07891], [4.64114, -74.079], [4.6385, -74.079], [4.6346, -74.07925], [4.63407, -74.07609], [4.6335, -74.07257], [4.6329, -74.06991], [4.63253, -74.06778], [4.63695, -74.067], [4.63858, -74.06672], [4.64045, -74.0664], [4.64076, -74.06821], [4.64123, -74.07103], [4.64186, -74.07443], [4.64228, -74.07699]]},
+  {id:'can', nombre:'Cañaveral – El Bosque', ciudad:'Bucaramanga', color:'#2b6cb0', estrato:5, base_m2:5.4e6, admin_m2:4300, arriendo_m2:28000, adr:{1:170000,2:230000,3:290000}, ocup:.55,
+   desc:'Cañaveral, FOSCAL/FOSUNAB, El Bosque (Floridablanca)', poly:[[7.0731, -73.11204], [7.06931, -73.11717], [7.06575, -73.12105], [7.06123, -73.1153], [7.06231, -73.10832], [7.0636, -73.10393], [7.06379, -73.09618], [7.06614, -73.09907], [7.06896, -73.10294], [7.07149, -73.10578], [7.07285, -73.10747], [7.0751, -73.1087]]}
 ];
 const Z = Object.fromEntries(ZONAS.map(z => [z.id, z]));
 
@@ -238,13 +233,13 @@ let PROYECTOS = [
    tipologias:[{habs:1,banos:1,area:38,parq:0,precio:349e6},{habs:2,banos:2,area:55,parq:1,precio:509e6}]},
   {id:'P02',nombre:'Campus 57 Living',constructora:'Grupo Ficticio B',zona:'chu',lat:4.6410,lng:-74.0625,estado:'En construcción',entrega:'2027-09',acabados:'Full acabados',area_tipo:'privada',renta_corta:'permitida',admin_m2:7200,fuente:'Metrocuadrado',detectado:'2026-10-03',
    tipologias:[{habs:1,banos:1,area:32,parq:0,precio:318e6},{habs:2,banos:2,area:48,parq:1,precio:468e6}]},
-  {id:'P03',nombre:'Lago 74 Residences',constructora:'Ficticia Urbana C',zona:'c72',lat:4.6575,lng:-74.0590,estado:'Sobre planos',entrega:'2029-03',acabados:'Obra gris',area_tipo:'construida',renta_corta:'desconocida',admin_m2:7800,fuente:'Búsqueda web (Claude)',detectado:'2026-10-24',
+  {id:'P03',nombre:'Lago 74 Residences',constructora:'Ficticia Urbana C',zona:'lag',lat:4.6650,lng:-74.0560,estado:'Sobre planos',entrega:'2029-03',acabados:'Obra gris',area_tipo:'construida',renta_corta:'desconocida',admin_m2:7800,fuente:'Búsqueda web (Claude)',detectado:'2026-10-24',
    tipologias:[{habs:1,banos:1,area:36,parq:1,precio:405e6},{habs:2,banos:2,area:50,parq:1,precio:575e6}]},
-  {id:'P04',nombre:'Quinta Camacho Park',constructora:'Constructora Ficticia A',zona:'c72',lat:4.6545,lng:-74.0560,estado:'En construcción',entrega:'2027-06',acabados:'Full acabados',area_tipo:'privada',renta_corta:'prohibida',admin_m2:8100,fuente:'Fincaraíz',detectado:'2026-09-28',
+  {id:'P04',nombre:'Quinta Camacho Park',constructora:'Constructora Ficticia A',zona:'chu',lat:4.6500,lng:-74.0600,estado:'En construcción',entrega:'2027-06',acabados:'Full acabados',area_tipo:'privada',renta_corta:'prohibida',admin_m2:8100,fuente:'Fincaraíz',detectado:'2026-09-28',
    tipologias:[{habs:1,banos:1,area:40,parq:1,precio:452e6},{habs:2,banos:2,area:49,parq:1,precio:569e6}]},
-  {id:'P05',nombre:'Polo 85',constructora:'Desarrollos Ficticios D',zona:'cor',lat:4.6740,lng:-74.0565,estado:'Sobre planos',entrega:'2028-08',acabados:'Full acabados',area_tipo:'construida',renta_corta:'permitida',admin_m2:7500,fuente:'Búsqueda web (Claude)',detectado:'2026-10-20',
+  {id:'P05',nombre:'Polo 85',constructora:'Desarrollos Ficticios D',zona:'cas',lat:4.6830,lng:-74.0610,estado:'Sobre planos',entrega:'2028-08',acabados:'Full acabados',area_tipo:'construida',renta_corta:'permitida',admin_m2:7500,fuente:'Búsqueda web (Claude)',detectado:'2026-10-20',
    tipologias:[{habs:1,banos:1,area:39,parq:1,precio:455e6},{habs:2,banos:2,area:50,parq:1,precio:592e6}]},
-  {id:'P06',nombre:'Cl 106 Urban',constructora:'Grupo Ficticio B',zona:'cor',lat:4.6900,lng:-74.0505,estado:'Entrega inmediata',entrega:'2026-11',acabados:'Full acabados',area_tipo:'privada',renta_corta:'permitida',admin_m2:7000,fuente:'Ciencuadras',detectado:'2026-10-25',
+  {id:'P06',nombre:'Cl 106 Urban',constructora:'Grupo Ficticio B',zona:'nav',lat:4.6920,lng:-74.0470,estado:'Entrega inmediata',entrega:'2026-11',acabados:'Full acabados',area_tipo:'privada',renta_corta:'permitida',admin_m2:7000,fuente:'Ciencuadras',detectado:'2026-10-25',
    tipologias:[{habs:1,banos:1,area:42,parq:1,precio:478e6},{habs:2,banos:2,area:49,parq:1,precio:560e6}]},
   {id:'P07',nombre:'Pasadena Verde',constructora:'Ficticia Urbana C',zona:'pas',lat:4.6920,lng:-74.0590,estado:'Sobre planos',entrega:'2028-10',acabados:'Obra gris',area_tipo:'construida',renta_corta:'desconocida',admin_m2:6200,fuente:'Metrocuadrado',detectado:'2026-10-15',
    tipologias:[{habs:1,banos:1,area:42,parq:1,precio:409e6},{habs:2,banos:2,area:58,parq:1,precio:566e6}]},
@@ -293,6 +288,7 @@ function genUsados(){
   return out;
 }
 let USADOS = genUsados();
+let USADOS_TODOS = USADOS;   // + los de entorno (fuera de zonas): solo para comparables por distancia
 let MODO = 'demo', PENDIENTES = {sin_ubicar:[], fuera:[]}, GENERADO = null;
 
 /* ---------- Motor de comparación ---------- */
@@ -321,8 +317,8 @@ const distM=(a,b,c,d)=>6371000*Math.hypot((c-a)*Math.PI/180,(d-b)*Math.PI/180*Ma
 // supuesto y en zonas mixtas (Calle 72: estratos 4, 5 y 6) dejaba sin comparables a casi todos.
 function filtroComp(p,t,o){
   const ap=apNuevo(p,t), est = MODO==='real' ? p.estrato : (p.estrato || Z[p.zona].estrato), ciudad=Z[p.zona].ciudad;
-  return USADOS.filter(u => (o.radio ? (Z[u.zona] && Z[u.zona].ciudad===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
-    && (est==null || u.estrato==null || u.estrato===est) && u.habs===t.habs && elegible(u)
+  return (o.radio ? USADOS_TODOS : USADOS).filter(u => (o.radio ? ((u.ciudad||Z[u.zona]?.ciudad)===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
+    && (est==null || u.estrato==null || Math.abs(u.estrato-est)<=(o.estr||0)) && u.habs===t.habs && elegible(u)
     && (u.antiguedad==null || u.antiguedad<=o.antig) && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=o.tol
     && (!PARAMS.exigir_parq || u.parq===t.parq));
 }
@@ -333,8 +329,8 @@ function comparables(p,t){
   const pasos=[
     {nivel:0, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:0, desc:'misma zona'},
     {nivel:1, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:r, desc:`ampliado a ${r} m alrededor del proyecto`},
-    {nivel:2, tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:r2,
-     desc:`ampliado a ${r2} m, área ±${Math.round(PARAMS.tol_area_amplia*100)} % y antigüedad ≤ ${PARAMS.max_antig_amplia} años`}];
+    {nivel:2, tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:r2, estr:1,
+     desc:`ampliado a ${r2} m, área ±${Math.round(PARAMS.tol_area_amplia*100)} %, antigüedad ≤ ${PARAMS.max_antig_amplia} años y estrato ±1`}];
   let l;
   for(const o of pasos){ l=filtroComp(p,t,o); l.nivel=o.nivel; l.desc=o.desc; if(l.length>=PARAMS.min_comps) break; }
   return l;
@@ -450,7 +446,8 @@ function renderMapa(){
     analisis(p,state.tip).comps.forEach(({u,a})=>{
       L.polyline([[p.lat,p.lng],[u.lat,u.lng]],{color:'#1f4e8c',weight:1.2,dashArray:'3 4',opacity:.7}).addTo(compLayer);
       L.circleMarker([u.lat,u.lng],{radius:6,color:'#fff',weight:2,fillColor:'#1f4e8c',fillOpacity:1})
-        .bindTooltip(`${u.id} · ${fM1(a.m2)}/m² aj. · clic para ver`).on('click',()=>selUsado(u.id)).addTo(compLayer);
+        .bindTooltip(`${u.id} · ${fM1(a.m2)}/m² aj. · ${u.zona?'clic para ver':'fuera de zonas (entorno)'}`)
+        .on('click',()=>{ if(u.zona) selUsado(u.id); else if(u.url) window.open(u.url,'_blank','noopener'); }).addTo(compLayer);
     });
   }
 }
@@ -518,7 +515,7 @@ function renderDetalle(){
     if(p.ubicacion_agregador) flags.push(`Ubicación tomada de la dirección publicada por el agregador${p.direccion?` (${p.direccion})`:''}: <b>pendiente de confirmar</b> con una fuente oficial.`);
     else if(p.precision==='baja') flags.push('Ubicación <b>no verificada</b>: ni la dirección en la fuente ni la calle en OpenStreetMap coincidieron.');
     else if(p.precision==='media') flags.push('Ubicación con una sola verificación (dirección oficial, calle en OpenStreetMap o enlace de mapa).');
-    if(p.zona_nota) flags.push(`Zona asignada por el sector del sitio: ${p.zona_nota}.`);
+    if(p.zona_nota) flags.push(`El punto del proyecto cae fuera del polígono (${p.zona_nota}): se asigna a esta zona por cercanía.`);
     if(p.renta_corta==='permitida' && p.renta_corta_agregador) flags.push('Renta corta: el portal clasifica el proyecto en la categoría <b>Renta Corta</b>. Es mercadeo, no el reglamento: confirmar en el reglamento de propiedad horizontal.');
     if(!p.admin_m2) flags.push('Administración sin dato: la rentabilidad no la descuenta.');
     if(p.ascensor===false) flags.push('<b>Sin ascensor</b> según la fuente: no cumple tu regla.');
@@ -800,7 +797,7 @@ function renderSup(){
    <div class="ctab" style="margin-top:8px"><table><thead><tr><th>Zona</th><th class="n">Estr.</th><th class="n">Arr. $/m²</th><th class="n">ADR 1/2/3h</th><th class="n">Ocup.</th></tr></thead><tbody>
    ${ZONAS.map(z=>`<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${z.color}"></i> ${z.nombre}<br><small class="muted">${z.desc}</small></td><td class="n">${z.estrato}</td><td class="n">${fK(z.arriendo_m2)}</td><td class="n">${[1,2,3].map(h=>Math.round(z.adr[h]/1000)).join('/')}k</td><td class="n">${(z.ocup*100).toFixed(0)}%</td></tr>`).join('')}
    </tbody></table></div>
-   <p class="muted" style="font-size:12px">Polígonos aproximados; se ajustan en <span class="mono">ZONAS</span>.</p></div>
+   <p class="muted" style="font-size:12px">Polígonos dibujados a mano (<span class="mono">config/zonas_dibujadas.geojson</span>, editable en geojson.io). Estrato, arriendo, ADR y ocupación por zona son supuestos.</p></div>
    <div class="card" style="margin-top:16px"><b>Contrato de datos</b><p class="muted" style="font-size:12.5px">Lo que el proceso diario debe producir. Descarga el JSON de ejemplo para ver la estructura de zonas, proyectos y usados.</p>
    <button class="btn" id="dl">Descargar data.json de ejemplo</button></div></div></div></div>`;
   $('#v-sup').querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{
@@ -835,11 +832,16 @@ async function cargarDatos(){
     const r = await fetch('../data/processed/dashboard.json', {cache:'no-store'});
     if(!r.ok) throw new Error(r.status);
     const d = await r.json();
+    // solo las zonas que trae el dashboard (si se retira una zona del config, desaparece del mapa)
+    const ids=new Set((d.zonas?.features||[]).map(f=>f.properties.id));
+    if(ids.size){ for(let i=ZONAS.length-1;i>=0;i--) if(!ids.has(ZONAS[i].id)){ delete Z[ZONAS[i].id]; state.zonas.delete(ZONAS[i].id); ZONAS.splice(i,1); } }
     (d.zonas?.features||[]).forEach(f=>{ const z=Z[f.properties.id];
       if(z){ z.poly = f.geometry.coordinates[0].slice(0,-1).map(([lng,lat])=>[lat,lng]);
              if(f.properties.descripcion) z.desc = f.properties.descripcion; } });
     PROYECTOS = (d.proyectos||[]).filter(p=>Z[p.zona]).map(p=>({...p, ciudad:Z[p.zona].ciudad}));
-    USADOS = (d.usados||[]).filter(u=>Z[u.zona]).map(u=>({...u, ciudad:Z[u.zona].ciudad}));
+    USADOS_TODOS = (d.usados||[]).filter(u=>!u.zona || Z[u.zona])
+      .map(u=>({...u, ciudad: u.zona ? Z[u.zona].ciudad : (u.lat>6 ? 'Bucaramanga' : 'Bogotá')}));
+    USADOS = USADOS_TODOS.filter(u=>u.zona);
     if(d.generado) HOY = d.generado.slice(0,10);
     PENDIENTES = {sin_ubicar:d.sin_ubicar||[], fuera:d.fuera_de_zonas||[]};
     GENERADO = d.generado; MODO = 'real';

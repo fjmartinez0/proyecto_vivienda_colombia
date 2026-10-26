@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.7.0, 25-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.8.1, 26-oct-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -11,9 +11,13 @@ Léelo completo antes de proponer cambios. El README tiene el detalle operativo 
 Radar de inversión inmobiliaria personal. Compara **proyectos de vivienda nueva** con **vivienda usada
 comparable** en zonas específicas, para decidir dónde comprar para arrendar (renta larga o corta).
 
-- **Bogotá:** Chapinero Universitario (chu), Calle 72 – Lago (c72), Corredor Cl. 80–116 (cor), Pasadena (pas),
-  Morato (mor), El Lago – San Felipe (lag), Teusaquillo – Galerías (teu).
-- **Floridablanca (Santander):** Cañaveral alrededor de la FOSUNAB (can). En el dashboard la ciudad aparece como "Bucaramanga".
+- **Zonas (v0.8, dibujadas por el usuario en `config/zonas_dibujadas.geojson`):** Bogotá — Chapinero Central (chu,
+  Cl. 53–72 Caracas–7ª), Country – Chapinero Norte (lag, Cl. 76–85 Caracas–11), Navarra – San Patricio (nav),
+  La Castellana (cas), Pasadena (pas), Morato – Pontevedra – Potosí (mor), Galerías – Chapinero Occidental (teu).
+  Floridablanca — Cañaveral – El Bosque (can, redibujada v2; en el dashboard "Bucaramanga").
+  v0.8.1: c72 = Quinta Camacho – Calle 72 (Cl. 70–76, Caracas–7ª), armada con los vértices de borde de chu y lag
+  (sin hueco ni traslape; hay prueba de no-traslape). Chapinero Alto EXCLUIDO (sector quitado de config.toml).
+  cor se retiró. Al oeste de la Caracas no hay zona (p. ej. 64 Estorias, Cra. 15 con Cl. 64B: fuera).
 - **Reglas duras:** precio total ≤ $600 M (incluye parqueadero), **con ascensor**.
 - **Variables clave:** administración (y admin/m²), estrato, parqueadero (regla flexible), habitaciones, ascensor,
   antigüedad (los edificios viejos suelen prohibir renta corta), área privada vs. construida.
@@ -108,8 +112,8 @@ puro: **no consumen Claude**.
 **Nuevos (Estrenar Vivienda)**
 - Cada tarjeta es una tipología; los proyectos se agrupan por URL. Solo cuentan para "corrida completa" los
   sectores `verificado = true` (los candidatos que den 404 no bloquean).
-- La zona de un proyecto la decide el **sector del sitio** (o `zonas` del manual); si el sector es ambiguo,
-  centro más cercano.
+- **(v0.8) La zona la decide el punto**, también para proyectos: dentro del polígono, o a ≤ 150 m del borde (error de
+  ubicación + dibujo; queda nota). Más lejos → "fuera de zonas". El sector del sitio solo desempata traslapes.
 - Ubicación: señales A (dirección en página oficial), B (calle OSM en esas coordenadas), C (enlace Maps/Waze).
   alta = 2–3, media = 1, baja = 0. Nunca se reemplaza por una de peor precisión.
 - Categoría "Renta Corta" del portal = apto según el portal, con bandera (es mercadeo, no reglamento).
@@ -122,6 +126,9 @@ puro: **no consumen Claude**.
 - La paginación es segmento de ruta (`/pagina2`); `?pagina=` se ignora en silencio.
 - `san-felipe` corto lleva a otro lugar del país → usar `san-felipe/zona-noroccidente`.
 - Pausas 3–6 s, pausa larga 15–25 s cada 10 páginas; si dos barrios seguidos dan bloqueo (403/429/captcha), se detiene.
+- **Usados de entorno (v0.8):** los anuncios fuera de toda zona se guardan con `zona = null`: no son inventario de
+  ninguna zona (no salen en mapa/tabla de usados) pero sí comparables por distancia (pasos 1–2 de la escalera).
+  Sin esto, con zonas ajustadas, Country y Chapinero quedaban sin comparables.
 - **La zona la da el punto del anuncio, no el barrio** (la URL de barrio trae vecinos). Zonas traslapadas:
   gana la de menor distancia/radio (si no, el corredor se tragaba a Pasadena).
 - Campos: admin = `commonExpenses` (86 % lleno); área privada = `m2apto` (72 %); estrato válido 1–6;
@@ -145,6 +152,15 @@ puro: **no consumen Claude**.
   Calle 72, que mezcla estratos 4/5/6). Motivo: los nuevos son 1 hab de ~30 m² y el usado así con ascensor y ≤ 15 años casi
   no existe en zonas viejas. Ojo: ampliar área hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
 - Pin de proyecto = nombre + valor (v0.7.2), siempre visible.
+- `vivienda zonas` (v0.7.3): UNA consulta Overpass por zona (todas las calles con nombre de la caja, sin regex en el
+  servidor) y los cruces se resuelven localmente. Antes: una consulta con regex por esquina (16), lentas y con 502/504.
+- Usados se re-zonifican desde su punto en cada exportación (v0.8.0): cambiar una zona no exige volver a descargar. Ampliar una zona sí necesita la siguiente corrida (lo que caía fuera nunca se guardó).
+- Zonas dibujadas (v0.7.4): `config/zonas_dibujadas.geojson` (geojson.io, properties.id) > esquinas > círculo.
+- Escalera de comparables, paso 2 acepta estrato ±1 (La Cité, estrato 5 confirmado, quedaba con 2 comparables).
+- Cotizaciones cargadas en proyectos_manuales.toml (sin datos personales): La Cité tipo B $416,04 M con bono, 32 m²
+  privados, admin $13.000/m²; Lumina 77 tipo A $375 M, 33,37 m² privados, entrega inferida 2029-04.
+- La Cité (s/c): no es falta de cobertura (310 usados a 1 km); es producto: 1 hab de ~28 m² privados casi no existe
+  en usado con ascensor. Lumina 77 es `s/precio` (manual sin precios), no `s/c`: tiene ~10 comparables.
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
 - Color de usados en el mapa: $/m² vs. mediana de su zona (verde ≤ −10 %, rojo ≥ +10 %). Grupos en gris.
 

@@ -44,37 +44,35 @@ pausa_segundos = 3         # pausa entre peticiones (cortesía con el sitio)
 timeout_segundos = 30
 user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 
-# Sectores del sitio y zona(s) del Radar a la que pertenecen.
+# Sectores del sitio y zona(s) del Radar a la que pertenecen. Desde v0.8 la zona la decide el punto del
+# proyecto; esta lista solo desempata cuando cae en dos zonas traslapadas.
 # verificado = true  -> la URL existe (confirmada)
 # verificado = false -> candidata; si da 404 se reporta, pero NO impide que la corrida cuente como completa.
 [[estrenar.sectores]]
 ruta = "bogota/nororiente/chapinero"
-zonas = ["chu", "c72"]
+zonas = ["chu", "c72", "lag"]
 verificado = true
 
-[[estrenar.sectores]]
-ruta = "bogota/nororiente/chapinero-alto"
-zonas = ["chu", "c72"]
-verificado = true
+# chapinero-alto: excluido del radar (26-oct-2026, decisión del usuario).
 
 [[estrenar.sectores]]
 ruta = "bogota/norte/chico"
-zonas = ["cor"]
+zonas = ["lag", "nav"]
 verificado = true
 
 [[estrenar.sectores]]
 ruta = "bogota/noroccidente/polo-club"
-zonas = ["cor"]
+zonas = ["cas", "pas"]
 verificado = true
 
 [[estrenar.sectores]]
 ruta = "bogota/noroccidente/la-castellana"
-zonas = ["cor"]
+zonas = ["cas"]
 verificado = true
 
 [[estrenar.sectores]]
 ruta = "bogota/norte/santa-bibiana"
-zonas = ["cor"]
+zonas = ["nav"]
 verificado = true
 
 [[estrenar.sectores]]

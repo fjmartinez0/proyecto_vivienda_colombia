@@ -61,20 +61,46 @@ def _centro(feature: dict) -> tuple[float, float]:
     return (sum(p[1] for p in anillo) / len(anillo), sum(p[0] for p in anillo) / len(anillo))
 
 
-def asignar_zona(lat: float, lng: float, candidatas: list[str] | None, zonas_geojson: dict) -> tuple[str | None, None]:
-    """Zona de un proyecto. El sector del sitio (o la zona del proyecto manual) manda:
-    - una zona candidata -> esa;
-    - varias (p. ej. Chapinero -> universitaria o calle 72) -> la de centro más cercano;
-    - ninguna -> el círculo que contenga el punto, si hay.
-    Devuelve (zona, None): ya no hay notas de borde."""
+TOLERANCIA_PROYECTO_M = 150   # error típico de la ubicación por cruce de vías + del dibujo de la zona
+
+
+def distancia_a_poligono_m(lat: float, lng: float, anillo: list[list[float]]) -> float:
+    """0 si el punto está dentro; si no, metros al borde más cercano (aproximación plana, sobra a esta escala)."""
+    if punto_en_poligono(lat, lng, anillo):
+        return 0.0
+    kx = 111_320 * math.cos(math.radians(lat))
+    ky = 110_574
+    px, py = lng * kx, lat * ky
+    mejor = float("inf")
+    for (x1, y1), (x2, y2) in zip(anillo, anillo[1:] + anillo[:1]):
+        ax, ay, bx, by = x1 * kx, y1 * ky, x2 * kx, y2 * ky
+        dx, dy = bx - ax, by - ay
+        t = 0.0 if dx == dy == 0 else max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)))
+        mejor = min(mejor, math.hypot(px - (ax + t * dx), py - (ay + t * dy)))
+    return mejor
+
+
+def asignar_zona(lat: float, lng: float, candidatas: list[str] | None, zonas_geojson: dict,
+                 tolerancia_m: float = TOLERANCIA_PROYECTO_M) -> tuple[str | None, str | None]:
+    """Zona de un proyecto: la decide su punto (zonas bien demarcadas).
+    - dentro de una zona -> esa; dentro de varias -> la candidata del sector, si no la de centro más cercano;
+    - fuera pero a ≤ tolerancia del borde -> esa zona, con nota (absorbe el error de ubicación y del dibujo);
+    - más lejos -> None (queda en 'fuera de zonas').
+    -> (zona, nota)"""
     candidatas = list(candidatas or [])
-    if len(candidatas) == 1:
-        return candidatas[0], None
-    if candidatas:
-        centros = {f["properties"]["id"]: _centro(f) for f in zonas_geojson["features"]}
-        z = min((c for c in candidatas if c in centros), key=lambda c: distancia_m(lat, lng, *centros[c]), default=None)
-        return z, None
-    return zona_de(lat, lng, zonas_geojson), None
+    d = {f["properties"]["id"]: distancia_a_poligono_m(lat, lng, f["geometry"]["coordinates"][0])
+         for f in zonas_geojson["features"]}
+    dentro = [z for z, x in d.items() if x == 0]
+    if not dentro:
+        cerca = sorted((x, z) for z, x in d.items() if x <= tolerancia_m)
+        if not cerca:
+            return None, None
+        return cerca[0][1], f"a {cerca[0][0]:.0f} m del borde de la zona"
+    if len(dentro) == 1:
+        return dentro[0], None
+    pref = [z for z in dentro if z in candidatas] or dentro
+    centros = {f["properties"]["id"]: _centro(f) for f in zonas_geojson["features"]}
+    return min(pref, key=lambda z: distancia_m(lat, lng, *centros[z])), None
 
 
 def bbox_zonas(ids: list[str] | None, zonas_geojson: dict, margen_m: float = 2500) -> tuple[float, float, float, float] | None:

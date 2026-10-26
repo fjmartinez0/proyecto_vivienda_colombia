@@ -62,16 +62,37 @@ def poligono_vigente(z: dict, cache: dict) -> list[list[float]] | None:
     return None
 
 
-def a_geojson(definiciones: list[dict], cache: dict | None = None) -> dict:
+ARCHIVO_DIBUJADAS = Path(__file__).resolve().parents[3] / "config" / "zonas_dibujadas.geojson"
+
+
+def cargar_dibujadas(path: Path | None = None) -> dict[str, list[list[float]]]:
+    """Polígonos dibujados a mano (p. ej. en geojson.io): Feature con properties.id = id de la zona.
+    Tienen prioridad sobre esquinas y círculo. -> {id: anillo [[lng, lat], ...]}"""
+    path = path or ARCHIVO_DIBUJADAS
+    try:
+        datos = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, ValueError):
+        return {}
+    out = {}
+    for f in datos.get("features", []):
+        zid = (f.get("properties") or {}).get("id")
+        g = f.get("geometry") or {}
+        if zid and g.get("type") == "Polygon" and g.get("coordinates") and len(g["coordinates"][0]) >= 4:
+            out[zid] = [[round(x, 6), round(y, 6)] for x, y, *_ in g["coordinates"][0]]
+    return out
+
+
+def a_geojson(definiciones: list[dict], cache: dict | None = None, dibujadas: dict | None = None) -> dict:
     cache = cache if cache is not None else {}
+    dibujadas = dibujadas or {}
     feats = []
     for z in definiciones:
-        anillo = poligono_vigente(z, cache)
+        anillo = dibujadas.get(z["id"]) or (None if z["id"] in dibujadas else poligono_vigente(z, cache))
         feats.append({
             "type": "Feature",
             "properties": {"id": z["id"], "nombre": z.get("nombre"), "ciudad": z.get("ciudad"),
                            "descripcion": z.get("descripcion"), "centro": z["centro"], "radio_m": z["radio_m"],
-                           "forma": "esquinas" if anillo else "circulo"},
+                           "forma": "dibujada" if z["id"] in dibujadas else "esquinas" if anillo else "circulo"},
             "geometry": {"type": "Polygon", "coordinates": [anillo or circulo(z["centro"], z["radio_m"])]},
         })
     return {"type": "FeatureCollection", "features": feats}
@@ -103,11 +124,16 @@ def calcular(definiciones: list[dict], geocod, hoy: date, forzar: bool = False,
         if not forzar and poligono_vigente(z, cache):
             res.al_dia.append(z["id"])
             continue
-        caja = geo.bbox_zonas([z["id"]], circulos, margen_m=1500)
         anillo, fallas = [], []
-        for i, e in enumerate(esq, 1):
-            avisar(f"  {z['id']} [{i}/{len(esq)}] {e} …")
-            r, motivo = geocod.cruce_detallado(e, z.get("ciudad"), bbox=caja)
+        if hasattr(geocod, "cruces_en_caja"):
+            # una sola consulta por zona; margen corto: las esquinas de un cuadro quedan a ≤ r·√2 del centro
+            caja = geo.bbox_zonas([z["id"]], circulos, margen_m=700)
+            avisar(f"  {z['id']}: descargando calles de la zona (una consulta) …")
+            resultados = geocod.cruces_en_caja(esq, caja)
+        else:
+            caja = geo.bbox_zonas([z["id"]], circulos, margen_m=1500)
+            resultados = [geocod.cruce_detallado(e, z.get("ciudad"), bbox=caja) for e in esq]
+        for e, (r, motivo) in zip(esq, resultados):
             if r:
                 anillo.append([round(r[1], 6), round(r[0], 6)])
             else:

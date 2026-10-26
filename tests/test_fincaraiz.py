@@ -9,7 +9,7 @@ from vivienda.sources.fincaraiz.cliente import Pagina, extraer_next_data, search
 from vivienda.sources.fincaraiz.parser import antiguedad_anios, estrato, to_number
 
 
-def item(id_=1, tipo="Apartamento", lat=4.6350, lng=-74.0640, **kw):
+def item(id_=1, tipo="Apartamento", lat=4.6500, lng=-74.0600, **kw):
     """Anuncio con la forma real de searchFast.data (según el proyecto anterior)."""
     base = {
         "id": id_, "link": f"/apartamento-en-venta-en-marly-bogota/{id_}",
@@ -111,14 +111,15 @@ class TestRecorrido(unittest.TestCase):
         p1 = Pagina("u1", [item(1), item(2, tipo="Casa"), item(3, isProject=True),
                            item(4, lat=4.60, lng=-74.20), item(5, lat=None, lng=None)],
                     {"lastPage": 2, "total": 7})
-        p2 = Pagina("u2", [item(6, lat=4.6565, lng=-74.0580), item(1)], {"lastPage": 2})
+        p2 = Pagina("u2", [item(6, lat=4.6650, lng=-74.0560), item(1)], {"lastPage": 2})
         cli = ClienteFalso([p1, p2])
         anuncios, r = usados.recorrer_barrio(cli, "marly/zona-chapinero", "bogota", self.zonas, 8,
                                              date(2026, 10, 26), avisar=lambda *_: None)
-        self.assertEqual(sorted(a["id"] for a in anuncios), ["1", "6"])   # dedup del 1
+        self.assertEqual(sorted(a["id"] for a in anuncios), ["1", "4", "6"])   # dedup del 1; el 4 queda de entorno
+        self.assertIsNone(next(a for a in anuncios if a["id"] == "4")["zona"])
         self.assertEqual((r.total_portal, r.paginas, r.otros_tipos, r.proyectos), (7, 2, 1, 1))
         self.assertEqual((r.fuera_de_zonas, r.sin_coordenadas), (1, 1))
-        self.assertEqual(r.en_zona, {"chu": 2, "c72": 1})
+        self.assertEqual(r.en_zona, {"chu": 2, "lag": 1})
         self.assertIn("/pagina2", cli.urls[1])
 
     def test_floridablanca_un_recorrido_por_tipo(self):
@@ -163,3 +164,17 @@ class TestHistorial(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestRezonificarUsados(unittest.TestCase):
+    def test_zona_desde_el_punto_al_exportar(self):
+        from datetime import date
+        from vivienda.pipeline import usados as um
+        from vivienda.pipeline.zonas import a_geojson
+        zonas = a_geojson([{"id": "nueva", "centro": [4.65, -74.06], "radio_m": 500}])
+        reg = {"a": {"id": "1", "zona": "vieja", "lat": 4.65, "lng": -74.06, "precio": 1, "area_privada": 40,
+                     "tipo": "apartamento", "primer_visto": "2026-10-25", "ultimo_visto": "2026-10-25"},
+               "b": {"id": "2", "zona": "vieja", "lat": 4.70, "lng": -74.06, "precio": 1, "area_privada": 40,
+                     "tipo": "apartamento", "primer_visto": "2026-10-25", "ultimo_visto": "2026-10-25"}}
+        out = um.para_dashboard(reg, date(2026, 10, 26), 7, 30, zonas)
+        self.assertEqual(sorted((u["id"], u["zona"]) for u in out), [("FR-1", "nueva"), ("FR-2", None)])

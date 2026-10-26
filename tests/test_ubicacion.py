@@ -67,7 +67,7 @@ class TestEnlaces(unittest.TestCase):
 class TestGeo(unittest.TestCase):
     def test_zonas(self):
         z = cargar_zonas()
-        self.assertEqual(geo.zona_de(4.6340, -74.0640, z), "chu")
+        self.assertEqual(geo.zona_de(4.6500, -74.0600, z), "chu")
         self.assertEqual(geo.zona_de(7.0705, -73.1065, z), "can")
         self.assertIsNone(geo.zona_de(4.60, -74.20, z))
 
@@ -129,7 +129,7 @@ class TestAplicar(unittest.TestCase):
         p = self.prys[self.pid]
         self.assertEqual(res.ubicados, [self.pid])
         self.assertEqual(p["ubicacion"]["precision"], "alta")
-        self.assertEqual(p["zona"], "c72")
+        self.assertEqual(p["zona"], "chu")
 
     def test_enlace_de_mapa_sin_direccion_da_media(self):
         item = {"id": self.pid, "lat": 4.653336, "lng": -74.062162,

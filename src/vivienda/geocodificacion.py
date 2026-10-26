@@ -178,24 +178,45 @@ class Geocodificador:
         elementos, error = self._overpass(consulta_overpass([p1, p2], bbox))
         if elementos is None:
             return None, f"Overpass (OpenStreetMap) no respondió [{error}]; reintentar más tarde"
-        r1, r2 = re.compile(p1, re.I), re.compile(p2, re.I)
-        g1, g2 = [], []
-        for el in elementos:
-            tags = el.get("tags", {})
-            nombres = [tags.get(t, "") for t in TAGS_NOMBRE]
-            pts = [(g["lat"], g["lon"]) for g in el.get("geometry", [])]
-            if any(r1.search(n) for n in nombres if n):
-                g1.append(pts)
-            elif any(r2.search(n) for n in nombres if n):
-                g2.append(pts)
-        faltan = [e for e, g in ((e1, g1), (e2, g2)) if not g]
-        if faltan:
-            return None, f"no existe en OSM con ese nombre: {', '.join(faltan)}"
-        res = punto_cruce(g1, g2, max_m=10**7)
-        lat, lng, sep = res
-        if sep > MAX_SEPARACION_M:
-            return None, f"{e1} y {e2} existen pero no se cruzan (lo más cerca: {sep:.0f} m)"
-        return (lat, lng, f"cruce {e1} × {e2} (separación {sep:.0f} m)"), "ok"
+        return cruce_en(elementos, vias)
+
+    def cruces_en_caja(self, direcciones: list[str], bbox: tuple[float, float, float, float]) -> list[tuple]:
+        """Varias esquinas de una misma zona con UNA consulta liviana: todas las vías con nombre de la caja
+        (sin regex en el servidor, que es lo que hace lentas y fallidas las consultas) y el cruce se
+        resuelve aquí. -> [((lat, lng, detalle) | None, motivo)] en el mismo orden."""
+        s, n, w, e = bbox
+        q = f'[out:json][timeout:120];way["highway"]["name"]({s},{w},{n},{e});out tags geom;'
+        elementos, error = self._overpass(q)
+        if elementos is None:
+            return [(None, f"Overpass (OpenStreetMap) no respondió [{error}]; reintentar más tarde")] * len(direcciones)
+        out = []
+        for d in direcciones:
+            vias = vias_para_cruce(d)
+            out.append(cruce_en(elementos, vias) if vias else (None, "formato de dirección no reconocido"))
+        return out
 
     def cruce(self, direccion: str, ciudad: str | None) -> tuple[float, float, str] | None:
         return self.cruce_detallado(direccion, ciudad)[0]
+
+
+def cruce_en(elementos: list[dict], vias) -> tuple[tuple[float, float, str] | None, str]:
+    """Cruce de dos vías dentro de elementos ya descargados de Overpass (geometría incluida)."""
+    (p1, e1), (p2, e2) = vias
+    r1, r2 = re.compile(p1, re.I), re.compile(p2, re.I)
+    g1, g2 = [], []
+    for el in elementos:
+        tags = el.get("tags", {})
+        nombres = [tags.get(t, "") for t in TAGS_NOMBRE]
+        pts = [(g["lat"], g["lon"]) for g in el.get("geometry", [])]
+        if any(r1.search(n) for n in nombres if n):
+            g1.append(pts)
+        elif any(r2.search(n) for n in nombres if n):
+            g2.append(pts)
+    faltan = [e for e, g in ((e1, g1), (e2, g2)) if not g]
+    if faltan:
+        return None, f"no existe en OSM con ese nombre: {', '.join(faltan)}"
+    res = punto_cruce(g1, g2, max_m=10**7)
+    lat, lng, sep = res
+    if sep > MAX_SEPARACION_M:
+        return None, f"{e1} y {e2} existen pero no se cruzan (lo más cerca: {sep:.0f} m)"
+    return (lat, lng, f"cruce {e1} × {e2} (separación {sep:.0f} m)"), "ok"

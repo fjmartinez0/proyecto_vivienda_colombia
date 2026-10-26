@@ -74,10 +74,10 @@ def recorrer_barrio(cliente, ruta: str, ciudad: str, zonas: dict, max_paginas: i
                     res.sin_coordenadas += 1
                     continue
                 z = geo.zona_de(a["lat"], a["lng"], zonas)
-                if not z:
-                    res.fuera_de_zonas += 1
-                    continue
-                res.en_zona[z] = res.en_zona.get(z, 0) + 1
+                if z:
+                    res.en_zona[z] = res.en_zona.get(z, 0) + 1
+                else:
+                    res.fuera_de_zonas += 1   # se guarda igual: sirve de comparable cercano (entorno)
                 vistos[a["id"]] = {**a, "zona": z, "ciudad": ciudad, "ruta": ruta}
             avisar(f"    pág. {pagina}/{min(ultima, max_paginas)}: {len(p.anuncios)} anuncios")
             pagina += 1
@@ -122,10 +122,18 @@ def vigentes(registro: dict[str, dict], hoy: date, dias: int) -> list[dict]:
     return [r for r in registro.values() if r.get("ultimo_visto", "") >= limite]
 
 
-def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: float) -> list[dict]:
-    """Formato que espera web/index.html (mismo contrato que los usados de demostración)."""
+def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: float,
+                   zonas: dict | None = None) -> list[dict]:
+    """Formato que espera web/index.html (mismo contrato que los usados de demostración).
+    Con `zonas`, la zona se recalcula desde el punto del anuncio: si cambias una zona, los usados
+    guardados se reubican en la siguiente exportación (y los que quedan fuera dejan de mostrarse)."""
     out = []
     for r in sorted(vigentes(registro, hoy, dias), key=lambda x: x["primer_visto"], reverse=True):
+        if zonas is not None:
+            if r.get("lat") is None:
+                continue
+            # fuera de toda zona -> zona None: no es inventario de ninguna zona, pero sí comparable por distancia
+            r = {**r, "zona": geo.zona_de(r["lat"], r["lng"], zonas)}
         area, tipo_area = (r["area_privada"], "privada") if r.get("area_privada") else \
                           (r["area_construida"], "construida") if r.get("area_construida") else (None, None)
         if not r.get("precio") or not area or area < area_min:

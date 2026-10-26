@@ -108,12 +108,12 @@ def oportunidades_usados(usados: list[dict], hoy: date, umbral: float, precio_ma
     Versión simple de 'similares' del dashboard: suficiente para avisar, no para decidir."""
     grupos: dict[tuple, list[float]] = {}
     for u in usados:
-        if u.get("precio") and u.get("area"):
+        if u.get("precio") and u.get("area") and u.get("zona"):
             grupos.setdefault((u["zona"], u.get("habs")), []).append(u["precio"] / u["area"])
     out = []
     h = hoy.isoformat()
     for u in usados:
-        if u.get("detectado") != h or not u.get("ascensor") or not u.get("precio") or u["precio"] > precio_max:
+        if u.get("detectado") != h or not u.get("zona") or not u.get("ascensor") or not u.get("precio") or u["precio"] > precio_max:
             continue
         g = grupos.get((u["zona"], u.get("habs")), [])
         if len(g) < min_grupo:

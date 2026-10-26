@@ -23,14 +23,16 @@ direccion = "Carrera 16A # 76-38"
 direccion_origen = "manual"
 fuente = "file://brochure/lumina77_brochure.pdf"
 ascensor = true
-notas = "Coliving: 320 apartaestudios en 21 pisos, renovación urbana. El brochure no publica precios."
+entrega = "2029-04"                 # inferida: la cotización pone el crédito el 04-abr-2029
+notas = "Coliving: 320 apartaestudios en 21 pisos, renovación urbana. Cotización Oikos 04-oct-2026, APT-T1 103 (piso 1): $375 M, valor acabados $0 (confirmar si se entrega terminado). Cuota inicial 30 % en 30 cuotas hasta mar-2029, 70 % crédito."
 
   [[proyecto.tipologia]]
-  nombre = "Tipo A"
+  nombre = "Tipo A (APT-T1 103, cotizado)"
   habs = 1
   banos = 1
   area = 37.95
   area_privada = 33.37
+  precio = 375_000_000
 
   [[proyecto.tipologia]]
   nombre = "Tipo E"
@@ -49,17 +51,20 @@ zonas = ["lag"]
 direccion = "Calle 80 # 19-07"
 direccion_origen = "agregador"      # es la sala de ventas, publicada en Ciencuadras
 fuente = "https://www.ciencuadras.com/proyecto-de-vivienda/la-cite-apartamentos-la-cite-apartamentos-bogota-2719"
-estrato = 5
+estrato = 5                         # confirmado en cotización de sala de ventas (13-oct-2026)
 ascensor = true
 entrega = "2027-10"
-notas = "Datos de Ciencuadras. Áreas aproximadas (el portal mezcla 32–35 m² y 29,5–42,5 m²)."
+acabados = "full"                   # cotización "con acabados"
+admin_m2 = 13_000                   # cotización: "≈ $13.000 x m2" (aprox.; la fija la asamblea)
+notas = "Cotización sala de ventas 13-oct-2026, apto 1201 tipo B: lista $436,04 M, bono $20 M → $416,04 M. Cuota inicial 20 % en 9 cuotas (oct-26 a jun-27), 80 % crédito. Admin ≈ $13.000/m² (alta: ~$450 k/mes). La tipología mayor sigue con datos de Ciencuadras."
 
   [[proyecto.tipologia]]
-  nombre = "1 alcoba (menor)"
+  nombre = "Tipo B (apto 1201, cotizado)"
   habs = 1
   banos = 1
-  area = 32.0
-  precio = 416_240_000
+  area = 34.5
+  area_privada = 32.0
+  precio = 416_040_000              # con bono de $20 M (lista $436.040.000)
 
   [[proyecto.tipologia]]
   nombre = "1 alcoba (mayor)"

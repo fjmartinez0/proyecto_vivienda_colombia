@@ -12,7 +12,8 @@ class TestZonas(unittest.TestCase):
     def test_archivo_real(self):
         z = cargar_zonas()
         self.assertEqual({f["properties"]["id"] for f in z["features"]},
-                         {"chu", "c72", "cor", "pas", "mor", "lag", "teu", "can"})
+                         {"chu", "c72", "lag", "nav", "cas", "pas", "mor", "teu", "can"})
+        self.assertTrue(all(f["properties"]["forma"] == "dibujada" for f in z["features"]))
 
     def test_circulo_contiene_su_centro(self):
         anillo = zmod.circulo([4.65, -74.06], 1000)
@@ -20,20 +21,41 @@ class TestZonas(unittest.TestCase):
         self.assertTrue(geo.punto_en_poligono(4.65, -74.06, anillo))
         self.assertFalse(geo.punto_en_poligono(4.67, -74.06, anillo))   # ~2,2 km al norte
 
-    def test_traslape_gana_la_mas_cercana_a_su_centro(self):
+    def test_puntos_en_zonas_dibujadas(self):
         z = cargar_zonas()
-        self.assertEqual(geo.zona_de(4.6920, -74.0610, z), "pas")   # también cae dentro del corredor
-        self.assertEqual(geo.zona_de(4.6385, -74.0730, z), "teu")   # Palermo: también dentro de chu
+        self.assertEqual(geo.zona_de(4.6950, -74.0620, z), "pas")
+        self.assertEqual(geo.zona_de(4.6380, -74.0720, z), "teu")
+        self.assertEqual(geo.zona_de(4.6920, -74.0470, z), "nav")
+        self.assertEqual(geo.zona_de(4.6565, -74.0580, z), "c72")   # Cl. 70–76: Quinta Camacho (antes hueco)
+        self.assertIsNone(geo.zona_de(4.6419, -74.0549, z))          # Chapinero Alto: excluido
 
-    def test_sector_manda(self):
+    def test_punto_manda_con_tolerancia(self):
         z = cargar_zonas()
-        self.assertEqual(geo.asignar_zona(4.70, -74.10, ["cor"], z), ("cor", None))
-        # ambiguo: gana el centro más cercano
-        self.assertEqual(geo.asignar_zona(4.6360, -74.0640, ["chu", "c72"], z)[0], "chu")
-        self.assertEqual(geo.asignar_zona(4.6560, -74.0580, ["chu", "c72"], z)[0], "c72")
-        # sin sector: el círculo que lo contenga
+        # el sector ya no saca a un proyecto de su lugar: lejos de toda zona -> fuera
+        self.assertEqual(geo.asignar_zona(4.70, -74.10, ["pas"], z), (None, None))
+        # Zento (Cra. 53 con Cl. 100) cae a metros del borde dibujado de Pasadena -> pas, con nota
+        zona, nota = geo.asignar_zona(4.68850, -74.06266, ["pas"], z)
+        self.assertEqual(zona, "pas")
+        self.assertIn("del borde", nota)
+        # Metro 73 (Cl. 73 # 14-48) -> Quinta Camacho; Primera Este (Chapinero Alto) -> fuera
+        self.assertEqual(geo.asignar_zona(4.65980, -74.06132, ["chu", "lag"], z)[0], "c72")
+        self.assertIsNone(geo.asignar_zona(4.64189, -74.05493, ["chu"], z)[0])
         self.assertEqual(geo.asignar_zona(7.0705, -73.1065, [], z)[0], "can")
-        self.assertIsNone(geo.asignar_zona(4.60, -74.20, [], z)[0])
+
+    def test_sin_traslapes_entre_zonas(self):
+        import random
+        z = cargar_zonas()
+        anillos = {f["properties"]["id"]: f["geometry"]["coordinates"][0] for f in z["features"]}
+        rnd = random.Random(7)
+        for _ in range(20000):
+            la, ln = rnd.uniform(4.62, 4.71), rnd.uniform(-74.095, -74.03)
+            dentro = [i for i, a in anillos.items() if geo.punto_en_poligono(la, ln, a)]
+            self.assertLessEqual(len(dentro), 1, (la, ln, dentro))
+
+    def test_distancia_a_poligono(self):
+        cuadro = [[-74.07, 4.63], [-74.06, 4.63], [-74.06, 4.64], [-74.07, 4.64], [-74.07, 4.63]]
+        self.assertEqual(geo.distancia_a_poligono_m(4.635, -74.065, cuadro), 0)
+        self.assertAlmostEqual(geo.distancia_a_poligono_m(4.645, -74.065, cuadro), 553, delta=10)
 
 
 
@@ -83,3 +105,43 @@ class TestEsquinas(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestCrucesEnCaja(unittest.TestCase):
+    """Una consulta por zona: el cruce se resuelve localmente con las calles descargadas."""
+
+    def test_esquinas_locales(self):
+        from unittest import mock
+        from vivienda.geocodificacion import Geocodificador
+        calles = [
+            {"tags": {"name": "Avenida Carrera 14"}, "geometry": [{"lat": 4.630, "lon": -74.066}, {"lat": 4.6375, "lon": -74.0652}, {"lat": 4.650, "lon": -74.064}]},
+            {"tags": {"name": "Calle 45"}, "geometry": [{"lat": 4.6375, "lon": -74.080}, {"lat": 4.6375, "lon": -74.0652}]},
+            {"tags": {"name": "Carrera 28"}, "geometry": [{"lat": 4.630, "lon": -74.080}, {"lat": 4.6375, "lon": -74.080}, {"lat": 4.650, "lon": -74.080}]},
+        ]
+        g = Geocodificador("test", pausa=0)
+        with mock.patch.object(g, "_overpass", return_value=(calles, "ok")) as op:
+            res = g.cruces_en_caja(["Calle 45 con Avenida Caracas", "Calle 45 con Carrera 28", "Calle 99 con Carrera 28"],
+                                   (4.62, 4.66, -74.09, -74.05))
+        self.assertEqual(op.call_count, 1)
+        self.assertIsNotNone(res[0][0])
+        self.assertIsNotNone(res[1][0])
+        self.assertIsNone(res[2][0])
+        self.assertIn("Calle 99", res[2][1])
+
+
+class TestDibujadas(unittest.TestCase):
+    def test_dibujada_gana_a_circulo(self):
+        import json, tempfile
+        from pathlib import Path
+        from vivienda.pipeline import zonas as zm
+        anillo = [[-74.07, 4.63], [-74.06, 4.63], [-74.06, 4.64], [-74.07, 4.64], [-74.07, 4.63]]
+        with tempfile.TemporaryDirectory() as t:
+            f = Path(t) / "z.geojson"
+            f.write_text(json.dumps({"type": "FeatureCollection", "features": [
+                {"type": "Feature", "properties": {"id": "chu"}, "geometry": {"type": "Polygon", "coordinates": [anillo]}}]}))
+            dib = zm.cargar_dibujadas(f)
+        gj = zm.a_geojson([{"id": "chu", "centro": [4.635, -74.064], "radio_m": 1300},
+                           {"id": "teu", "centro": [4.638, -74.074], "radio_m": 1000}], {}, dib)
+        formas = {x["properties"]["id"]: x["properties"]["forma"] for x in gj["features"]}
+        self.assertEqual(formas, {"chu": "dibujada", "teu": "circulo"})
+        self.assertEqual(gj["features"][0]["geometry"]["coordinates"][0], anillo)
