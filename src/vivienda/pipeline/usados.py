@@ -38,12 +38,16 @@ class ResumenBarrio:
     fuera_de_zonas: int = 0
     en_zona: dict[str, int] = field(default_factory=dict)
     error: str | None = None
+    apartaestudios_portal: int | None = None   # Bogotá: total del recorrido extra de apartaestudios
 
 
 def recorrer_barrio(cliente, ruta: str, ciudad: str, zonas: dict, max_paginas: int,
                     hoy: date, avisar=print) -> tuple[list[dict], ResumenBarrio]:
     res = ResumenBarrio(ruta, ciudad)
-    tipos = sorted(TIPOS_VALIDOS) if PATRON_CIUDAD[ciudad]["incluye_tipo"] else [None]
+    # Bogotá: recorrido general (todos los tipos, más recientes primero) + uno solo de apartaestudios.
+    # Sin el segundo, el tope de páginas se lo comen los apartamentos grandes y casi no entran unidades
+    # pequeñas, que son justo los comparables de los proyectos nuevos (Ciento5I: 34 de ~70 en Navarra).
+    tipos = sorted(TIPOS_VALIDOS) if PATRON_CIUDAD[ciudad]["incluye_tipo"] else [None, "apartaestudio"]
     vistos: dict[str, dict] = {}
     for tipo_url in tipos:
         pagina, ultima = 1, 1
@@ -52,12 +56,18 @@ def recorrer_barrio(cliente, ruta: str, ciudad: str, zonas: dict, max_paginas: i
             etiqueta = f"{ruta.replace('/', '-')}_{tipo_url or 'todos'}_p{pagina}"
             p = cliente.pagina(url, etiqueta)
             if p.error:
+                extra = tipo_url == "apartaestudio" and not PATRON_CIUDAD[ciudad]["incluye_tipo"]
+                if extra and not any(s in p.error for s in ("403", "429", "bloqueo", "captcha")):
+                    avisar(f"    · recorrido de apartaestudios sin datos: {p.error}")   # no tumba el barrio
+                    break
                 res.error = f"{url}: {p.error}"
                 avisar(f"    ✗ {p.error}")
                 break
             res.paginas += 1
-            if pagina == 1:
+            if pagina == 1 and (tipo_url is None or PATRON_CIUDAD[ciudad]["incluye_tipo"]):
                 res.total_portal = (res.total_portal or 0) + (p.paginador.get("total") or 0)
+            if pagina == 1 and tipo_url == "apartaestudio" and not PATRON_CIUDAD[ciudad]["incluye_tipo"]:
+                res.apartaestudios_portal = p.paginador.get("total")
             ultima = p.paginador.get("lastPage") or pagina
             for item in p.anuncios:
                 a = parsear(item)

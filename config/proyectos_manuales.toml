@@ -10,7 +10,8 @@
 #   opcionales: estrato, ascensor (true/false), renta_corta ("permitida"/"prohibida"),
 #               entrega ("AAAA-MM"), acabados ("full"/"semi"/"obra gris"), notas
 #   seguimiento      true = mostrarlo en el mapa aunque quede fuera de tus zonas (comparables por distancia)
-#   lat, lng         coordenadas exactas si se conocen (enlace de Waze/Maps de la ficha): no se geocodifica
+#   lat, lng         coordenadas si se conocen (enlace de Waze/Maps de la ficha): no se geocodifica
+#   precision        "media" (por defecto con lat/lng) o "baja" si las coordenadas son aproximadas
 # Tipologías: habs, banos, area (construida), area_privada, precio (opcional), nombre
 # Si quitas un proyecto de este archivo, queda inactivo (no se borra su historial).
 
@@ -230,8 +231,10 @@ constructora = "Muisca Construcciones"
 ciudad = "Floridablanca"
 sector = "Cañaveral"
 zonas = ["can"]
-direccion = "Calle 158 con Carrera 18"   # la web también dice "calle 158 con 19": confirmar
+direccion = "Calle 158 con Carrera 19"   # la web dice "cra 18" y "con 19"; FOSUNAB es Calle 158 # 20-95 → se toma la 19
 direccion_origen = "manual"
+lat = 7.069997                      # pin de Google Maps "Torres del Valle, Cañaveral" (enviado por el usuario, 30-oct-2026)
+lng = -73.1151028
 fuente = "https://www.torresdelvalle.co"
 seguimiento = true
 ascensor = true                     # torre de 33 pisos
@@ -239,7 +242,7 @@ notas = "Junto a FOSUNAB. Torre de 33 pisos, 4 niveles de parqueo, zona social e
 
   [[proyecto.tipologia]]
   nombre = "Tipo A"
-  habs = 2                          # SUPUESTO: 77 m² en Floridablanca suele ser 2 alcobas; confirmar
+  habs = 3                          # SUPUESTO: en Cañaveral, de los usados de ~77 m² casi todos son de 3 alcobas (97 vs 5 de 2). Confirmar
   banos = 2
   area = 77.0
   precio = 549_000_000
@@ -257,7 +260,8 @@ constructora = "Amarilo"
 ciudad = "Bogotá"
 sector = "Puente Largo"
 zonas = ["pas", "and"]
-direccion = "Transversal 60 # 106-62"   # sala de ventas (antiguo CC Puente Largo); el lote del proyecto no está publicado
+direccion = "Avenida Suba con Calle 106"   # sala de ventas (Tv 60 # 106-62, antiguo CC Puente Largo). Tv 60 = Av. Suba;
+                                          # "Tv 60 # 106" se leía como Diagonal 106 y no cruzaba
 direccion_origen = "agregador"
 fuente = "https://www.fincaraiz.com.co/proyectos-vivienda/verona-apartamentos-en-venta-en-puente-largo-bogota/10379685"
 seguimiento = true
@@ -272,3 +276,26 @@ notas = "Encontrado en el escaneo del 30-oct-2026. Fincaraíz: desde 32 m², $45
   banos = 1
   area = 32.0
   precio = 450_000_000
+
+[[proyecto]]
+id = "viu-park-home"
+nombre = "Viu Park Home"
+constructora = "Gradeco"
+ciudad = "Bogotá"
+sector = "Santa Bárbara Occidental"
+zonas = ["sba"]
+direccion = "Carrera 45 # 116-76"   # sala de ventas (Autopista con 116); el lote no está publicado
+direccion_origen = "agregador"
+fuente = "https://www.ciencuadras.com/proyecto-de-vivienda/gradeco-viu-park-home-bogota-2343"
+seguimiento = true
+estrato = 6
+ascensor = true                     # edificio de 9 pisos (160 aptos): ascensor obligatorio
+entrega = "2027-02"
+notas = "Encontrado en el escaneo del 30-oct-2026 (Ciencuadras, publicado en ago-2024: CONFIRMAR que siga en venta). Apartaestudios de 36,45 m² (el encabezado dice 26 m²: inconsistente) desde $394,9 M. 9 pisos, 160 unidades."
+
+  [[proyecto.tipologia]]
+  nombre = "Apartaestudio 36,45"
+  habs = 1
+  banos = 1
+  area = 36.45
+  precio = 394_892_000

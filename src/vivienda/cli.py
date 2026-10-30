@@ -493,7 +493,8 @@ def cmd_usados(args) -> None:
         resumenes.append((b, r))
         todos += anuncios
         zonas_txt = ", ".join(f"{z}: {n}" for z, n in sorted(r.en_zona.items())) or "ninguno en zonas"
-        print(f"    total en el portal {r.total_portal if r.total_portal is not None else '?'} · "
+        print(f"    total en el portal {r.total_portal if r.total_portal is not None else '?'}"
+              + (f" (+{r.apartaestudios_portal} apartaestudios)" if r.apartaestudios_portal else "") + " · "
               f"{r.paginas} pág. · {r.leidos} leídos → {zonas_txt}"
               + (f" · {r.fuera_de_zonas} fuera de zonas" if r.fuera_de_zonas else "")
               + (f" · {r.sin_coordenadas} sin coordenadas" if r.sin_coordenadas else "")

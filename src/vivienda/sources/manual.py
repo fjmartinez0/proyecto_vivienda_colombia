@@ -74,7 +74,8 @@ def aplicar_a_proyectos(registro: dict[str, dict], manuales: list[dict], hoy: da
             u = p.get("ubicacion") or {}
             if (u.get("lat"), u.get("lng")) != (m["lat"], m["lng"]):
                 p["ubicacion"] = {"lat": float(m["lat"]), "lng": float(m["lng"]), "direccion": m.get("direccion"),
-                                  "precision": "media", "fuente": fuente, "metodo": "coordenadas manuales",
+                                  "precision": m.get("precision", "media"), "fuente": fuente,
+                                  "metodo": "coordenadas manuales" + (" (aproximadas)" if m.get("precision") == "baja" else ""),
                                   "verificado": h}
         if m.get("direccion"):
             origen = "agregador" if m.get("direccion_origen") == "agregador" else "manual"

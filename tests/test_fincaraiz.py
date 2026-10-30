@@ -79,6 +79,8 @@ class TestCliente(unittest.TestCase):
                          "https://www.fincaraiz.com.co/venta/palermo/bogota?ordenListado=3")
         self.assertEqual(url_barrio("san-felipe/zona-noroccidente", "bogota", 2),
                          "https://www.fincaraiz.com.co/venta/san-felipe/zona-noroccidente/bogota/pagina2?ordenListado=3")
+        self.assertEqual(url_barrio("santa-bibiana/zona-norte", "bogota", 2, "apartaestudio"),
+                         "https://www.fincaraiz.com.co/venta/apartaestudios/santa-bibiana/zona-norte/bogota/pagina2?ordenListado=3")
         self.assertEqual(url_barrio("canaveral", "floridablanca", 1, "apartaestudio"),
                          "https://www.fincaraiz.com.co/venta/apartaestudios/canaveral/floridablanca/floridablanca?ordenListado=3")
         with self.assertRaises(ValueError):
@@ -134,7 +136,9 @@ class TestRecorrido(unittest.TestCase):
         cli = ClienteFalso([Pagina("a", [], {"lastPage": 30, "total": 600})] * 3)
         _, r = usados.recorrer_barrio(cli, "palermo", "bogota", self.zonas, 2, date(2026, 10, 26),
                                       avisar=lambda *_: None)
-        self.assertEqual(r.paginas, 2)
+        self.assertEqual(r.paginas, 3)   # 2 del recorrido general (tope) + 1 de apartaestudios (luego se agota)
+        self.assertIn("/venta/apartaestudios/palermo/bogota", cli.urls[2])
+        self.assertIsNone(r.error)       # que el recorrido extra se quede sin páginas no es un fallo
 
 
 class TestHistorial(unittest.TestCase):

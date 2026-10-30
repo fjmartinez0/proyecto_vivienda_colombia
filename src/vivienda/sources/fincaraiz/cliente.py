@@ -51,9 +51,9 @@ def url_barrio(barrio_path: str, ciudad: str, pagina: int = 1, tipo: str | None 
     if patron is None:
         raise ValueError(f"'{ciudad}' no tiene patrón de URL por barrio confirmado (hoy: {sorted(PATRON_CIUDAD)})")
     partes = [BASE_URL, operacion]
-    if patron["incluye_tipo"]:
-        if tipo is None:
-            raise ValueError(f"'{ciudad}' requiere el tipo en la URL")
+    if patron["incluye_tipo"] and tipo is None:
+        raise ValueError(f"'{ciudad}' requiere el tipo en la URL")
+    if tipo is not None:   # Bogotá admite el tipo como filtro opcional: /venta/apartaestudios/{barrio}/bogota
         partes.append(TIPOS_URL[tipo])
     partes += [barrio_path.strip("/"), patron["sufijo"]]
     url = "/".join(partes)

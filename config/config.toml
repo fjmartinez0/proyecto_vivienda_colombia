@@ -260,6 +260,17 @@ ruta = "canaveral"
 ciudad = "floridablanca"
 verificado = true
 
+# --- Navarra – San Patricio: barrios que faltaban (candidatas, confirmar con --probar)
+[[fincaraiz.barrios]]
+ruta = "navarra/zona-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "san-patricio/zona-norte"
+ciudad = "bogota"
+verificado = false
+
 # --- Zonas agregadas el 30-oct-2026. Candidatas: confirmar con
 #     vivienda usados --probar --barrio la-floresta andes-norte alhambra el-batan santa-barbara
 [[fincaraiz.barrios]]
@@ -268,17 +279,17 @@ ciudad = "bogota"
 verificado = false
 
 [[fincaraiz.barrios]]
-ruta = "andes-norte"
+ruta = "andes-norte/zona-noroccidente"
 ciudad = "bogota"
 verificado = false
 
 [[fincaraiz.barrios]]
-ruta = "alhambra/zona-norte"
+ruta = "alhambra/zona-noroccidente"
 ciudad = "bogota"
 verificado = false
 
 [[fincaraiz.barrios]]
-ruta = "el-batan/zona-norte"
+ruta = "el-batan/zona-noroccidente"
 ciudad = "bogota"
 verificado = false
 
@@ -289,5 +300,15 @@ verificado = false
 
 [[fincaraiz.barrios]]
 ruta = "santa-barbara-occidental/zona-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "los-andes/zona-noroccidente"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "santa-barbara/zona-norte"
 ciudad = "bogota"
 verificado = false

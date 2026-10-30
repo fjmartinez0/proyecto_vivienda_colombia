@@ -14,7 +14,7 @@ class TestManuales(unittest.TestCase):
 
     def test_archivo_real(self):
         ids = {m["id"] for m in self.manuales}
-        self.assertEqual(ids, {"lumina-77", "la-cite", "street-52", "distrito-kb", "mava-92", "heritage-97", "torres-del-valle", "verona-amarilo"})
+        self.assertEqual(ids, {"lumina-77", "la-cite", "street-52", "distrito-kb", "mava-92", "heritage-97", "torres-del-valle", "verona-amarilo", "viu-park-home"})
         zonas = {z["properties"]["id"] for z in cargar_zonas()["features"]}
         for m in self.manuales:
             self.assertTrue(set(m.get("zonas", [])) <= zonas, m["id"])
@@ -33,9 +33,11 @@ class TestManuales(unittest.TestCase):
         proyectos.sincronizar(reg, prys)
         manual.aplicar_a_proyectos(prys, self.manuales, date(2026, 10, 25))
         por_nombre = {p["nombre"]: p for p in prys.values()}
-        self.assertEqual(len(prys), 8)
+        self.assertEqual(len(prys), 9)
         self.assertEqual(por_nombre["Heritage 97"]["ubicacion"]["metodo"], "coordenadas manuales")
         self.assertTrue(por_nombre["Mava 92"]["seguimiento"])
+        tdv = por_nombre["Torres del Valle"]["ubicacion"]
+        self.assertEqual((tdv["precision"], tdv["metodo"], tdv["lat"]), ("media", "coordenadas manuales", 7.069997))
         s52 = por_nombre["Street 52"]
         self.assertEqual(s52["direccion_candidata"]["origen"], "manual")
         self.assertEqual(s52["enriquecimiento"]["renta_corta"]["valor"], "permitida")

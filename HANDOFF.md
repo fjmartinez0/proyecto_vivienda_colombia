@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.10.0, 30-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.11.0, 30-oct-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -134,8 +134,8 @@ puro: **no consumen Claude**.
 - Campos: admin = `commonExpenses` (86 % lleno); área privada = `m2apto` (72 %); estrato válido 1–6;
   `isProject` fuera; `to_number` toma el primer bloque numérico ("55 m2" → 55).
 - **Pisos del edificio llega en 0 cuando no se sabe** → se trata como sin dato.
-- Ascensor: campo/amenidad del anuncio > descripción ("sin ascensor" gana) > edificio 6+ pisos o apartamento
-  en piso 6+ = *probable*. Sin dato (~31 %) = **no cumple la regla dura**.
+- Ascensor (misma regla para comprar y para comparar): campo/amenidad del anuncio > descripción ("sin ascensor"
+  gana) > edificio 6+ pisos o apartamento en piso 6+ = *probable* (cuenta como sí). Sin dato = **descartado**.
 - Historial `usados.json`: primer/último visto y cada cambio de precio; vigente si se vio en los últimos 7 días.
 - `el-lago` se quitó (mismo listado que `lago-gaitan`). `chico-norte` (2.987) y `chico-navarra` (1.709) son
   listados de sector, no de barrio: no importa porque se filtra por punto.
@@ -170,6 +170,19 @@ puro: **no consumen Claude**.
   santa-barbara-central/occidental) → confirmar con `usados --probar`. Hoy esas zonas tienen 0–5 usados.
   Escaneo: Loto122 (21,9 m²), Edificio Balmes (21–22 m²), Córdoba 127 ($928 M), Solara 93 (20,8 m²) no pasan filtros.
   Verona (Amarilo) agregado como manual: Fincaraíz 32 m² $450 M (antes se descartó por los 27 m² de Ciencuadras).
+- **Comparables de unidades pequeñas (30-oct, sin zip aún):** (1) en Bogotá `usados` hace además un recorrido
+  `/venta/apartaestudios/{barrio}/bogota` por barrio: el general (más recientes, tope de páginas) enterraba los
+  apartaestudios; un error en ese recorrido extra no marca el barrio como fallido. (2) Se probó admitir para comparar usados sin
+  dato de ascensor con edificio ≤ 15 años y el USUARIO LO RECHAZÓ: la regla es una sola para comprar y comparar —
+  ascensor confirmado, o edificio de 6+ pisos / apto en piso 6+ ("probable"); si no, se descarta. No reabrir. En Fincaraíz hay una reventa de Ciento5I (33 m², $362 M)
+  vs. lista nueva $422 M. Rutas nuevas candidatas: navarra/zona-norte, san-patricio/zona-norte.
+- Torres del Valle salía "sin ubicar" (el cruce Calle 158 × Carrera 18 no está así en OSM): ahora usa el pin de
+  Google Maps del usuario (7.069997, -73.1151028). OJO: el punto de "FOSUNAB" del círculo viejo (7.0705, -73.1065)
+  quedaba ~950 m al oriente; no usarlo como referencia. Verona: dirección cambiada a "Avenida Suba con Calle 106" (Tv 60 = Av. Suba;
+  "Tv 60 # 106" se interpretaba como Diagonal 106). Alias nuevo ("transversal","60") → Avenida Suba.
+- Escaneo profundo zonas nuevas: Viu Park Home (Gradeco, Santa Bárbara Occ., 36,45 m², $395 M, publicado 2024 —
+  confirmar vigencia) agregado. El Polo (Cl 84 # 28B-45, 28 m²), UBA y Torre de Los Andes (retirados), Altus 124
+  (18 m², obra gris) no entran.
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.

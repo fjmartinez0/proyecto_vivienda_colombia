@@ -33,6 +33,7 @@ _ALIAS = {
     ("calle", "100"): "Avenida Calle 100", ("carrera", "45"): "Autopista Norte", ("calle", "134"): "Avenida Calle 134",
     ("calle", "53"): "Pablo VI", ("calle", "63"): "Jos[eé] Celestino Mutis", ("carrera", "68"): "Avenida Carrera 68|Congreso Eucar[ií]stico",
     ("carrera", "50"): "Avenida Carrera 50", ("calle", "116"): "Pepe Sierra", ("carrera", "15"): "Avenida Carrera 15",
+    ("transversal", "60"): "Avenida Suba",   # Tv 60 = Av. Suba entre Cl. 100 y 116 (Puente Largo)
 }
 
 _NOMBRE_TIPO = {"calle": "Calle", "carrera": "Carrera", "diagonal": "Diagonal", "transversal": "Transversal"}
