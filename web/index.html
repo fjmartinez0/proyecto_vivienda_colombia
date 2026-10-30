@@ -472,10 +472,15 @@ function renderMapa(){
 
   const p=PROYECTOS.find(x=>x.id===state.sel);
   if(p){
+    const medZc={};   // mediana $/m² de anuncio por zona, sobre todos los usados (como en la capa de usados)
+    const medianaZ = z => z in medZc ? medZc[z] : (medZc[z]=median(USADOS.filter(x=>x.zona===z).map(x=>ajusteUsado(x).m2_lista)));
     analisis(p,state.tip).comps.forEach(({u,a})=>{
+      const mz=u.zona?medianaZ(u.zona):null, dv=mz?a.m2_lista/mz-1:null;
       L.polyline([[p.lat,p.lng],[u.lat,u.lng]],{color:'#1f4e8c',weight:1.2,dashArray:'3 4',opacity:.7}).addTo(compLayer);
       L.circleMarker([u.lat,u.lng],{radius:6,color:'#fff',weight:2,fillColor:'#1f4e8c',fillOpacity:1})
-        .bindTooltip(`${u.id} · ${fM1(a.m2)}/m² aj. · ${u.zona?'clic para ver':'fuera de zonas (entorno)'}`)
+        .bindTooltip(`<b>${nombreUsado(u)} · ${u.area} m²</b>${u.barrio?' · '+u.barrio:''}<br>${fM(u.precio)} · ${fM1(a.m2_lista)}/m²${dv!==null?` <small>(${pct(dv)} vs. zona)</small>`:''}`
+          + `<br><small>Comparable: ${fM1(a.m2)}/m² ajustado (privada, −${Math.round(PARAMS.desc_neg*100)} % negociación)</small>`
+          + `<br><small class="muted">${u.zona?'clic para ver detalle':'fuera de zonas · clic abre el anuncio'}</small>`,{direction:'top'})
         .on('click',()=>{ if(u.zona) selUsado(u.id); else if(u.url) window.open(u.url,'_blank','noopener'); }).addTo(compLayer);
     });
   }

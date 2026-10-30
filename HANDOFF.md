@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.11.0, 30-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.11.1, 30-oct-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -154,6 +154,7 @@ puro: **no consumen Claude**.
   zona: con 40–60 anuncios por zona las medianas son ruido (Morato salía más cara que Pasadena).
   Ojo: área ampliada hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
 - Pin de proyecto = nombre + valor (v0.7.2), siempre visible.
+- Tooltip de comparables (v0.11.1) = el mismo de la capa de usados (tipo, m², barrio, precio, $/m² vs. zona) + $/m² ajustado.
 - **Proyectos en seguimiento (v0.9):** `seguimiento = true` en proyectos_manuales.toml los muestra en el mapa aunque
   queden fuera de zonas (pin punteado). Se publican con `fuera_de_zona`, la zona más cercana (solo para supuestos de
   arriendo/ADR) y comparables por distancia (≤ 1 km estricto, ≤ 1,5 km ampliado, cualquier zona). `lat`/`lng` en el
