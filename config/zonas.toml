@@ -82,3 +82,27 @@ ciudad = "Floridablanca"
 descripcion = "Cañaveral, FOSCAL/FOSUNAB, El Bosque (Floridablanca)"
 centro = [7.0678, -73.1082]
 radio_m = 1440
+
+[[zona]]
+id = "and"
+nombre = "Los Andes – La Floresta"
+ciudad = "Bogotá"
+descripcion = "Los Andes, Andes Norte, La Floresta (entre Morato, Pasadena y La Castellana)"
+centro = [4.6863, -74.0682]
+radio_m = 980
+
+[[zona]]
+id = "bat"
+nombre = "Alhambra – Batán"
+ciudad = "Bogotá"
+descripcion = "Al norte de Pasadena, entre Av. Suba y Autopista Norte (Alhambra, Batán)"
+centro = [4.7023, -74.0620]
+radio_m = 960
+
+[[zona]]
+id = "sba"
+nombre = "Santa Bárbara"
+ciudad = "Bogotá"
+descripcion = "Al norte de Navarra, de la Autopista Norte hacia la Cra. 7 (Santa Bárbara Occidental y Central)"
+centro = [4.7004, -74.0448]
+radio_m = 1320

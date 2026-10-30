@@ -68,6 +68,14 @@ def aplicar_a_proyectos(registro: dict[str, dict], manuales: list[dict], hoy: da
         p["url"] = m.get("fuente") if reglas.es_url(m.get("fuente")) else None
         p["notas"] = m.get("notas")
         p["zonas_candidatas"] = list(m.get("zonas", []))
+        p["seguimiento"] = bool(m.get("seguimiento"))   # fuera de zonas pero visible en el mapa
+        if m.get("lat") is not None and m.get("lng") is not None:
+            # coordenadas dadas a mano (p. ej. del enlace de Waze/Maps de la ficha): no se geocodifica
+            u = p.get("ubicacion") or {}
+            if (u.get("lat"), u.get("lng")) != (m["lat"], m["lng"]):
+                p["ubicacion"] = {"lat": float(m["lat"]), "lng": float(m["lng"]), "direccion": m.get("direccion"),
+                                  "precision": "media", "fuente": fuente, "metodo": "coordenadas manuales",
+                                  "verificado": h}
         if m.get("direccion"):
             origen = "agregador" if m.get("direccion_origen") == "agregador" else "manual"
             actual = p.get("direccion_candidata") or {}

@@ -1,5 +1,5 @@
 {
- "generado": "2026-10-30T06:49:04-04:00",
+ "generado": "2026-10-30T15:27:48-04:00",
  "zonas": {
   "type": "FeatureCollection",
   "features": [
@@ -924,6 +924,252 @@
       ]
      ]
     }
+   },
+   {
+    "type": "Feature",
+    "properties": {
+     "id": "and",
+     "nombre": "Los Andes – La Floresta",
+     "ciudad": "Bogotá",
+     "descripcion": "Los Andes, Andes Norte, La Floresta (entre Morato, Pasadena y La Castellana)",
+     "centro": [
+      4.6863,
+      -74.0682
+     ],
+     "radio_m": 980,
+     "forma": "dibujada"
+    },
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -74.076984,
+        4.685282
+       ],
+       [
+        -74.075763,
+        4.684929
+       ],
+       [
+        -74.073362,
+        4.684654
+       ],
+       [
+        -74.070566,
+        4.68332
+       ],
+       [
+        -74.065763,
+        4.679357
+       ],
+       [
+        -74.062833,
+        4.683647
+       ],
+       [
+        -74.061179,
+        4.68761
+       ],
+       [
+        -74.065453,
+        4.688708
+       ],
+       [
+        -74.070173,
+        4.689637
+       ],
+       [
+        -74.073484,
+        4.687766
+       ],
+       [
+        -74.076984,
+        4.685282
+       ]
+      ]
+     ]
+    }
+   },
+   {
+    "type": "Feature",
+    "properties": {
+     "id": "bat",
+     "nombre": "Alhambra – Batán",
+     "ciudad": "Bogotá",
+     "descripcion": "Al norte de Pasadena, entre Av. Suba y Autopista Norte (Alhambra, Batán)",
+     "centro": [
+      4.7023,
+      -74.062
+     ],
+     "radio_m": 960,
+     "forma": "dibujada"
+    },
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -74.0544,
+        4.706599
+       ],
+       [
+        -74.055566,
+        4.699756
+       ],
+       [
+        -74.060444,
+        4.70076
+       ],
+       [
+        -74.061071,
+        4.70088
+       ],
+       [
+        -74.061129,
+        4.700639
+       ],
+       [
+        -74.06125,
+        4.700672
+       ],
+       [
+        -74.062844,
+        4.700977
+       ],
+       [
+        -74.063421,
+        4.701056
+       ],
+       [
+        -74.063378,
+        4.70132
+       ],
+       [
+        -74.061469,
+        4.700956
+       ],
+       [
+        -74.064182,
+        4.701474
+       ],
+       [
+        -74.066435,
+        4.702372
+       ],
+       [
+        -74.065307,
+        4.703677
+       ],
+       [
+        -74.06467,
+        4.705183
+       ],
+       [
+        -74.064193,
+        4.708776
+       ],
+       [
+        -74.0544,
+        4.706599
+       ]
+      ]
+     ]
+    }
+   },
+   {
+    "type": "Feature",
+    "properties": {
+     "id": "sba",
+     "nombre": "Santa Bárbara",
+     "ciudad": "Bogotá",
+     "descripcion": "Al norte de Navarra, de la Autopista Norte hacia la Cra. 7 (Santa Bárbara Occidental y Central)",
+     "centro": [
+      4.7004,
+      -74.0448
+     ],
+     "radio_m": 1320,
+     "forma": "dibujada"
+    },
+    "geometry": {
+     "type": "Polygon",
+     "coordinates": [
+      [
+       [
+        -74.04839,
+        4.698221
+       ],
+       [
+        -74.04862,
+        4.698316
+       ],
+       [
+        -74.04888,
+        4.698369
+       ],
+       [
+        -74.048842,
+        4.698516
+       ],
+       [
+        -74.05009,
+        4.698895
+       ],
+       [
+        -74.054729,
+        4.699634
+       ],
+       [
+        -74.053536,
+        4.706609
+       ],
+       [
+        -74.048897,
+        4.705368
+       ],
+       [
+        -74.043621,
+        4.703888
+       ],
+       [
+        -74.03824,
+        4.70373
+       ],
+       [
+        -74.036331,
+        4.704047
+       ],
+       [
+        -74.033256,
+        4.703307
+       ],
+       [
+        -74.035006,
+        4.699502
+       ],
+       [
+        -74.037153,
+        4.695222
+       ],
+       [
+        -74.041872,
+        4.696358
+       ],
+       [
+        -74.046352,
+        4.697759
+       ],
+       [
+        -74.048339,
+        4.698363
+       ],
+       [
+        -74.04839,
+        4.698221
+       ]
+      ]
+     ]
+    }
    }
   ]
  },
@@ -933,6 +1179,8 @@
    "nombre": "67 Estorias",
    "constructora": "GRUPO ACCANTO",
    "zona": "chu",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.653336,
    "lng": -74.062162,
    "direccion": null,
@@ -1005,6 +1253,8 @@
    "nombre": "Albura Los Robles",
    "constructora": "INGEURBE",
    "zona": "mor",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.692982,
    "lng": -74.070813,
    "direccion": "Carrera 68A No. 105-73",
@@ -1058,6 +1308,8 @@
    "nombre": "Ciento5I",
    "constructora": "FORJAR INVERSIONES",
    "zona": "nav",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.692717,
    "lng": -74.055044,
    "direccion": "Calle 105 # 23-42",
@@ -1121,6 +1373,8 @@
    "nombre": "Cortteza Parque Central Los Robles",
    "constructora": "INGEURBE",
    "zona": "mor",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.692982,
    "lng": -74.070813,
    "direccion": "Carrera 68A No. 105-73",
@@ -1161,6 +1415,8 @@
    "nombre": "Flora Parque Central Los Robles",
    "constructora": "INGEURBE",
    "zona": "mor",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.692982,
    "lng": -74.070813,
    "direccion": "Carrera 68a # 105 - 73",
@@ -1203,6 +1459,8 @@
    "nombre": "La Floresta Living",
    "constructora": "CONSTRUCTORA BOLÍVAR",
    "zona": "mor",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.686437,
    "lng": -74.076218,
    "direccion": "Av. Cra 68 con Calle 95",
@@ -1256,6 +1514,8 @@
    "nombre": "Metro 73",
    "constructora": "FORJAR INVERSIONES",
    "zona": "c72",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.659798,
    "lng": -74.061318,
    "direccion": "Calle 73 # 14-48",
@@ -1329,6 +1589,8 @@
    "nombre": "Zento",
    "constructora": "INGEURBE",
    "zona": "pas",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.688503,
    "lng": -74.062663,
    "direccion": "Carrera 53 con Calle 100",
@@ -1382,6 +1644,8 @@
    "nombre": "Distrito KB",
    "constructora": "Distrito KB",
    "zona": "teu",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.635877,
    "lng": -74.074996,
    "direccion": "Carrera 24 # 45C-33",
@@ -1422,6 +1686,8 @@
    "nombre": "La Cité",
    "constructora": "La Cité Apartamentos",
    "zona": "lag",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.667648,
    "lng": -74.059197,
    "direccion": "Calle 80 # 19-07",
@@ -1472,6 +1738,8 @@
    "nombre": "Lumina 77",
    "constructora": "Oikos",
    "zona": "lag",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.663517,
    "lng": -74.060154,
    "direccion": "Carrera 16A # 76-38",
@@ -1522,6 +1790,8 @@
    "nombre": "Street 52",
    "constructora": "Constructora Santa Lucía",
    "zona": "teu",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
    "lat": 4.639942,
    "lng": -74.069486,
    "direccion": "Calle 52 # 17-41",
@@ -1530,7 +1800,7 @@
    "ubicacion_metodo": "cruce Calle 52 × Carrera 17 (separación 0 m)",
    "zona_nota": null,
    "estado": "Sin dato",
-   "entrega": null,
+   "entrega": "2028-01",
    "acabados": "Sin dato",
    "area_tipo": "construida",
    "renta_corta": "permitida",
@@ -1541,20 +1811,10 @@
    "ascensor": true,
    "brochure": null,
    "fuente": "Manual",
-   "notas": "20 apartamentos de 1 alcoba en 6 pisos. El brochure no publica precios ni entrega.",
+   "notas": "20 apartamentos de 1 alcoba en 6 pisos. Propuesta apto 303 (piso 3, 34,53 m²): $365,5 M. Separación $10 M; saldo de cuota inicial 30 % ($99,65 M) en 14 cuotas de $3,55 M + 2 extraordinarias de $25 M (dic-2026 y jun-2027); 70 % ($255,85 M) crédito o recursos propios a la entrega. Fecha de entrega no informada.",
    "url": null,
    "detectado": "2026-10-25",
    "tipologias": [
-    {
-     "id": "street-52-1",
-     "habs": 1,
-     "banos": 1,
-     "area": 34.53,
-     "parq": 0,
-     "precio": null,
-     "url": "",
-     "area_privada": 34.53
-    },
     {
      "id": "street-52-2",
      "habs": 1,
@@ -1574,6 +1834,110 @@
      "precio": null,
      "url": "",
      "area_privada": 37.0
+    },
+    {
+     "id": "street-52-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 34.53,
+     "parq": 0,
+     "precio": 365500000,
+     "url": "",
+     "area_privada": 34.53
+    }
+   ]
+  },
+  {
+   "id": "PRY-0017",
+   "nombre": "Heritage 97",
+   "constructora": "Buenvivir",
+   "zona": "nav",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 360,
+   "lat": 4.681893,
+   "lng": -74.048221,
+   "direccion": "Carrera 14 # 97-34",
+   "precision": "media",
+   "ubicacion_agregador": true,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Sobre planos",
+   "entrega": "2029-12",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "permitida",
+   "renta_corta_agregador": true,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 6,
+   "ascensor": true,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "Torre de 15 pisos, parqueadero comunal en los tipos de 1 alcoba. Fiduciaria Aval. Solo el tipo E (30,62 m², $541 M) pasa tus filtros: C y la unidad de 25 m² son < 30 m²; G e I pasan de $600 M.",
+   "url": "https://www.estrenarvivienda.com/heritage-97/51568",
+   "detectado": "2026-10-30",
+   "tipologias": [
+    {
+     "id": "heritage-97-3",
+     "habs": 1,
+     "banos": 1,
+     "area": 30.62,
+     "parq": 0,
+     "precio": 540961887,
+     "url": "https://www.estrenarvivienda.com/heritage-97/51568",
+     "area_privada": null
+    }
+   ]
+  },
+  {
+   "id": "PRY-0018",
+   "nombre": "Mava 92",
+   "constructora": "Grupo Empresarial Ingecol / Ospina y Asociados",
+   "zona": "cas",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 418,
+   "lat": 4.677698,
+   "lng": -74.056071,
+   "direccion": "Calle 92 # 19A-55",
+   "precision": "baja",
+   "ubicacion_agregador": true,
+   "ubicacion_metodo": "cruce Calle 92 × Carrera 19A (separación 0 m)",
+   "zona_nota": null,
+   "estado": "Sobre planos",
+   "entrega": "2029-05",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 6,
+   "ascensor": null,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "196 lofts de 1–2 habitaciones, 12 pisos + terraza (sky bar, BBQ, gimnasio, coworking). Cuota inicial 35 %. Áreas desde 26,6 m². Precios de portales (Fincaraíz $461 M por 30,41 m²; Trovit 30 m² $473 M, 40 m² $590 M, 54 m² $820 M).",
+   "url": "https://www.fincaraiz.com.co/proyectos-vivienda/mava-92-apartamentos-en-venta-en-chico-norte-bogota/15018085",
+   "detectado": "2026-10-30",
+   "tipologias": [
+    {
+     "id": "mava-92-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 30.41,
+     "parq": 0,
+     "precio": 461000000,
+     "url": "https://www.fincaraiz.com.co/proyectos-vivienda/mava-92-apartamentos-en-venta-en-chico-norte-bogota/15018085",
+     "area_privada": null
+    },
+    {
+     "id": "mava-92-2",
+     "habs": 1,
+     "banos": 1,
+     "area": 40.0,
+     "parq": 0,
+     "precio": 590000000,
+     "url": "https://www.fincaraiz.com.co/proyectos-vivienda/mava-92-apartamentos-en-venta-en-chico-norte-bogota/15018085",
+     "area_privada": null
     }
    ]
   }
@@ -1584,6 +1948,18 @@
    "nombre": "Novus Florida",
    "sector": "Cañaveral",
    "url": "https://www.estrenarvivienda.com/novus-florida/floridablanca"
+  },
+  {
+   "id": "PRY-0019",
+   "nombre": "Torres del Valle",
+   "sector": "Cañaveral",
+   "url": "https://www.torresdelvalle.co"
+  },
+  {
+   "id": "PRY-0020",
+   "nombre": "Verona",
+   "sector": "Puente Largo",
+   "url": "https://www.fincaraiz.com.co/proyectos-vivienda/verona-apartamentos-en-venta-en-puente-largo-bogota/10379685"
   }
  ],
  "fuera_de_zonas": [
@@ -3668,7 +4044,7 @@
   },
   {
    "id": "FR-194474053",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.698021190566,
    "lng": -74.045365105404,
    "estrato": 6,
@@ -4982,7 +5358,7 @@
   },
   {
    "id": "FR-194472939",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.6991052097386,
    "lng": -74.048680076962,
    "estrato": 5,
@@ -7524,7 +7900,7 @@
   },
   {
    "id": "FR-194463675",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.6980195136917,
    "lng": -74.045393793587,
    "estrato": 5,
@@ -13299,7 +13675,7 @@
   },
   {
    "id": "FR-194456535",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.699991524545,
    "lng": -74.054013134005,
    "estrato": 6,
@@ -13429,7 +13805,7 @@
   },
   {
    "id": "FR-194459044",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.6979947,
    "lng": -74.0454315,
    "estrato": 6,
@@ -13553,7 +13929,7 @@
   },
   {
    "id": "FR-194444750",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.6969693,
    "lng": -74.0426247,
    "estrato": 5,
@@ -13607,7 +13983,7 @@
   },
   {
    "id": "FR-194440153",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.697379011072,
    "lng": -74.043986588092,
    "estrato": 6,
@@ -13838,7 +14214,7 @@
   },
   {
    "id": "FR-194394019",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.699599638151,
    "lng": -74.050276058248,
    "estrato": 6,
@@ -13903,7 +14279,7 @@
   },
   {
    "id": "FR-194394804",
-   "zona": null,
+   "zona": "sba",
    "lat": 4.699599638151,
    "lng": -74.050276058248,
    "estrato": 6,
@@ -14364,7 +14740,7 @@
   },
   {
    "id": "FR-194437225",
-   "zona": null,
+   "zona": "bat",
    "lat": 4.70041,
    "lng": -74.05695,
    "estrato": 5,
@@ -58287,7 +58663,7 @@
   },
   {
    "id": "FR-194363230",
-   "zona": null,
+   "zona": "and",
    "lat": 4.6888290336486,
    "lng": -74.066441106421,
    "estrato": 5,
@@ -155411,7 +155787,7 @@
   },
   {
    "id": "FR-193896699",
-   "zona": null,
+   "zona": "and",
    "lat": 4.681933,
    "lng": -74.064776,
    "estrato": 4,
@@ -157458,7 +157834,7 @@
   },
   {
    "id": "FR-192893882",
-   "zona": null,
+   "zona": "and",
    "lat": 4.6829352,
    "lng": -74.0639196,
    "estrato": 6,
@@ -158034,7 +158410,7 @@
   },
   {
    "id": "FR-192021455",
-   "zona": null,
+   "zona": "and",
    "lat": 4.6879494,
    "lng": -74.0633944,
    "estrato": 5,

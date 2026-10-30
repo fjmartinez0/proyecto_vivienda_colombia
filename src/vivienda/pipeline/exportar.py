@@ -24,6 +24,13 @@ def _valor(p: dict, campo: str, defecto=None):
     return ((p.get("enriquecimiento") or {}).get(campo) or {}).get("valor", defecto)
 
 
+def _zona_mas_cercana(lat: float, lng: float, zonas: dict) -> tuple[str, float]:
+    """Proyecto en seguimiento fuera de zonas: zona más cercana (para los supuestos de arriendo/ADR)."""
+    from vivienda import geo
+    return min(((f["properties"]["id"], geo.distancia_a_poligono_m(lat, lng, f["geometry"]["coordinates"][0]))
+                for f in zonas["features"]), key=lambda x: x[1])
+
+
 def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: dict) -> dict:
     tips_por_clave: dict[str, list[dict]] = {}
     for t in tipologias.values():
@@ -40,14 +47,19 @@ def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: di
         if not u:
             sin_ubicar.append(resumen)
             continue
+        zona_ref = None
         if not p.get("zona"):
-            fuera.append({**resumen, "lat": u["lat"], "lng": u["lng"]})
-            continue
+            if not p.get("seguimiento"):
+                fuera.append({**resumen, "lat": u["lat"], "lng": u["lng"]})
+                continue
+            zona_ref = _zona_mas_cercana(u["lat"], u["lng"], zonas)
         publicados.append({
             "id": p["id"],
             "nombre": p.get("nombre"),
             "constructora": p.get("constructora"),
-            "zona": p["zona"],
+            "zona": p.get("zona") or zona_ref[0],
+            "fuera_de_zona": zona_ref is not None,
+            "distancia_zona_m": round(zona_ref[1]) if zona_ref else None,
             "lat": u["lat"], "lng": u["lng"],
             "direccion": u.get("direccion"),
             "precision": u.get("precision"),

@@ -9,6 +9,8 @@
 #   fuente           URL o archivo de donde salen los datos
 #   opcionales: estrato, ascensor (true/false), renta_corta ("permitida"/"prohibida"),
 #               entrega ("AAAA-MM"), acabados ("full"/"semi"/"obra gris"), notas
+#   seguimiento      true = mostrarlo en el mapa aunque quede fuera de tus zonas (comparables por distancia)
+#   lat, lng         coordenadas exactas si se conocen (enlace de Waze/Maps de la ficha): no se geocodifica
 # Tipologías: habs, banos, area (construida), area_privada, precio (opcional), nombre
 # Si quitas un proyecto de este archivo, queda inactivo (no se borra su historial).
 
@@ -85,14 +87,16 @@ direccion_origen = "manual"
 fuente = "file://brochure/street52_brochure.pdf"
 ascensor = true
 renta_corta = "permitida"           # el brochure lo plantea para operación de renta corta (Airbnb/Booking)
-notas = "20 apartamentos de 1 alcoba en 6 pisos. El brochure no publica precios ni entrega."
+entrega = "2028-01"                 # INFERIDA: la cuota inicial termina ~dic-2027 y el 70 % se paga a la entrega. Confirmar.
+notas = "20 apartamentos de 1 alcoba en 6 pisos. Propuesta apto 303 (piso 3, 34,53 m²): $365,5 M. Separación $10 M; saldo de cuota inicial 30 % ($99,65 M) en 14 cuotas de $3,55 M + 2 extraordinarias de $25 M (dic-2026 y jun-2027); 70 % ($255,85 M) crédito o recursos propios a la entrega. Fecha de entrega no informada."
 
   [[proyecto.tipologia]]
-  nombre = "1 alcoba 34,53"
+  nombre = "1 alcoba 34,53 (apto 303, cotizado)"
   habs = 1
   banos = 1
   area = 34.53
   area_privada = 34.53
+  precio = 365_500_000
 
   [[proyecto.tipologia]]
   nombre = "1 alcoba 34,85"
@@ -128,3 +132,143 @@ notas = "54 aparta-estudios en 7 pisos. Precio de la cotización del apto 605 (t
   area = 30.41
   area_privada = 27.11
   precio = 362_000_000
+
+# ---------------------------------------------------------------------------------------------
+# Proyectos en SEGUIMIENTO (pedidos por el usuario el 30-oct-2026). Pueden quedar fuera de las zonas.
+# Las tipologías que no pasan los filtros (≤ $600 M, ≥ 30 m² construidos) quedan anotadas pero se descartan solas.
+# ---------------------------------------------------------------------------------------------
+
+[[proyecto]]
+id = "mava-92"
+nombre = "Mava 92"
+constructora = "Grupo Empresarial Ingecol / Ospina y Asociados"   # Fincaraíz y Trovit no coinciden
+ciudad = "Bogotá"
+sector = "Chicó Norte / El Virrey"
+direccion = "Calle 92 # 19A-55"
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/proyectos-vivienda/mava-92-apartamentos-en-venta-en-chico-norte-bogota/15018085"
+seguimiento = true
+estrato = 6
+estado_obra = "sobre planos"
+entrega = "2029-05"
+notas = "196 lofts de 1–2 habitaciones, 12 pisos + terraza (sky bar, BBQ, gimnasio, coworking). Cuota inicial 35 %. Áreas desde 26,6 m². Precios de portales (Fincaraíz $461 M por 30,41 m²; Trovit 30 m² $473 M, 40 m² $590 M, 54 m² $820 M)."
+
+  [[proyecto.tipologia]]
+  nombre = "Loft 30,41 (Fincaraíz)"
+  habs = 1
+  banos = 1
+  area = 30.41
+  precio = 461_000_000
+
+  [[proyecto.tipologia]]
+  nombre = "Apartaestudio 40 (Trovit)"
+  habs = 1
+  banos = 1
+  area = 40.0
+  precio = 590_000_000
+
+[[proyecto]]
+id = "heritage-97"
+nombre = "Heritage 97"
+constructora = "Buenvivir"
+ciudad = "Bogotá"
+sector = "Chicó"
+direccion = "Carrera 14 # 97-34"
+direccion_origen = "agregador"
+fuente = "https://www.estrenarvivienda.com/heritage-97/51568"
+seguimiento = true
+lat = 4.681893                      # enlace de Waze/Maps de la ficha de Estrenar Vivienda
+lng = -74.048221
+estrato = 6
+ascensor = true                     # 4 ascensores, 15 pisos, 34 aptos por piso
+renta_corta = "permitida"           # la ficha: "permitidas, sujeto al reglamento de PH"
+estado_obra = "sobre planos"
+entrega = "2029-12"                 # ficha: "4T-2029"
+notas = "Torre de 15 pisos, parqueadero comunal en los tipos de 1 alcoba. Fiduciaria Aval. Solo el tipo E (30,62 m², $541 M) pasa tus filtros: C y la unidad de 25 m² son < 30 m²; G e I pasan de $600 M."
+
+  [[proyecto.tipologia]]
+  nombre = "25,03 (privada 22,53)"
+  habs = 1
+  banos = 1
+  area = 25.03
+  area_privada = 22.53
+  precio = 386_550_595
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo C"
+  habs = 1
+  banos = 1
+  area = 27.56
+  precio = 465_427_811
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo E"
+  habs = 1
+  banos = 1
+  area = 30.62
+  precio = 540_961_887
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo G"
+  habs = 1
+  banos = 1
+  area = 36.14
+  precio = 644_599_236
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo I"
+  habs = 2
+  banos = 1
+  area = 60.02
+  parq = 1
+  precio = 976_824_000
+
+[[proyecto]]
+id = "torres-del-valle"
+nombre = "Torres del Valle"
+constructora = "Muisca Construcciones"
+ciudad = "Floridablanca"
+sector = "Cañaveral"
+zonas = ["can"]
+direccion = "Calle 158 con Carrera 18"   # la web también dice "calle 158 con 19": confirmar
+direccion_origen = "manual"
+fuente = "https://www.torresdelvalle.co"
+seguimiento = true
+ascensor = true                     # torre de 33 pisos
+notas = "Junto a FOSUNAB. Torre de 33 pisos, 4 niveles de parqueo, zona social en piso 34 (piscina panorámica, gimnasio, turco, parque de 1.600 m²). La web publica 'desde $549 M' sin decir para qué tipo; se asume el tipo A. Áreas sin indicar si son privadas."
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo A"
+  habs = 2                          # SUPUESTO: 77 m² en Floridablanca suele ser 2 alcobas; confirmar
+  banos = 2
+  area = 77.0
+  precio = 549_000_000
+
+  [[proyecto.tipologia]]
+  nombre = "Tipo B"
+  habs = 3                          # SUPUESTO; sin precio publicado
+  banos = 2
+  area = 93.0
+
+[[proyecto]]
+id = "verona-amarilo"
+nombre = "Verona"
+constructora = "Amarilo"
+ciudad = "Bogotá"
+sector = "Puente Largo"
+zonas = ["pas", "and"]
+direccion = "Transversal 60 # 106-62"   # sala de ventas (antiguo CC Puente Largo); el lote del proyecto no está publicado
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/proyectos-vivienda/verona-apartamentos-en-venta-en-puente-largo-bogota/10379685"
+seguimiento = true
+estrato = 5
+estado_obra = "sobre planos"
+entrega = "2027-12"                 # Ciencuadras: 31/12/2027
+notas = "Encontrado en el escaneo del 30-oct-2026. Fincaraíz: desde 32 m², $450 M, 1–3 habitaciones. Ciencuadras publica 27 m² a $419 M (esa unidad no pasa el mínimo de 30 m²). Ubicación = sala de ventas: confirmar el lote."
+
+  [[proyecto.tipologia]]
+  nombre = "1 alcoba 32 (Fincaraíz)"
+  habs = 1
+  banos = 1
+  area = 32.0
+  precio = 450_000_000

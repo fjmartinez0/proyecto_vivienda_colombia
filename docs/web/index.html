@@ -115,6 +115,7 @@ td.n,th.n{text-align:right}
 .pinwrap .pin.proy{position:absolute;left:50%;top:0;transform:translateX(-50%);margin:0;gap:6px}
 .pin.proy .pn{font-weight:500;font-size:11px;opacity:.92;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .pin.proy .pv{font-weight:700}
+.pin.proy.fuera{border-style:dashed}
 .ucl{width:30px;height:30px;border-radius:50%;background:rgba(90,95,102,.85);color:#fff;font:600 11.5px Inter;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .dot.usel{width:16px;height:16px;border:3px solid #111;box-shadow:0 0 0 2px #fff}
 .dot{width:10px;height:10px;border-radius:50%;background:#7d838a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -223,6 +224,12 @@ const ZONAS = [
    desc:'Pontevedra, Morato, Julio Flórez, Potosí', poly:[[4.69873, -74.08209], [4.69745, -74.08285], [4.69669, -74.08475], [4.69577, -74.0872], [4.69546, -74.08828], [4.69421, -74.08717], [4.69323, -74.08635], [4.69241, -74.08548], [4.69014, -74.08371], [4.68858, -74.08251], [4.68711, -74.08144], [4.68589, -74.08046], [4.68442, -74.07929], [4.68485, -74.07843], [4.68464, -74.07892], [4.6853, -74.078], [4.6869, -74.0757], [4.68868, -74.07307], [4.68969, -74.07114], [4.6899, -74.06912], [4.6893, -74.06561], [4.6905, -74.06573], [4.69179, -74.06631], [4.69395, -74.06783], [4.6965, -74.06908], [4.69853, -74.0698], [4.7, -74.07016], [4.69965, -74.0716], [4.6994, -74.07298], [4.69892, -74.07421], [4.69901, -74.07651], [4.70001, -74.07868], [4.7012, -74.0808], [4.69995, -74.08138]]},
   {id:'teu', nombre:'Galerías – Chapinero Occidental', ciudad:'Bogotá', color:'#4f7a28', estrato:4, base_m2:6.8e6, admin_m2:5200, arriendo_m2:36000, adr:{1:170000,2:230000,3:300000}, ocup:.58,
    desc:'Cl. 45–53, Av. Caracas a NQS', poly:[[4.64264, -74.07891], [4.64114, -74.079], [4.6385, -74.079], [4.6346, -74.07925], [4.63407, -74.07609], [4.6335, -74.07257], [4.6329, -74.06991], [4.63253, -74.06778], [4.63695, -74.067], [4.63858, -74.06672], [4.64045, -74.0664], [4.64076, -74.06821], [4.64123, -74.07103], [4.64186, -74.07443], [4.64228, -74.07699]]},
+  {id:'and', nombre:'Los Andes – La Floresta', ciudad:'Bogotá', color:'#6d597a', estrato:4, base_m2:7.0e6, admin_m2:5400, arriendo_m2:37000, adr:{1:150000,2:200000,3:260000}, ocup:.50,
+   desc:'Los Andes, Andes Norte, La Floresta (entre Morato, Pasadena y La Castellana)', poly:[[4.68528, -74.07698], [4.68493, -74.07576], [4.68465, -74.07336], [4.68332, -74.07057], [4.67936, -74.06576], [4.68365, -74.06283], [4.68761, -74.06118], [4.68871, -74.06545], [4.68964, -74.07017], [4.68777, -74.07348]]},
+  {id:'bat', nombre:'Alhambra – Batán', ciudad:'Bogotá', color:'#b5838d', estrato:5, base_m2:7.8e6, admin_m2:6000, arriendo_m2:41000, adr:{1:160000,2:220000,3:290000}, ocup:.52,
+   desc:'Al norte de Pasadena, entre Av. Suba y Autopista Norte (Alhambra, Batán)', poly:[[4.7066, -74.0544], [4.69976, -74.05557], [4.70076, -74.06044], [4.70088, -74.06107], [4.70064, -74.06113], [4.70067, -74.06125], [4.70098, -74.06284], [4.70106, -74.06342], [4.70132, -74.06338], [4.70096, -74.06147], [4.70147, -74.06418], [4.70237, -74.06643], [4.70368, -74.06531], [4.70518, -74.06467], [4.70878, -74.06419]]},
+  {id:'sba', nombre:'Santa Bárbara', ciudad:'Bogotá', color:'#457b9d', estrato:5, base_m2:9.0e6, admin_m2:7400, arriendo_m2:46000, adr:{1:210000,2:290000,3:370000}, ocup:.60,
+   desc:'Al norte de Navarra, de la Autopista Norte hacia la Cra. 7 (Santa Bárbara Occidental y Central)', poly:[[4.69822, -74.04839], [4.69832, -74.04862], [4.69837, -74.04888], [4.69852, -74.04884], [4.6989, -74.05009], [4.69963, -74.05473], [4.70661, -74.05354], [4.70537, -74.0489], [4.70389, -74.04362], [4.70373, -74.03824], [4.70405, -74.03633], [4.70331, -74.03326], [4.6995, -74.03501], [4.69522, -74.03715], [4.69636, -74.04187], [4.69776, -74.04635], [4.69836, -74.04834]]},
   {id:'can', nombre:'Cañaveral – El Bosque', ciudad:'Bucaramanga', color:'#2b6cb0', estrato:5, base_m2:5.4e6, admin_m2:4300, arriendo_m2:28000, adr:{1:170000,2:230000,3:290000}, ocup:.55,
    desc:'Cañaveral, FOSCAL/FOSUNAB, El Bosque (Floridablanca)', poly:[[7.0731, -73.11204], [7.06931, -73.11717], [7.06575, -73.12105], [7.06123, -73.1153], [7.06231, -73.10832], [7.0636, -73.10393], [7.06379, -73.09618], [7.06614, -73.09907], [7.06896, -73.10294], [7.07149, -73.10578], [7.07285, -73.10747], [7.0751, -73.1087]]}
 ];
@@ -326,6 +333,14 @@ function filtroComp(p,t,o){
 // Paso 0: criterios estrictos. Paso 1 (si hay < min_comps): misma zona con área, antigüedad y estrato ampliados.
 // Con menos de 3 al final no se calcula sobreprecio (s/c).
 function comparables(p,t){
+  if(p.fuera_de_zona){   // proyecto en seguimiento fuera de tus zonas: no hay zona propia -> por distancia
+    const r=PARAMS.radio_amplio;
+    const pasosF=[{nivel:0, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:Math.round(r*2/3), desc:`a ≤ ${Math.round(r*2/3)} m (fuera de zonas)`},
+                  {nivel:1, tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:r, estr:1,
+                   desc:`a ≤ ${r} m con área ±${Math.round(PARAMS.tol_area_amplia*100)} %, antigüedad ≤ ${PARAMS.max_antig_amplia} y estrato ±1 (fuera de zonas)`}];
+    let lf; for(const o of pasosF){ lf=filtroComp(p,t,o); lf.nivel=o.nivel; lf.desc=o.desc; if(lf.length>=PARAMS.min_comps) break; }
+    return lf;
+  }
   const pasos=[
     {nivel:0, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:0, desc:'misma zona'},
     {nivel:1, tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:0, estr:1,
@@ -336,6 +351,7 @@ function comparables(p,t){
 }
 // Referencia (solo informativa): usados parecidos FUERA de la zona, a ≤ radio_amplio del proyecto.
 function referenciaEntorno(p,t){
+  if(p.fuera_de_zona) return [];
   return filtroComp(p,t,{tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:PARAMS.radio_amplio, estr:1})
     .filter(u=>u.zona!==p.zona);
 }
@@ -430,8 +446,9 @@ function renderMapa(){
     const motivo = pr!==null ? (I.nivel>0?'Sobreprecio vs. usados de la zona con criterios ampliados (área, antigüedad, estrato)':`Sobreprecio real vs. usados comparables de la zona`)
       : desde(p)===null ? 'Precio no publicado: no se puede comparar'
       : USADOS.length ? `Sin comparables suficientes en la zona (${I.maxComps} de 3 mínimos)${I.refPrima!==null?`. Referencia fuera de la zona: ${pct(I.refPrima)}`:''}` : '';
-    const estadoTxt = p.estado && p.estado!=='Sin dato' ? p.estado : `Entrega ${p.entrega||'s/d'}`;
-    const icon=L.divIcon({className:'pinwrap',html:`<div class="pin proy ${c} ${state.sel===p.id?'sel':''}"><span class="pn">${p.nombre}</span><span class="pv">${etiqueta}</span></div>`,iconSize:[80,30],iconAnchor:[40,34]});
+    const estadoTxt = (p.estado && p.estado!=='Sin dato' ? p.estado : `Entrega ${p.entrega||'s/d'}`)
+      + (p.fuera_de_zona ? ` · fuera de tus zonas (a ${p.distancia_zona_m} m de ${Z[p.zona].nombre})` : '');
+    const icon=L.divIcon({className:'pinwrap',html:`<div class="pin proy ${c} ${p.fuera_de_zona?'fuera':''} ${state.sel===p.id?'sel':''}"><span class="pn">${p.nombre}</span><span class="pv">${etiqueta}</span></div>`,iconSize:[80,30],iconAnchor:[40,34]});
     L.marker([p.lat,p.lng],{icon,zIndexOffset:1000}).on('click',()=>selProyecto(p.id))
       .bindTooltip(`<b>${p.nombre}</b><br>${estadoTxt} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}${motivo?`<br><span style="color:#666">${etiqueta} = ${motivo}</span>`:''}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
   });
@@ -535,7 +552,8 @@ function renderDetalle(){
   if(p.acabados==='Obra gris') flags.push(`Obra gris: se suman ${fK(PARAMS.acabados_m2)}/m² de acabados (${fM(n.acab)}).`);
   if(p.renta_corta==='desconocida') flags.push('Renta corta sin confirmar: revisar el reglamento de propiedad horizontal.');
   if(n.m>0) flags.push(`Entrega en ${n.m} meses: precio llevado a valor presente${PARAMS.renta_perdida?` + ${fM(n.rentaPerd)} de arriendo no percibido`:''}.`);
-  if(A.nivel>0 && A.comps.length) flags.push(`Pocos usados parecidos en la zona: comparables con criterios ampliados (<b>${A.desc}</b>).`);
+  if(p.fuera_de_zona) flags.push(`<b>En seguimiento, fuera de tus zonas</b> (a ${p.distancia_zona_m} m de ${z.nombre}). Comparables por distancia, de cualquier zona; arriendo, ADR y estrato típico tomados de ${z.nombre} (supuesto).`);
+  if(A.nivel>0 && A.comps.length && !p.fuera_de_zona) flags.push(`Pocos usados parecidos en la zona: comparables con criterios ampliados (<b>${A.desc}</b>).`);
   if(A.comps.length<3) flags.push(`Solo ${A.comps.length} comparable(s) en la zona aun ampliando criterios: no alcanza para calcular sobreprecio. En la zona casi no hay usados de este tamaño con ascensor.`);
   if(A.ref.n) flags.push(`Referencia fuera de la zona (no entra en el cálculo): ${A.ref.n} usados parecidos a ≤ ${PARAMS.radio_amplio} m en otras zonas, mediana ${fM1(A.ref.med)}/m² ajustado${A.ref.prima!==null?` → este proyecto estaría ${pct(A.ref.prima)} frente a ellos`:''}.`);
   const nf=A.comps.filter(c=>c.u.area_tipo!=='privada').length;

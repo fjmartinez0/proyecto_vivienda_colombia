@@ -55,6 +55,23 @@ verificado = true
 
 # chapinero-alto: excluido del radar (26-oct-2026, decisión del usuario).
 
+# --- Zonas agregadas el 30-oct-2026 (candidatas: la ruta no está confirmada; si da 404 no bloquea) ---
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/los-andes"
+zonas = ["and"]
+verificado = false
+
+[[estrenar.sectores]]
+ruta = "bogota/noroccidente/batan"
+zonas = ["bat"]
+verificado = false
+
+[[estrenar.sectores]]
+ruta = "bogota/norte/santa-barbara"
+zonas = ["sba"]
+verificado = false
+
+
 [[estrenar.sectores]]
 ruta = "bogota/norte/chico"
 zonas = ["lag", "nav"]
@@ -242,3 +259,35 @@ verificado = true
 ruta = "canaveral"
 ciudad = "floridablanca"
 verificado = true
+
+# --- Zonas agregadas el 30-oct-2026. Candidatas: confirmar con
+#     vivienda usados --probar --barrio la-floresta andes-norte alhambra el-batan santa-barbara
+[[fincaraiz.barrios]]
+ruta = "la-floresta/zona-noroccidente"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "andes-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "alhambra/zona-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "el-batan/zona-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "santa-barbara-central/zona-norte"
+ciudad = "bogota"
+verificado = false
+
+[[fincaraiz.barrios]]
+ruta = "santa-barbara-occidental/zona-norte"
+ciudad = "bogota"
+verificado = false

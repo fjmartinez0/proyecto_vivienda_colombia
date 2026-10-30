@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.8.2, 26-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.10.0, 30-oct-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -154,6 +154,24 @@ puro: **no consumen Claude**.
   zona: con 40–60 anuncios por zona las medianas son ruido (Morato salía más cara que Pasadena).
   Ojo: área ampliada hacia unidades más grandes infla el sobreprecio (el $/m² baja con el tamaño).
 - Pin de proyecto = nombre + valor (v0.7.2), siempre visible.
+- **Proyectos en seguimiento (v0.9):** `seguimiento = true` en proyectos_manuales.toml los muestra en el mapa aunque
+  queden fuera de zonas (pin punteado). Se publican con `fuera_de_zona`, la zona más cercana (solo para supuestos de
+  arriendo/ADR) y comparables por distancia (≤ 1 km estricto, ≤ 1,5 km ampliado, cualquier zona). `lat`/`lng` en el
+  manual fijan la ubicación sin geocodificar. Hoy: Mava 92, Heritage 97 (Chicó, fuera) y Torres del Valle (Cañaveral).
+- **Escaneo web 30-oct (WebFetch sí llega a Estrenar/Fincaraíz/Ciencuadras, pero solo a URLs salidas de WebSearch):**
+  nada nuevo en zonas que pase filtros. Palco (Galerías, 22,7 m²) y Verona/Amarilo (Puente Largo, 27 m²) quedan bajo
+  30 m²; Open C60 (Chapinero occidental, sin dirección), View 63 y Serendipia (Chapinero Alto, excluido), Optimus 61
+  (San Luis, 20 m²), UR 67 (agotado).
+- **Zonas v3 (30-oct):** + Los Andes – La Floresta (and, tal cual se dibujó), Alhambra – Batán (bat) y Santa Bárbara
+  (sba); bat y sba con la rendija de 14–26 m contra Pasadena/Navarra cerrada (cierre morfológico, +0,8 % y +0,1 %).
+  NO se cerró and–pas (61 m): metía a Zento en Los Andes. and–mor/cas quedan a 17–27 m (ancho de calle).
+  Nombres de las 3 zonas = provisionales (deducidos de la ubicación). Rutas nuevas en config.toml como CANDIDATAS
+  (Estrenar: los-andes, batan, santa-barbara; Fincaraíz: la-floresta, andes-norte, alhambra, el-batan,
+  santa-barbara-central/occidental) → confirmar con `usados --probar`. Hoy esas zonas tienen 0–5 usados.
+  Escaneo: Loto122 (21,9 m²), Edificio Balmes (21–22 m²), Córdoba 127 ($928 M), Solara 93 (20,8 m²) no pasan filtros.
+  Verona (Amarilo) agregado como manual: Fincaraíz 32 m² $450 M (antes se descartó por los 27 m² de Ciencuadras).
+- **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
+- Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
 - Color de usados en el mapa: $/m² vs. mediana de su zona (verde ≤ −10 %, rojo ≥ +10 %). Grupos en gris.
 

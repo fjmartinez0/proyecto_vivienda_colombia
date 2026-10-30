@@ -12,7 +12,7 @@ class TestZonas(unittest.TestCase):
     def test_archivo_real(self):
         z = cargar_zonas()
         self.assertEqual({f["properties"]["id"] for f in z["features"]},
-                         {"chu", "c72", "lag", "nav", "cas", "pas", "mor", "teu", "can"})
+                         {"chu", "c72", "lag", "nav", "cas", "pas", "mor", "teu", "can", "and", "bat", "sba"})
         self.assertTrue(all(f["properties"]["forma"] == "dibujada" for f in z["features"]))
 
     def test_circulo_contiene_su_centro(self):
@@ -48,7 +48,7 @@ class TestZonas(unittest.TestCase):
         anillos = {f["properties"]["id"]: f["geometry"]["coordinates"][0] for f in z["features"]}
         rnd = random.Random(7)
         for _ in range(20000):
-            la, ln = rnd.uniform(4.62, 4.71), rnd.uniform(-74.095, -74.03)
+            la, ln = rnd.uniform(4.62, 4.715), rnd.uniform(-74.095, -74.03)
             dentro = [i for i, a in anillos.items() if geo.punto_en_poligono(la, ln, a)]
             self.assertLessEqual(len(dentro), 1, (la, ln, dentro))
 
