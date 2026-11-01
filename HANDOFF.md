@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.13.1, 01-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.14.0, 01-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -212,6 +212,15 @@ puro: **no consumen Claude**.
   Resultado: La Cité y Lumina 77 tienen 2 comparables reales (s/c por el mínimo de 3); Metro 73 0 (Quinta Camacho casi
   no tiene unidades pequeñas ubicadas). El Polo manual se quitó: lo trae Estrenar (micro). Ampliar cobertura = segunda
   fuente de usados (Metrocuadrado/Ciencuadras) y probar la ruta `el-lago/zona-nororiental` para apartaestudios.
+- **v0.14.0 (01-nov):** (1) Tabla de comparables: columna Precio (2.ª). (2) `config/ajustes_proyectos.toml` +
+  `src/vivienda/ajustes.py`: correcciones por NOMBRE a proyectos de Estrenar (dirección en forma de cruce o lat/lng,
+  `seguimiento`) y `[excluir] nombres` (marca `excluido`, no se exporta). Se aplica en `_proyectos_al_dia` antes de
+  rezonificar/geocodificar. Cargados: Novus Florida (Cra 8 con Cl 10, Floridablanca: la ficha no publica dirección,
+  por eso salía sin ubicar), Atelier 68 (Cra 15 con Cl 67), Nau House (Cl 85A con Cra 28C); excluido Signature Virrey
+  (fuera de presupuesto). (3) IVIN Refugio corregido: estaba con las coordenadas de IVIN Lago; ahora dirección
+  Transversal 5 con Calle 86A (fuera de zonas, seguimiento). Quitar lat/lng de un manual borra la ubicación manual y
+  la re-geocodifica. (4) IVIN Lago agregado (Cra 16A # 79-76, micro 22–29 m²). (5) SOHO 26 (Marval, Salitre/Av. 26)
+  analizado: sin precios hasta el lanzamiento (5-nov-2026); agregar como manual en seguimiento cuando haya lista.
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.

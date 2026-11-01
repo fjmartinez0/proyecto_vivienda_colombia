@@ -27,6 +27,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 from vivienda import agente
+from vivienda import ajustes
 from vivienda import config as cfgmod
 from vivienda.checks import Bitacora
 from vivienda.models import Tipologia
@@ -195,6 +196,8 @@ def _proyectos_al_dia(registros: dict[str, dict] | None = None) -> dict[str, dic
     prys = proyectos.cargar()
     proyectos.sincronizar(registros, prys)
     manual.aplicar_a_proyectos(prys, manuales, date.today())
+    for c in ajustes.aplicar(prys, ajustes.cargar(), date.today()):
+        log.info("Ajuste: %s", c)
     proyectos.rezonificar(prys, cfgmod.cargar_zonas())
     proyectos.guardar(prys)
     return prys

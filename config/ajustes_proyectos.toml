@@ -1,0 +1,29 @@
+# Correcciones a mano sobre proyectos que trae Estrenar Vivienda (se buscan por nombre).
+# Se aplican en cada corrida antes de geocodificar. Para proyectos que no están en ningún portal,
+# usa proyectos_manuales.toml.
+#
+# [[ubicacion]]
+#   nombre        como aparece en el visor (sin importar tildes/mayúsculas)
+#   direccion     preferible en forma de cruce: "Carrera 15 con Calle 67" (el geocodificador busca la esquina)
+#   lat, lng      si tienes el pin de Google Maps: se usa tal cual y no se geocodifica
+#   seguimiento   true = mostrarlo aunque quede fuera de tus zonas
+#
+# [excluir] nombres: no aparecen en el visor (siguen en el historial por si vuelven a interesar).
+
+[[ubicacion]]
+nombre = "Novus Florida"          # la ficha no publica dirección: por eso salía 'sin ubicar'
+direccion = "Carrera 8 con Calle 10"   # Cra 8 # 10-172, Floridablanca (dato del usuario, 01-nov-2026)
+seguimiento = true
+
+[[ubicacion]]
+nombre = "Atelier 68"
+direccion = "Carrera 15 con Calle 67"  # Cra 15 # 67-49
+seguimiento = true
+
+[[ubicacion]]
+nombre = "Nau House"
+direccion = "Calle 85A con Carrera 28C"   # Cl 85A # 28C-35, El Polo Club
+seguimiento = true
+
+[excluir]
+nombres = ["Signature Virrey"]    # fuera de presupuesto (01-nov-2026)

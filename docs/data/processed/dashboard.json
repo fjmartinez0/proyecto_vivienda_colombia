@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-01T09:53:00-05:00",
+ "generado": "2026-11-01T13:55:32-05:00",
  "zonas": {
   "type": "FeatureCollection",
   "features": [
@@ -1635,6 +1635,71 @@
    ]
   },
   {
+   "id": "PRY-0009",
+   "nombre": "Novus Florida",
+   "constructora": "MARVAL",
+   "zona": "can",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 1334,
+   "lat": 7.059264,
+   "lng": -73.084977,
+   "direccion": "Carrera 8 con Calle 10",
+   "precision": "media",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "cruce Carrera 8 × Calle 10 (separación 0 m)",
+   "zona_nota": null,
+   "estado": "Sin dato",
+   "entrega": "2028-06",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": null,
+   "ascensor": null,
+   "brochure": null,
+   "fuente": "Estrenar Vivienda",
+   "notas": null,
+   "url": "https://www.estrenarvivienda.com/novus-florida/floridablanca",
+   "detectado": "2026-10-25",
+   "tipologias": [
+    {
+     "id": "49615",
+     "habs": 2,
+     "banos": 1,
+     "area": 53.76,
+     "parq": 0,
+     "precio": 330101000,
+     "url": "/novus-florida/49615",
+     "segmento": "estandar",
+     "area_privada": null
+    },
+    {
+     "id": "49612",
+     "habs": 2,
+     "banos": 1,
+     "area": 41.41,
+     "parq": 0,
+     "precio": 330102000,
+     "url": "/novus-florida/49612",
+     "segmento": "estandar",
+     "area_privada": null
+    },
+    {
+     "id": "49618",
+     "habs": 2,
+     "banos": 1,
+     "area": 54.73,
+     "parq": 0,
+     "precio": 330102000,
+     "url": "/novus-florida/49618",
+     "segmento": "estandar",
+     "area_privada": null
+    }
+   ]
+  },
+  {
    "id": "PRY-0011",
    "nombre": "Zento",
    "constructora": "INGEURBE",
@@ -2247,6 +2312,63 @@
    ]
   },
   {
+   "id": "PRY-0025",
+   "nombre": "Nau House",
+   "constructora": "CONINSA S.A.S",
+   "zona": "cas",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 572,
+   "lat": 4.673711,
+   "lng": -74.065549,
+   "direccion": "Calle 85A con Carrera 28C",
+   "precision": "media",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "cruce Calle 85A × Carrera 28C (separación 0 m)",
+   "zona_nota": null,
+   "estado": "Sin dato",
+   "entrega": "2027-06",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [
+    "CoWorking",
+    "Pet Friendly"
+   ],
+   "admin_m2": null,
+   "estrato": null,
+   "ascensor": null,
+   "brochure": null,
+   "fuente": "Estrenar Vivienda",
+   "notas": null,
+   "url": "https://www.estrenarvivienda.com/nau-house/bogota",
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "47389",
+     "habs": 1,
+     "banos": 1,
+     "area": 20.13,
+     "parq": 0,
+     "precio": 266425950,
+     "url": "/nau-house/47389",
+     "segmento": "micro",
+     "area_privada": null
+    },
+    {
+     "id": "47393",
+     "habs": 1,
+     "banos": 1,
+     "area": 20.33,
+     "parq": 0,
+     "precio": 266425950,
+     "url": "/nau-house/47393",
+     "segmento": "micro",
+     "area_privada": null
+    }
+   ]
+  },
+  {
    "id": "PRY-0027",
    "nombre": "Alma 72",
    "constructora": "Apiros",
@@ -2391,14 +2513,14 @@
    "nombre": "IVIN Refugio",
    "constructora": "IVIN",
    "zona": "lag",
-   "fuera_de_zona": false,
-   "distancia_zona_m": null,
-   "lat": 4.6667915,
-   "lng": -74.0581433,
-   "direccion": "El Refugio (Chapinero)",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 805,
+   "lat": 4.666359,
+   "lng": -74.044341,
+   "direccion": "Transversal 5 con Calle 86A",
    "precision": "media",
-   "ubicacion_agregador": true,
-   "ubicacion_metodo": "coordenadas manuales",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "cruce Transversal 5 × Calle 86A (separación 91 m)",
    "zona_nota": null,
    "estado": "Sin dato",
    "entrega": null,
@@ -2412,18 +2534,18 @@
    "ascensor": null,
    "brochure": null,
    "fuente": "Manual",
-   "notas": "Unidades nuevas publicadas una por una como apartaestudios usados (las detecta la regla de 'unidad de proyecto'). Lofts de 22–48 m², sin parqueadero. Amenidades: gimnasio, coworking, lavandería, terraza.",
-   "url": "https://www.fincaraiz.com.co/apartaestudio-en-venta-en-el-refugio-bogota/193321486",
+   "notas": "Trv 5 # 86A-50, El Refugio (cerros, al oriente de la Cra 7): FUERA de tus zonas. Lofts 22–48 m² sin parqueadero; los de 30+ m² pasan del tope salvo el de 30 m². Corrección 01-nov-2026: antes tenía las coordenadas de IVIN Lago (Cra 16A con 79).",
+   "url": "https://ivin.com.co/refugio/",
    "detectado": "2026-11-01",
    "tipologias": [
     {
      "id": "ivin-refugio-1",
      "habs": 1,
      "banos": 1,
-     "area": 22.0,
+     "area": 22.03,
      "parq": 0,
-     "precio": 374069400,
-     "url": "https://www.fincaraiz.com.co/apartaestudio-en-venta-en-el-refugio-bogota/193321486",
+     "precio": 377468000,
+     "url": "https://ivin.com.co/refugio/",
      "segmento": "micro",
      "area_privada": null
     },
@@ -2434,7 +2556,7 @@
      "area": 30.0,
      "parq": 0,
      "precio": 457525200,
-     "url": "https://www.fincaraiz.com.co/apartaestudio-en-venta-en-el-refugio-bogota/193321486",
+     "url": "https://ivin.com.co/refugio/",
      "segmento": "estandar",
      "area_privada": null
     }
@@ -2525,15 +2647,74 @@
      "area_privada": null
     }
    ]
+  },
+  {
+   "id": "PRY-0034",
+   "nombre": "IVIN Lago",
+   "constructora": "IVIN",
+   "zona": "lag",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
+   "lat": 4.6667915,
+   "lng": -74.0581433,
+   "direccion": "Carrera 16A # 79-76",
+   "precision": "media",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Sin dato",
+   "entrega": null,
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 5,
+   "ascensor": null,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "Cra 16A # 79-76 (El Lago). 72 % vendido, obra ~40 %, Fiduciaria Aval. Lofts sin parqueadero; el de 42,4 m² ($665,4 M) pasa del tope. Unidades publicadas una a una en Fincaraíz como 'usados' (las excluye la regla de unidad de proyecto).",
+   "url": "https://ivin.com.co/proyecto/ivin-lago/",
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "ivin-lago-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 22.37,
+     "parq": 0,
+     "precio": 333200000,
+     "url": "https://ivin.com.co/proyecto/ivin-lago/",
+     "segmento": "micro",
+     "area_privada": null
+    },
+    {
+     "id": "ivin-lago-2",
+     "habs": 1,
+     "banos": 1,
+     "area": 25.0,
+     "parq": 0,
+     "precio": 380500000,
+     "url": "https://ivin.com.co/proyecto/ivin-lago/",
+     "segmento": "micro",
+     "area_privada": null
+    },
+    {
+     "id": "ivin-lago-3",
+     "habs": 1,
+     "banos": 1,
+     "area": 29.0,
+     "parq": 0,
+     "precio": 457400000,
+     "url": "https://ivin.com.co/proyecto/ivin-lago/",
+     "segmento": "micro",
+     "area_privada": null
+    }
+   ]
   }
  ],
  "sin_ubicar": [
-  {
-   "id": "PRY-0009",
-   "nombre": "Novus Florida",
-   "sector": "Cañaveral",
-   "url": "https://www.estrenarvivienda.com/novus-florida/floridablanca"
-  },
   {
    "id": "PRY-0022",
    "nombre": "Atelier 68",
@@ -2545,18 +2726,6 @@
    "nombre": "El Polo",
    "sector": "Polo Club",
    "url": "https://www.estrenarvivienda.com/el-polo/bogota"
-  },
-  {
-   "id": "PRY-0025",
-   "nombre": "Nau House",
-   "sector": "Polo Club",
-   "url": "https://www.estrenarvivienda.com/nau-house/bogota"
-  },
-  {
-   "id": "PRY-0026",
-   "nombre": "Signature Virrey",
-   "sector": "Chicó",
-   "url": "https://www.estrenarvivienda.com/signature-virrey/bogota"
   }
  ],
  "fuera_de_zonas": [

@@ -77,6 +77,9 @@ def aplicar_a_proyectos(registro: dict[str, dict], manuales: list[dict], hoy: da
                                   "precision": m.get("precision", "media"), "fuente": fuente,
                                   "metodo": "coordenadas manuales" + (" (aproximadas)" if m.get("precision") == "baja" else ""),
                                   "verificado": h}
+        elif (p.get("ubicacion") or {}).get("metodo", "").startswith("coordenadas manuales"):
+            p["ubicacion"] = None   # se quitaron las coordenadas a mano: se geocodifica la dirección
+            p["zona"] = None
         if m.get("direccion"):
             origen = "agregador" if m.get("direccion_origen") == "agregador" else "manual"
             actual = p.get("direccion_candidata") or {}

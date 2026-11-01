@@ -15,7 +15,7 @@ class TestManuales(unittest.TestCase):
     def test_archivo_real(self):
         ids = {m["id"] for m in self.manuales}
         self.assertEqual(ids, {"lumina-77", "la-cite", "street-52", "distrito-kb", "mava-92", "heritage-97", "torres-del-valle", "verona-amarilo", "viu-park-home",
-                               "alma-72", "ivin-refugio", "palco", "loto-122", "edificio-balmes", "altus-124"})
+                               "alma-72", "ivin-refugio", "ivin-lago", "palco", "loto-122", "edificio-balmes", "altus-124"})
         zonas = {z["properties"]["id"] for z in cargar_zonas()["features"]}
         for m in self.manuales:
             self.assertTrue(set(m.get("zonas", [])) <= zonas, m["id"])
@@ -34,7 +34,7 @@ class TestManuales(unittest.TestCase):
         proyectos.sincronizar(reg, prys)
         manual.aplicar_a_proyectos(prys, self.manuales, date(2026, 10, 25))
         por_nombre = {p["nombre"]: p for p in prys.values()}
-        self.assertEqual(len(prys), 15)
+        self.assertEqual(len(prys), 16)
         self.assertEqual(por_nombre["Heritage 97"]["ubicacion"]["metodo"], "coordenadas manuales")
         self.assertTrue(por_nombre["Mava 92"]["seguimiento"])
         tdv = por_nombre["Torres del Valle"]["ubicacion"]

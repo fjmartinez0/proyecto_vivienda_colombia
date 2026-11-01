@@ -91,6 +91,12 @@ hasta que aparezca una fuente oficial, que la reemplaza automáticamente.
 valla, referido). Se integran solos en cada comando: historial, registro, geocodificación por cruce, dashboard.
 Pueden no tener precio (se muestran con "s/precio"). Si quitas uno del archivo, queda inactivo.
 
+### Correcciones a proyectos de portal
+
+`config/ajustes_proyectos.toml`: para un proyecto de Estrenar con dirección faltante o mala, agrega un
+`[[ubicacion]]` con su nombre y la dirección en forma de cruce ("Carrera 15 con Calle 67") o el pin (lat/lng).
+Para sacarlo del visor, ponlo en `[excluir] nombres`. Se aplica en la siguiente corrida.
+
 ### Brochures
 
 1. **Encontrar** (haiku, con web): solo la URL directa del PDF. `ubicar` también las recoge de paso.

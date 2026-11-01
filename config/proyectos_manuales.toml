@@ -355,21 +355,18 @@ nombre = "IVIN Refugio"
 constructora = "IVIN"
 ciudad = "Bogotá"
 sector = "El Refugio"
-direccion = "El Refugio (Chapinero)"
-direccion_origen = "agregador"
-fuente = "https://www.fincaraiz.com.co/apartaestudio-en-venta-en-el-refugio-bogota/193321486"
+direccion = "Transversal 5 con Calle 86A"   # Trv 5 # 86A-50 (ivin.com.co/refugio); fuera de tus zonas
+fuente = "https://ivin.com.co/refugio/"
 seguimiento = true
-lat = 4.6667915                     # punto de los anuncios de Fincaraíz (publica K•Veintiuno)
-lng = -74.0581433
 estrato = 6
-notas = "Unidades nuevas publicadas una por una como apartaestudios usados (las detecta la regla de 'unidad de proyecto'). Lofts de 22–48 m², sin parqueadero. Amenidades: gimnasio, coworking, lavandería, terraza."
+notas = "Trv 5 # 86A-50, El Refugio (cerros, al oriente de la Cra 7): FUERA de tus zonas. Lofts 22–48 m² sin parqueadero; los de 30+ m² pasan del tope salvo el de 30 m². Corrección 01-nov-2026: antes tenía las coordenadas de IVIN Lago (Cra 16A con 79)."
 
   [[proyecto.tipologia]]
-  nombre = "22 m²"
+  nombre = "22,03 m²"
   habs = 1
   banos = 1
-  area = 22.0
-  precio = 374_069_400
+  area = 22.03
+  precio = 377_468_000
 
   [[proyecto.tipologia]]
   nombre = "30 m²"
@@ -377,6 +374,41 @@ notas = "Unidades nuevas publicadas una por una como apartaestudios usados (las 
   banos = 1
   area = 30.0
   precio = 457_525_200
+
+[[proyecto]]
+id = "ivin-lago"
+nombre = "IVIN Lago"
+constructora = "IVIN"
+ciudad = "Bogotá"
+sector = "El Lago"
+direccion = "Carrera 16A # 79-76"
+fuente = "https://ivin.com.co/proyecto/ivin-lago/"
+seguimiento = true
+lat = 4.6667915                     # punto de los anuncios de unidades en Fincaraíz (Cra 16A con 79)
+lng = -74.0581433
+estrato = 5
+notas = "Cra 16A # 79-76 (El Lago). 72 % vendido, obra ~40 %, Fiduciaria Aval. Lofts sin parqueadero; el de 42,4 m² ($665,4 M) pasa del tope. Unidades publicadas una a una en Fincaraíz como 'usados' (las excluye la regla de unidad de proyecto)."
+
+  [[proyecto.tipologia]]
+  nombre = "22,37 m²"
+  habs = 1
+  banos = 1
+  area = 22.37
+  precio = 333_200_000
+
+  [[proyecto.tipologia]]
+  nombre = "25 m²"
+  habs = 1
+  banos = 1
+  area = 25.0
+  precio = 380_500_000
+
+  [[proyecto.tipologia]]
+  nombre = "29 m²"
+  habs = 1
+  banos = 1
+  area = 29.0
+  precio = 457_400_000
 
 # El Polo (DOM Real Estate) se quitó de aquí el 01-nov-2026: ahora lo trae Estrenar Vivienda (segmento micro).
 

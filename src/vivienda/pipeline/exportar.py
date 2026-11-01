@@ -41,7 +41,7 @@ def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: di
     publicados, sin_ubicar, fuera = [], [], []
     for p in sorted(proyectos.values(), key=lambda x: x["id"]):
         ts = tips_por_clave.get(p["clave"], [])
-        if not p.get("activo") or not ts:
+        if not p.get("activo") or not ts or p.get("excluido"):
             continue
         resumen = {"id": p["id"], "nombre": p.get("nombre"), "sector": p.get("sector"), "url": p.get("url")}
         u = p.get("ubicacion")
