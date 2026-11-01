@@ -212,3 +212,14 @@ class TestSegmentoUsados(unittest.TestCase):
                "d": {**base, "id": "4", "area_construida": 15}}                 # bajo el piso de 18 -> fuera
         out = {u["id"]: u["segmento"] for u in um.para_dashboard(reg, date(2026, 11, 1), 7, 30, area_min_micro=18)}
         self.assertEqual(out, {"FR-1": "micro", "FR-2": "estandar", "FR-3": "micro"})
+
+
+class TestUbicacionGenerica(unittest.TestCase):
+    def test_centroide_con_muchos_barrios(self):
+        from vivienda.pipeline.usados import descartar_ubicaciones_genericas
+        gen = [{"lat": 4.65482, "lng": -74.05527, "barrio": f"Barrio {i % 8}"} for i in range(12)]
+        edificio = [{"lat": 4.66679, "lng": -74.05814, "barrio": ["Lago gaitan", "El refugio"][i % 2]} for i in range(20)]
+        n = descartar_ubicaciones_genericas(gen + edificio)
+        self.assertEqual(n, 12)
+        self.assertTrue(all(u.get("ubicacion_generica") for u in gen))
+        self.assertFalse(any(u.get("ubicacion_generica") for u in edificio))

@@ -309,6 +309,9 @@ function genUsados(){
 }
 let USADOS = genUsados();
 let USADOS_TODOS = USADOS;   // + los de entorno (fuera de zonas): solo para comparables por distancia
+// Pool de COMPARABLES: todos los segmentos. La pestaña decide qué se MUESTRA; el área (± tolerancia) decide qué se COMPARA:
+// un usado de 25 m² privados (micro) sí compara con un proyecto de 32 m² (estándar) si cae dentro de la tolerancia.
+let COMP_U = USADOS, COMP_UT = USADOS_TODOS;
 let MODO = 'demo', PENDIENTES = {sin_ubicar:[], fuera:[]}, GENERADO = null;
 
 /* ---------- Motor de comparación ---------- */
@@ -340,7 +343,7 @@ const distM=(a,b,c,d)=>6371000*Math.hypot((c-a)*Math.PI/180,(d-b)*Math.PI/180*Ma
 // supuesto y en zonas mixtas (Calle 72: estratos 4, 5 y 6) dejaba sin comparables a casi todos.
 function filtroComp(p,t,o){
   const ap=apNuevo(p,t), est = MODO==='real' ? p.estrato : (p.estrato || Z[p.zona].estrato), ciudad=Z[p.zona].ciudad;
-  return depurarMuestra((o.radio ? USADOS_TODOS : USADOS).filter(u => (o.radio ? ((u.ciudad||Z[u.zona]?.ciudad)===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
+  return depurarMuestra((o.radio ? COMP_UT : COMP_U).filter(u => (o.radio ? ((u.ciudad||Z[u.zona]?.ciudad)===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
     && (est==null || u.estrato==null || Math.abs(u.estrato-est)<=(o.estr||0)) && (o.habsLibre || u.habs===t.habs) && elegible(u)
     && (o.antigReq ? (u.antiguedad!=null && u.antiguedad<=o.antig) : (u.antiguedad==null || u.antiguedad<=o.antig))
     && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=o.tol
@@ -380,9 +383,16 @@ function comparables(p,t){
 // Calidad de la muestra: fuera las unidades de proyecto nuevo publicadas como usados, y máximo 2 por edificio
 // (las de área más parecida). Sin esto, 6 unidades de un mismo edificio nuevo eran "los comparables" de La Cité.
 const MAX_POR_EDIFICIO = 2;
+// Mismo inmueble publicado dos veces (otra inmobiliaria, otro ID): mismo precio, misma área, misma cantidad de
+// alcobas y a ≤ 150 m -> cuenta una sola vez.
+function sinDuplicados(l){
+  const vistos=[];
+  return l.filter(u=>{ const dup=vistos.some(v=>v.precio===u.precio && v.area===u.area && v.habs===u.habs && distM(v.lat,v.lng,u.lat,u.lng)<=150);
+    if(!dup) vistos.push(u); return !dup; });
+}
 function depurarMuestra(l, ap){
   const g={}, out=[];
-  l.filter(u=>!u.unidad_proyecto)
+  sinDuplicados(l.filter(u=>!u.unidad_proyecto))
    .sort((a,b)=>Math.abs(areaPriv(a.area,a.area_tipo)-ap)-Math.abs(areaPriv(b.area,b.area_tipo)-ap))
    .forEach(u=>{ const k=u.edificio||u.id; g[k]=(g[k]||0)+1; if(g[k]<=MAX_POR_EDIFICIO) out.push(u); });
   return out;
@@ -394,7 +404,7 @@ function depurarMuestra(l, ap){
 function nuevosCercanos(p,t){
   const ap=apNuevo(p,t), r=PARAMS.radio_amplio, ciudad=Z[p.zona].ciudad, porEd={};
   const libre = state.seg==='micro';
-  USADOS_TODOS.forEach(u=>{ if(!u.unidad_proyecto || (!libre && u.habs!==t.habs) || u.precio>PARAMS.precio_max*1.5) return;
+  COMP_UT.forEach(u=>{ if(!u.unidad_proyecto || (!libre && u.habs!==t.habs) || u.precio>PARAMS.precio_max*1.5) return;
     const a=areaPriv(u.area,u.area_tipo); if(Math.abs(a/ap-1)>0.25 || distM(p.lat,p.lng,u.lat,u.lng)>r) return;
     (porEd['FR '+(u.edificio||u.id)]=porEd['FR '+(u.edificio||u.id)]||{nombre:u.barrio||'Edificio sin nombre', m2:[]}).m2.push(u.precio/a); });
   PROYECTOS.forEach(q=>{ if(q.id===p.id || Z[q.zona]?.ciudad!==ciudad || distM(p.lat,p.lng,q.lat,q.lng)>r) return;
@@ -596,7 +606,7 @@ function selUsado(id){state.selU=id;state.sel=null;renderDetalle();renderMapa();
 
 function renderDetalle(){
   const v=$('#v-mapa'), el=$('#detail'), p=PROYECTOS.find(x=>x.id===state.sel);
-  const uSel=!p && state.selU ? USADOS.find(x=>x.id===state.selU) : null;
+  const uSel=!p && state.selU ? (USADOS.find(x=>x.id===state.selU) || COMP_U.find(x=>x.id===state.selU)) : null;
   if(uSel){ v.classList.add('open'); renderDetalleUsado(uSel, el); return; }
   if(!p){v.classList.remove('open');el.innerHTML='';setTimeout(()=>map.invalidateSize(),50);return}
   v.classList.add('open');
@@ -939,6 +949,7 @@ async function cargarDatos(){
     USADOS_TODOS = (d.usados||[]).filter(u=>!u.zona || Z[u.zona])
       .map(u=>({...u, ciudad: u.zona ? Z[u.zona].ciudad : (u.lat>6 ? 'Bucaramanga' : 'Bogotá')}));
     USADOS = USADOS_TODOS.filter(u=>u.zona);
+    COMP_UT = USADOS_TODOS; COMP_U = USADOS;
     if(d.generado) HOY = d.generado.slice(0,10);
     PENDIENTES = {sin_ubicar:d.sin_ubicar||[], fuera:d.fuera_de_zonas||[]};
     GENERADO = d.generado; MODO = 'real';
@@ -957,6 +968,7 @@ function aplicarSegmento(k){
   PROYECTOS = TODOS_P.map(p=>({...p, tipologias:p.tipologias.filter(t=>segDe(t)===k)})).filter(p=>p.tipologias.length);
   USADOS_TODOS = TODOS_U.filter(u=>segDe(u)===k);
   USADOS = USADOS_TODOS.filter(u=>u.zona);
+  COMP_UT = TODOS_U; COMP_U = TODOS_U.filter(u=>u.zona);
   document.body.classList.toggle('micro', k==='micro');
   $('#seg').querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.s===k));
   if(MODO==='real' && GENERADO) $('#subtitulo').textContent =

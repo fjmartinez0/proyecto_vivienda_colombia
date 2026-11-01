@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.13.0, 01-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.13.1, 01-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -205,6 +205,13 @@ puro: **no consumen Claude**.
   Bandera de reglamento/regulación de renta corta en cada ficha micro. Manuales micro agregados: Alma 72, IVIN
   Refugio, El Polo, Palco, Loto122, Edificio Balmes, Altus 124 (+ tipos micro de Verona y Mava 92). Sin ubicar aún:
   Signature Virrey, Solara 93, Paloverde, Atelier 68, Nau House. Mockup previo: claude.ai/artifact/YJXfg9hJcSThVjee9kRryH
+- **Limpieza de muestra v0.13.1 (01-nov):** (1) `ubicacion_generica`: un punto con ≥ 10 anuncios de ≥ 6 barrios
+  distintos es el centroide que Fincaraíz pone a los anuncios sin ubicación; se sacan del export (eran 174: 72 caían en
+  Cañaveral, 46 en Quinta Camacho). (2) Comparables cruzan segmentos: la pestaña decide qué se MUESTRA, el área ± tolerancia
+  qué se COMPARA (pool COMP_U/COMP_UT con todos los usados). (3) Duplicados: mismo precio, área y alcobas a ≤ 150 m = uno.
+  Resultado: La Cité y Lumina 77 tienen 2 comparables reales (s/c por el mínimo de 3); Metro 73 0 (Quinta Camacho casi
+  no tiene unidades pequeñas ubicadas). El Polo manual se quitó: lo trae Estrenar (micro). Ampliar cobertura = segunda
+  fuente de usados (Metrocuadrado/Ciencuadras) y probar la ruta `el-lago/zona-nororiental` para apartaestudios.
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.

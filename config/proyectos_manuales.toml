@@ -378,32 +378,7 @@ notas = "Unidades nuevas publicadas una por una como apartaestudios usados (las 
   area = 30.0
   precio = 457_525_200
 
-[[proyecto]]
-id = "el-polo"
-nombre = "El Polo"
-constructora = "DOM Real Estate"
-ciudad = "Bogotá"
-sector = "Polo Club"
-direccion = "Calle 84 # 28B-45"
-direccion_origen = "agregador"
-fuente = "https://www.estrenarvivienda.com/el-polo/52513"
-seguimiento = true
-lat = 4.672502                      # enlace de Waze/Maps de la ficha
-lng = -74.065466
-estrato = 4
-ascensor = true                     # 4 ascensores por torre
-renta_corta = "permitida"           # la ficha: "permitidas, sujeto al reglamento de PH"
-estado_obra = "sobre planos"
-entrega = "2029-12"
-notas = "2 torres de 25 pisos, 210 unidades. Fiducia Alianza."
-
-  [[proyecto.tipologia]]
-  nombre = "Apartaestudio 28 / 24 m²"
-  habs = 1
-  banos = 1
-  area = 28.0
-  area_privada = 24.0
-  precio = 365_000_000
+# El Polo (DOM Real Estate) se quitó de aquí el 01-nov-2026: ahora lo trae Estrenar Vivienda (segmento micro).
 
 [[proyecto]]
 id = "palco"

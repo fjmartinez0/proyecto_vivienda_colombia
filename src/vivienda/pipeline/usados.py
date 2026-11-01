@@ -135,6 +135,25 @@ def vigentes(registro: dict[str, dict], hoy: date, dias: int) -> list[dict]:
 PUBLICADORES_CONSTRUCTORA = {"builder", "constructora", "developer"}
 
 
+def descartar_ubicaciones_genericas(usados: list[dict], min_anuncios: int = 10, min_barrios: int = 6) -> int:
+    """Fincaraíz pone en un MISMO punto los anuncios sin ubicación exacta (centroide de sector): p. ej. 46 anuncios
+    de 16 barrios distintos en 4.6548,-74.0553, que caía dentro de Quinta Camacho. Un punto con >= min_anuncios de
+    >= min_barrios barrios distintos no es un edificio: esos anuncios se marcan `ubicacion_generica` y salen del
+    análisis (no son inventario de ninguna zona ni comparables). Un edificio real con muchas unidades trae 1–3 barrios.
+    -> cuántos se marcaron."""
+    grupos: dict[tuple, list[dict]] = {}
+    for u in usados:
+        grupos.setdefault((round(u["lat"], 5), round(u["lng"], 5)), []).append(u)
+    n = 0
+    for g in grupos.values():
+        barrios = {(x.get("barrio") or "").strip().lower() for x in g} - {""}
+        if len(g) >= min_anuncios and len(barrios) >= min_barrios:
+            for u in g:
+                u["ubicacion_generica"] = True
+                n += 1
+    return n
+
+
 def edificio_de(lat: float, lng: float) -> str:
     """Clave de edificio: el punto redondeado a ~11 m (los anuncios de un mismo edificio comparten coordenadas)."""
     return f"{round(lat, 4)},{round(lng, 4)}"
@@ -192,5 +211,7 @@ def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: fl
             "publicador": r.get("publicador"), "creado_portal": (r.get("creado_portal") or "")[:10] or None,
             "amenidades": r.get("amenidades") or [], "descripcion": r.get("descripcion"),
         })
+    descartar_ubicaciones_genericas(out)
+    out = [u for u in out if not u.get("ubicacion_generica")]
     marcar_unidades_proyecto(out)
     return out
