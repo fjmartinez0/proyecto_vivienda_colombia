@@ -500,3 +500,124 @@ notas = "VIS (150 SMMLV), entrega en obra gris, 10 niveles. Cuota inicial 30 %."
   banos = 1
   area = 18.0
   precio = 249_900_000
+
+# --- Shortlist Estrenar (escaneo 30-oct, agregados 01-nov-2026). Fuera de zonas salvo Kobe 50 (teu).
+# Coordenadas = enlace de Maps de la ficha de Estrenar. Si Estrenar los trae con el mismo nombre,
+# manda este registro y el del portal se oculta (ajustes.py).
+
+[[proyecto]]
+id = "64-estorias"
+nombre = "64 Estorias"
+constructora = "Accanto"
+ciudad = "Bogotá"
+sector = "Chapinero (occidente de la Caracas)"
+direccion = "Carrera 15 # 64B-11"
+direccion_origen = "agregador"
+fuente = "file://escaneo/estrenar-2026-10-30"
+seguimiento = true
+lat = 4.652834
+lng = -74.065246
+estrato = 3
+ascensor = true                     # 14 pisos, 2 ascensores
+renta_corta = "permitida"           # según la ficha (mercadeo: confirmar en reglamento de PH)
+estado_obra = "sobre planos"
+entrega = "2028-03"                 # ficha: 1T-2028
+notas = "Mejor $/m² del escaneo (8,5 M). Fiduciaria Davivienda. A ~3 cuadras de Atelier 68. Referente para SOHO 26."
+
+  [[proyecto.tipologia]]
+  nombre = "32,93 m²"
+  habs = 1
+  banos = 1
+  area = 32.93
+  precio = 280_600_000
+
+  [[proyecto.tipologia]]
+  nombre = "37,15 m²"
+  habs = 1
+  banos = 1
+  area = 37.15
+  precio = 306_900_000
+
+[[proyecto]]
+id = "kobe-50"
+nombre = "Kobe 50"
+constructora = "CSB Inmobiliaria"
+ciudad = "Bogotá"
+sector = "Teusaquillo"
+zonas = ["teu"]
+direccion = "Calle 50 # 19-38"
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/proyectos-vivienda/galerias/zona-chapinero/bogota"
+seguimiento = true
+lat = 4.638341
+lng = -74.07151
+estrato = 3
+ascensor = true                     # 6 pisos + sótano, 1 ascensor
+renta_corta = "permitida"           # según la ficha de Estrenar (mercadeo)
+estado_obra = "sobre planos"
+entrega = "2028-06"                 # Estrenar: 2T-2028; el blog de Fincaraíz dice 1S-2027 (se toma la más tardía)
+notas = "104 unidades, estrato 3. Fincaraíz: desde $235 M (22,38 m²). Edificio chico, unidad muy pequeña (micro)."
+
+  [[proyecto.tipologia]]
+  nombre = "22,38 m² · micro"
+  habs = 1
+  banos = 1
+  area = 22.38
+  precio = 238_000_000
+
+[[proyecto]]
+id = "reserva-26"
+nombre = "Reserva de la 26"
+constructora = "AR Construcciones"
+ciudad = "Bogotá"
+sector = "La Soledad"
+direccion = "Calle 34 # 29-38"
+direccion_origen = "agregador"
+fuente = "file://escaneo/estrenar-2026-10-30"
+seguimiento = true
+lat = 4.624891
+lng = -74.079283
+estrato = 4
+ascensor = true                     # 24 pisos
+estado_obra = "sobre planos"
+entrega = "2028-12"                 # ficha: 4T-2028
+notas = "481 unidades en 24 pisos: mucha oferta igual al entregar. La ficha no confirma la política de renta corta."
+
+  [[proyecto.tipologia]]
+  nombre = "27 m² · micro"
+  habs = 1
+  banos = 1
+  area = 27.0
+  precio = 294_000_000
+
+  [[proyecto.tipologia]]
+  nombre = "30 m²"
+  habs = 1
+  banos = 1
+  area = 30.0
+  precio = 371_000_000
+
+[[proyecto]]
+id = "g95"
+nombre = "G95"
+constructora = "Gallery"
+ciudad = "Bogotá"
+sector = "Chicó Norte"
+direccion = "Calle 95 # 14-48"
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/apartamento-en-venta-en-chico-norte-bogota/193397413"
+seguimiento = true
+lat = 4.68083
+lng = -74.049505
+estrato = 6
+ascensor = true                     # torre de 8 pisos
+estado_obra = "entrega inmediata"
+entrega = "2026-12"                 # ficha: 4T-2026
+notas = "Casi entregado (menor riesgo de obra), caro por m² (14,2 M). Precios de la ficha inconsistentes: confirmar en sala. Un anuncio en Fincaraíz dice 'licencia turística' (no verificado: no se marca renta corta)."
+
+  [[proyecto.tipologia]]
+  nombre = "36,76 m²"
+  habs = 1
+  banos = 1
+  area = 36.76
+  precio = 522_000_000

@@ -34,6 +34,16 @@ def aplicar(prys: dict[str, dict], ajustes: dict, hoy: date) -> list[str]:
         por_nombre.setdefault(normalizar(p.get("nombre")), []).append(p)
         p["excluido"] = normalizar(p.get("nombre")) in excluir
 
+    # Un proyecto cargado a mano manda sobre el mismo proyecto traído por un portal (mismo nombre):
+    # sin esto saldrían dos pines. El del portal queda en el historial, solo no se exporta.
+    for nombre, grupo in por_nombre.items():
+        manuales = [p for p in grupo if str(p.get("clave", "")).startswith("manual:") and p.get("activo", True)]
+        if manuales:
+            for p in grupo:
+                if p not in manuales and not p["excluido"]:
+                    p["excluido"] = True
+                    p["duplicado_de"] = manuales[0]["id"]
+
     for a in ajustes.get("ubicacion", []):
         for p in por_nombre.get(normalizar(a.get("nombre")), []):
             fuente = a.get("fuente") or "file://ajustes_proyectos"

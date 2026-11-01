@@ -42,6 +42,16 @@ class TestAjustes(unittest.TestCase):
             d = exportar.construir(prys, tips, {"type": "FeatureCollection", "features": []})
         self.assertEqual(d["proyectos"] + d["sin_ubicar"], [])
 
+    def test_manual_manda_sobre_portal_mismo_nombre(self):
+        prys = {"P4": pry("P4", "64 Estorias"),
+                "M1": {**pry("M1", "64 ESTORIAS"), "clave": "manual:64-estorias:bogota"},
+                "P5": pry("P5", "Otro")}
+        ajustes.aplicar(prys, {}, HOY)
+        self.assertTrue(prys["P4"]["excluido"])
+        self.assertEqual(prys["P4"]["duplicado_de"], "M1")
+        self.assertFalse(prys["M1"]["excluido"])
+        self.assertFalse(prys["P5"]["excluido"])
+
 
 if __name__ == "__main__":
     unittest.main()

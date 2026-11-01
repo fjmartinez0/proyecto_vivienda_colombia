@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-01T13:55:32-05:00",
+ "generado": "2026-11-01T15:51:46-05:00",
  "zonas": {
   "type": "FeatureCollection",
   "features": [
@@ -2265,53 +2265,6 @@
    ]
   },
   {
-   "id": "PRY-0024",
-   "nombre": "Kobe 50",
-   "constructora": "CSB INMOBILIARIA",
-   "zona": "teu",
-   "fuera_de_zona": false,
-   "distancia_zona_m": null,
-   "lat": 4.638323,
-   "lng": -74.071816,
-   "direccion": "carrera 20 con calle 50",
-   "precision": "baja",
-   "ubicacion_agregador": true,
-   "ubicacion_metodo": "cruce Carrera 20 × Calle 50 (separación 0 m)",
-   "zona_nota": null,
-   "estado": "Sin dato",
-   "entrega": "2028-06",
-   "acabados": "Sin dato",
-   "area_tipo": "construida",
-   "renta_corta": "permitida",
-   "renta_corta_agregador": true,
-   "categorias": [
-    "Renta Corta",
-    "CoWorking",
-    "Pet Friendly"
-   ],
-   "admin_m2": null,
-   "estrato": null,
-   "ascensor": null,
-   "brochure": null,
-   "fuente": "Estrenar Vivienda",
-   "notas": null,
-   "url": "https://www.estrenarvivienda.com/kobe-50/bogota",
-   "detectado": "2026-11-01",
-   "tipologias": [
-    {
-     "id": "48370",
-     "habs": 1,
-     "banos": 1,
-     "area": 22.38,
-     "parq": 0,
-     "precio": 238000000,
-     "url": "/kobe-50/48370",
-     "segmento": "micro",
-     "area_privada": null
-    }
-   ]
-  },
-  {
    "id": "PRY-0025",
    "nombre": "Nau House",
    "constructora": "CONINSA S.A.S",
@@ -2712,6 +2665,200 @@
      "area_privada": null
     }
    ]
+  },
+  {
+   "id": "PRY-0035",
+   "nombre": "64 Estorias",
+   "constructora": "Accanto",
+   "zona": "chu",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 260,
+   "lat": 4.652834,
+   "lng": -74.065246,
+   "direccion": "Carrera 15 # 64B-11",
+   "precision": "media",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Sobre planos",
+   "entrega": "2028-03",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "permitida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 3,
+   "ascensor": true,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "Mejor $/m² del escaneo (8,5 M). Fiduciaria Davivienda. A ~3 cuadras de Atelier 68. Referente para SOHO 26.",
+   "url": null,
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "64-estorias-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 32.93,
+     "parq": 0,
+     "precio": 280600000,
+     "url": "",
+     "segmento": "estandar",
+     "area_privada": null
+    },
+    {
+     "id": "64-estorias-2",
+     "habs": 1,
+     "banos": 1,
+     "area": 37.15,
+     "parq": 0,
+     "precio": 306900000,
+     "url": "",
+     "segmento": "estandar",
+     "area_privada": null
+    }
+   ]
+  },
+  {
+   "id": "PRY-0036",
+   "nombre": "G95",
+   "constructora": "Gallery",
+   "zona": "nav",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 493,
+   "lat": 4.68083,
+   "lng": -74.049505,
+   "direccion": "Calle 95 # 14-48",
+   "precision": "media",
+   "ubicacion_agregador": true,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Entrega inmediata",
+   "entrega": "2026-12",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 6,
+   "ascensor": true,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "Casi entregado (menor riesgo de obra), caro por m² (14,2 M). Precios de la ficha inconsistentes: confirmar en sala. Un anuncio en Fincaraíz dice 'licencia turística' (no verificado: no se marca renta corta).",
+   "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-chico-norte-bogota/193397413",
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "g95-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 36.76,
+     "parq": 0,
+     "precio": 522000000,
+     "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-chico-norte-bogota/193397413",
+     "segmento": "estandar",
+     "area_privada": null
+    }
+   ]
+  },
+  {
+   "id": "PRY-0037",
+   "nombre": "Kobe 50",
+   "constructora": "CSB Inmobiliaria",
+   "zona": "teu",
+   "fuera_de_zona": false,
+   "distancia_zona_m": null,
+   "lat": 4.638341,
+   "lng": -74.07151,
+   "direccion": "Calle 50 # 19-38",
+   "precision": "media",
+   "ubicacion_agregador": true,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Sobre planos",
+   "entrega": "2028-06",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "permitida",
+   "renta_corta_agregador": true,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 3,
+   "ascensor": true,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "104 unidades, estrato 3. Fincaraíz: desde $235 M (22,38 m²). Edificio chico, unidad muy pequeña (micro).",
+   "url": "https://www.fincaraiz.com.co/proyectos-vivienda/galerias/zona-chapinero/bogota",
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "kobe-50-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 22.38,
+     "parq": 0,
+     "precio": 238000000,
+     "url": "https://www.fincaraiz.com.co/proyectos-vivienda/galerias/zona-chapinero/bogota",
+     "segmento": "micro",
+     "area_privada": null
+    }
+   ]
+  },
+  {
+   "id": "PRY-0038",
+   "nombre": "Reserva de la 26",
+   "constructora": "AR Construcciones",
+   "zona": "teu",
+   "fuera_de_zona": true,
+   "distancia_zona_m": 1059,
+   "lat": 4.624891,
+   "lng": -74.079283,
+   "direccion": "Calle 34 # 29-38",
+   "precision": "media",
+   "ubicacion_agregador": false,
+   "ubicacion_metodo": "coordenadas manuales",
+   "zona_nota": null,
+   "estado": "Sobre planos",
+   "entrega": "2028-12",
+   "acabados": "Sin dato",
+   "area_tipo": "construida",
+   "renta_corta": "desconocida",
+   "renta_corta_agregador": false,
+   "categorias": [],
+   "admin_m2": null,
+   "estrato": 4,
+   "ascensor": true,
+   "brochure": null,
+   "fuente": "Manual",
+   "notas": "481 unidades en 24 pisos: mucha oferta igual al entregar. La ficha no confirma la política de renta corta.",
+   "url": null,
+   "detectado": "2026-11-01",
+   "tipologias": [
+    {
+     "id": "reserva-26-1",
+     "habs": 1,
+     "banos": 1,
+     "area": 27.0,
+     "parq": 0,
+     "precio": 294000000,
+     "url": "",
+     "segmento": "micro",
+     "area_privada": null
+    },
+    {
+     "id": "reserva-26-2",
+     "habs": 1,
+     "banos": 1,
+     "area": 30.0,
+     "parq": 0,
+     "precio": 371000000,
+     "url": "",
+     "segmento": "estandar",
+     "area_privada": null
+    }
+   ]
   }
  ],
  "sin_ubicar": [
@@ -2728,16 +2875,7 @@
    "url": "https://www.estrenarvivienda.com/el-polo/bogota"
   }
  ],
- "fuera_de_zonas": [
-  {
-   "id": "PRY-0016",
-   "nombre": "64 Estorias",
-   "sector": "Chapinero",
-   "url": "https://www.estrenarvivienda.com/64-estorias/bogota",
-   "lat": 4.652747,
-   "lng": -74.065169
-  }
- ],
+ "fuera_de_zonas": [],
  "usados": [
   {
    "id": "FR-194485416",

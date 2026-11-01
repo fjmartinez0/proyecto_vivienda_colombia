@@ -1,8 +1,15 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.14.0, 01-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.14.1, 01-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
 Léelo completo antes de proponer cambios. El README tiene el detalle operativo de cada módulo.
+
+**Para arrancar un chat nuevo:** sube `proyecto_vivienda_colombia.zip` + este archivo y pega:
+> Retomo el Proyecto Vivienda Colombia. Lee HANDOFF.md completo, descomprime el zip, corre las pruebas
+> y dime en 5 líneas el estado. No cambies nada todavía.
+
+El repo público (https://github.com/fjmartinez0/proyecto_vivienda_colombia) refleja la última publicación del
+usuario; el zip es la fuente de verdad del código (puede ir adelante del repo hasta que el usuario lo instale y publique).
 
 ---
 
@@ -17,6 +24,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
   Floridablanca — Cañaveral – El Bosque (can, redibujada v2; en el dashboard "Bucaramanga").
   v0.8.1: c72 = Quinta Camacho – Calle 72 (Cl. 70–76, Caracas–7ª), armada con los vértices de borde de chu y lag
   (sin hueco ni traslape; hay prueba de no-traslape). Chapinero Alto EXCLUIDO (sector quitado de config.toml).
+  v3 (30-oct): + Los Andes (and), El Batán (bat), Santa Bárbara (sba). Total 12 polígonos.
   cor se retiró. Al oeste de la Caracas no hay zona (p. ej. 64 Estorias, Cra. 15 con Cl. 64B: fuera).
 - **Reglas duras:** precio total ≤ $600 M (incluye parqueadero), **con ascensor**.
 - **Variables clave:** administración (y admin/m²), estrato, parqueadero (regla flexible), habitaciones, ascensor,
@@ -57,55 +65,60 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 2. **Evidencia antes que afirmaciones:** cada dato lleva URL fuente; agregadores no cuentan como evidencia oficial.
 3. **Historial append-only:** nada se borra, se marca inactivo. Bitácora en `data/checks.jsonl`.
 4. **Stack simple:** Python + JSON en archivos + HTML estático (Leaflet). Sin base de datos ni servidor.
-5. **Pendiente del blueprint:** ejecución diaria con **launchd**, **git**, publicación en **GitHub Pages** y
-   alertas con **ntfy** → ver sección 8.
+5. **Blueprint completo:** corrida diaria con launchd (`vivienda programar`), git + GitHub Pages
+   (`vivienda publicar`) y alertas ntfy ya están implementados (v0.10+).
 
-## 4. Estado actual
+## 4. Estado actual (v0.14.1, 01-nov-2026)
 
 | Módulo | Estado |
 |---|---|
-| Nuevos: Estrenar Vivienda por sector + historial de tipologías + registro `PRY-0001` | ✅ 15 proyectos, 13 en el mapa |
-| Proyectos manuales (`config/proyectos_manuales.toml`) | ✅ lumina-77, la-cite, street-52, distrito-kb |
-| Geocodificación sin IA (dirección → cruce de vías en OpenStreetMap/Overpass) | ✅ |
-| Agente `ubicar` (haiku): dirección oficial, estrato, admin, ascensor, renta corta | ✅ |
-| Brochures PDF (área privada por tipología) | ✅ manual (`vivienda brochure PRY-x archivo.pdf`); búsqueda automática fuera de la rutina |
-| Usados: Fincaraíz por barrio + historial de precios | ✅ 1.384 en zonas / 1.188 vigentes (corrida con tope 8 páginas) |
-| Dashboard: mapa (Nuevos / Usados / Ambos), panel de proyecto, **panel de usado**, Tabla, pestaña **Usados**, Detectados, Supuestos | ✅ |
-| Zonas: círculos por defecto; polígono por esquinas opcional (`vivienda zonas`) | ✅ |
-| Carga profunda de usados (`--max-paginas 40`) + `vivienda zonas` | ⏳ corriendo al cierre; log en `logs/carga_inicial.txt` — pedirlo |
-| Arriendos reales (para yield de mercado) | ❌ hoy el arriendo/ADR por zona son **supuestos** en `web/index.html` |
-| Metrocuadrado / Ciencuadras, deduplicación entre portales | ❌ |
-| Corrida diaria (`vivienda diario`, `vivienda programar`), alertas ntfy (tema `fmz_proyecto_vivienda` en `config/ntfy_tema.txt`), publicación saneada en `docs/` | ✅ código. Publicación decidida: repo público github.com/fjmartinez0/proyecto_vivienda_colombia + Pages desde `main /docs` → https://fjmartinez0.github.io/proyecto_vivienda_colombia/web/ (primera vez: `scripts/configurar_github.sh`) |
+| Nuevos: Estrenar Vivienda, 17 sectores (`[estrenar]`) + historial de tipologías + registro `PRY-xxxx` | ✅ |
+| Proyectos manuales (`config/proyectos_manuales.toml`, 20) | ✅ lumina-77, la-cite, street-52, distrito-kb, mava-92, heritage-97, torres-del-valle, verona-amarilo, viu-park-home, alma-72, ivin-refugio, ivin-lago, palco, loto-122, edificio-balmes, altus-124, 64-estorias, kobe-50, reserva-26, g95 |
+| Correcciones a proyectos de portal (`config/ajustes_proyectos.toml`, v0.14) | ✅ dirección/pin por nombre + `[excluir]` |
+| Geocodificación sin IA (cruce de vías en Overpass, una consulta por zona, alias de avenidas) | ✅ |
+| Agente `ubicar` (haiku) | ✅ solo si hay proyectos nuevos |
+| Usados: Fincaraíz, 29 barrios, + pasada extra de apartaestudios en Bogotá | ✅ |
+| Limpieza de muestra: puntos genéricos, unidades de proyecto, duplicados, máx. 2 por edificio | ✅ v0.13.1 |
+| Segmentos Estándar (≥ 30 m²) / Micro (18–30 m²) en pestañas separadas | ✅ v0.13 |
+| Zonas dibujadas (geojson, 12 polígonos) | ✅ |
+| Corrida diaria (`diario`, `programar` → launchd), alertas ntfy `fmz_proyecto_vivienda`, publicación en Pages | ✅ |
+| Dashboard publicado | https://fjmartinez0.github.io/proyecto_vivienda_colombia/web/ (repo público fjmartinez0/proyecto_vivienda_colombia) |
+| Arriendos reales / ADR medido | ❌ supuestos en `web/index.html` |
+| Segunda fuente de usados (Metrocuadrado/Ciencuadras) + dedupe entre portales | ❌ siguiente módulo recomendado |
+| Instagram de constructoras | ❌ solo plan (Graph API Business Discovery) |
 
-80 pruebas pasan (requieren `tests/fixtures/*.html`, que no se publican): `PYTHONPATH=src python3 -m unittest discover -s tests`.
+93 pruebas pasan: `PYTHONPATH=src python3 -m unittest discover -s tests` (los fixtures HTML no se publican en el repo).
 
 ## 5. Mapa del código
 
 ```
-config/config.toml              filtros, [agente], [estrenar] 15 sectores, [fincaraiz] 19 barrios  ← lo más editado
-config/zonas.toml               8 zonas: centro + radio (+ esquinas opcionales en chu, c72, lag, teu)
-config/proyectos_manuales.toml  proyectos que no están en portales
-src/vivienda/cli.py             todos los comandos `vivienda ...`
-src/vivienda/sources/estrenar/  fetcher, parser (tarjeta = tipología), ficha (dirección, entrega, categorías)
-src/vivienda/sources/fincaraiz/ cliente (URLs, pausas, __NEXT_DATA__, diagnóstico de bloqueo), parser (campos)
+config/config.toml               filtros (precio_max, area_min=30, area_min_micro=18), [agente], [estrenar] 17 sectores,
+                                 [fincaraiz] 29 barrios, [diario] (publicar=true, url_dashboard, alertas)
+config/zonas_dibujadas.geojson   12 zonas dibujadas por el usuario (mandan sobre zonas.toml): chu c72 lag nav cas pas
+                                 mor teu can and bat sba
+config/zonas.toml                nombres/metadatos y respaldo de círculos
+config/proyectos_manuales.toml   proyectos fuera de portales (lat/lng, precision, seguimiento, tipologías)
+config/ajustes_proyectos.toml    correcciones por nombre a proyectos de Estrenar + exclusiones
+config/ntfy_tema.txt             tema ntfy (fuera del repo)
+src/vivienda/cli.py              todos los comandos; _proyectos_al_dia = manuales → sincronizar → ajustes → rezonificar
+src/vivienda/ajustes.py          aplica ajustes_proyectos.toml (marca `excluido`, dirección 'manual', lat/lng)
+src/vivienda/sources/estrenar/   fetcher, parser (tarjeta = tipología), ficha (dirección, entrega, categorías)
+src/vivienda/sources/fincaraiz/  cliente + parser (ascensor, antigüedad, área, publicador)
 src/vivienda/sources/manual.py, brochure.py
-src/vivienda/pipeline/          historial, proyectos, filtros, geocodificar, aplicar, brochures, usados, zonas, exportar
-src/vivienda/geo.py             bbox por ciudad, punto en polígono, zona_de (traslape: gana centro más cercano / radio)
-src/vivienda/geocodificacion.py cruce de vías vía Overpass (3 servidores, alias de avenidas)
-src/vivienda/verificacion.py    señales A/B/C de ubicación, Nominatim
-src/vivienda/agente.py          Claude Code headless (haiku), solo escribe en proposals/
-agent/*.md                      prompts versionados
-web/index.html                  dashboard (lee ../data/processed/dashboard.json; ?demo=1 = datos ficticios)
-data/processed/                 nuevos.json, proyectos.json, usados.json, dashboard.json, zonas_esquinas.json
-data/raw/                       HTML/JSON crudo por fecha (no se versiona)
+src/vivienda/pipeline/           historial, proyectos, filtros (segmento), geocodificar, aplicar, brochures,
+                                 usados (para_dashboard: rezonifica, segmento, ubicaciones genéricas, unidades de proyecto),
+                                 zonas, exportar (construir: seguimiento/fuera_de_zona, segmento por tipología), diario
+src/vivienda/geo.py              asignar_zona (tolerancia 150 m para proyectos), distancia_a_poligono_m, bbox
+src/vivienda/geocodificacion.py  cruce de vías (Overpass, 3 servidores), alias (Caracas=Cra 14, Tv 60=Av. Suba…)
+src/vivienda/agente.py           Claude Code headless (haiku), solo escribe en proposals/
+web/index.html                   dashboard Leaflet (comparables, segmentos, paneles, tabla, supuestos)
+scripts/configurar_github.sh     primera configuración del repo/Pages
+docs/                            copia saneada que sirve GitHub Pages (la genera `vivienda publicar`)
 ```
 
-Comandos principales: `nuevos`, `geocodificar`, `ubicar`, `aplicar`, `direccion`, `brochures`, `brochure`,
-`usados [--probar] [--barrio] [--max-paginas]`, `zonas [--forzar]`, `estado`, `exportar`, `web`.
-
-**Qué consume la suscripción de Claude:** solo `ubicar`, `brochures --buscar` y la lectura asistida de
-brochures (Claude Code con haiku). `nuevos`, `geocodificar`, `usados`, `zonas`, `exportar` y `web` son Python
-puro: **no consumen Claude**.
+Comandos: `nuevos`, `geocodificar`, `ubicar`, `aplicar`, `direccion`, `brochures`, `brochure`, `usados`, `zonas`,
+`diario`, `publicar`, `programar`, `estado`, `exportar`, `web`.
+Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el resto es Python puro.
 
 ## 6. Decisiones clave (no cambiar sin discutir)
 
@@ -221,6 +234,11 @@ puro: **no consumen Claude**.
   Transversal 5 con Calle 86A (fuera de zonas, seguimiento). Quitar lat/lng de un manual borra la ubicación manual y
   la re-geocodifica. (4) IVIN Lago agregado (Cra 16A # 79-76, micro 22–29 m²). (5) SOHO 26 (Marval, Salitre/Av. 26)
   analizado: sin precios hasta el lanzamiento (5-nov-2026); agregar como manual en seguimiento cuando haya lista.
+- **v0.14.1 (01-nov):** shortlist de Estrenar agregada como manuales en seguimiento con lat/lng de las fichas:
+  64 Estorias (a 260 m de chu, al oeste de la Caracas), Kobe 50 (DENTRO de teu, micro), Reserva de la 26 (La Soledad,
+  ~1 km de teu) y G95 (Chicó Norte, ~490 m de nav). Nueva regla en `ajustes.aplicar`: si un manual y un proyecto de
+  portal tienen el mismo nombre, manda el manual y el del portal se marca `excluido` + `duplicado_de` (evita doble pin).
+  Si Estrenar usa otro nombre, agregar ese nombre a `[excluir]`. Zonas nuevas: NO se crearon (ver recomendación).
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
@@ -228,73 +246,37 @@ puro: **no consumen Claude**.
 
 ## 7. Limitaciones conocidas
 
-- **Arriendo largo y ADR de renta corta por zona son supuestos** escritos en `web/index.html` (ZONAS). Los yields
-  son indicativos. El siguiente módulo de mayor valor: capturar **arriendos** de Fincaraíz (mismo código con
-  `operacion="arriendo"`) y estimar canon con el matching del proyecto anterior (k = 3 vecinos dentro de la
-  misma zona, distancia estandarizada sobre área, estrato, antigüedad, piso, habitaciones, baños; mediana).
-- Estrato "típico" por zona también es un supuesto del dashboard.
+- Arriendo largo y ADR de renta corta por zona son **supuestos** en `web/index.html`; yields indicativos.
+- Pocos comparables en Country/Lago (La Cité, Lumina 77: 2 reales → "s/c" por mínimo de 3) y Quinta Camacho
+  (Metro 73: 0). Causa: una sola fuente (Fincaraíz) y pocos anuncios pequeños bien ubicados.
 - Renta corta de usados siempre "desconocida" (el anuncio no lo dice).
-- Solo una fuente de usados (Fincaraíz).
-- Las zonas por esquinas solo están definidas para chu, c72, lag, teu; el resto son círculos.
-- `rsync` de instalación no borra archivos que se eliminen entre versiones (inofensivo hasta ahora).
+- Claude (sandbox) no llega a estrenarvivienda.com, fincaraiz, Nominatim ni Overpass desde la shell: no puede
+  geocodificar ni correr el scraper; WebFetch sí lee fichas de Estrenar y webs de constructoras.
+- Mapas en artifacts de claude.ai salen grises (no cargan teselas remotas).
+- `rsync` de instalación no borra archivos eliminados entre versiones.
 
-## 8. Próximos pasos (NO están codificados — hacerlos en la nueva conversación)
+## 8. Próximos pasos
 
-### 8.0 Primero
-Pedir `logs/carga_inicial.txt` (carga profunda: `usados --max-paginas 40` y `zonas`) y revisar: bloqueos,
-zonas que fallaron por esquina, volumen por zona.
-
-### 8.1 Corrida diaria automática (launchd)
-- Script `scripts/corrida_diaria.sh` (o comando `vivienda diario`) con candado para no solaparse, que haga:
-  `nuevos` → `geocodificar` → `usados` (tope 8 páginas) → `exportar` → publicar (8.2) → alertar (8.3).
-  Log en `logs/AAAA-MM-DD.txt`.
-- `ubicar` (consume Claude, haiku) **no** diario: solo si `nuevos` detectó proyectos nuevos, con `--max` bajo.
-- Que cada comando deje un resumen legible por máquina, p. ej. `data/processed/ultima_corrida.json`
-  (proyectos nuevos, tipologías con cambio de precio, usados nuevos, errores, si la corrida fue parcial).
-  Hoy los nuevos solo se imprimen en consola (`cmd_nuevos` calcula `nuevos_ids`).
-- `~/Library/LaunchAgents/co.vivienda.diario.plist` a una hora fija (p. ej. 6:30 a. m.). El Mac debe estar
-  despierto: `sudo pmset repeat wakeorpoweron MTWRFSU 06:25:00`. launchd no hereda el alias: usar rutas
-  absolutas (`/opt/homebrew/bin/python3`, `PYTHONPATH=.../src`).
-- `zonas` no va en la rutina (solo cuando cambien las esquinas).
-
-### 8.2 Publicación en GitHub (repo público + GitHub Pages)
-- Repo público con el código; GitHub Pages sirviendo `web/index.html` y `data/processed/dashboard.json`
-  (el HTML ya lee `../data/processed/dashboard.json`, así que Pages desde la raíz funciona sin cambios).
-- Versionar solo lo necesario: código, config, `data/processed/dashboard.json` (y si se quiere el historial
-  `nuevos.json`/`proyectos.json`/`usados.json`); **nunca** `data/raw/`, `.run/`, `logs/`.
-- El script hace `git add` de lo publicado, `git commit -m "corrida AAAA-MM-DD"` y `git push` solo si hubo
-  cambios. Autenticación con `gh auth login` o llave SSH.
-- **Decidido (25-oct):** publicar ya. El repo NO lleva `data/`, `logs/`, `proposals/`, el tema de ntfy ni las páginas
-  de portales de `tests/fixtures`; `docs/` lleva el dashboard sin descripción ni publicador de los anuncios.
-- Riesgos que se aceptaron:
-  - Publicar datos extraídos de portales en un repo público puede ir contra sus términos de uso. Mínimo:
-    **no publicar la descripción del anuncio** (texto con derechos de autor) ni datos de contacto; dejar el
-    enlace al anuncio y los números. Alternativa: repo privado + Pages (requiere plan pago de GitHub) o
-    publicar solo agregados por zona.
-  - `proposals/` y `checks.jsonl` pueden quedarse fuera del repo público.
-  - Un repo público hace visibles las zonas y la estrategia de inversión del usuario.
-
-### 8.3 Alertas (ntfy)
-- `curl -d "mensaje" ntfy.sh/<tema>` al detectar **proyecto nuevo** (requisito del usuario). Mensaje:
-  nombre, zona, precio desde, entrega, enlace a la ficha y al dashboard publicado.
-- Opcionales a proponer: tipología con baja de precio, usado ≥ 15 % por debajo de la mediana de sus similares,
-  corrida fallida o parcial (bloqueo de Fincaraíz).
-- El tema de ntfy es público para quien conozca el nombre: usar uno largo y aleatorio, guardado fuera del repo
-  (variable de entorno o archivo en `.gitignore`).
-
-### 8.4 Después
-- Arriendos reales (sección 7) → yields de mercado en ambos paneles.
-- Metrocuadrado / Ciencuadras + deduplicación entre portales.
-- Brochures con OCR (PDF de solo imágenes quedan como `requiere_ocr`).
-
-## 8.5 Resultado de la carga profunda (25-oct)
-Usados vigentes por zona (total / cumplen ≤ $600 M y con ascensor): c72 131/23 · can 442/231 · chu 286/170 ·
-cor 1.607/154 · lag 53/24 · mor 54/8 · pas 260/52 · teu 87/28. Sin bloqueos. chico-norte, chico-navarra y
-santa-bibiana llegaron al tope de 40 páginas (no importa: cor sobra). **Morato (8) y c72/lag/teu (~25) tienen pocos
-comparables** → agregar barrios vecinos en `[fincaraiz]`. Esquinas: "Caracas" no se encontraba por nombre en OSM
-(ahora el patrón acepta "Carrera 14"); el resto fueron caídas de Overpass → reintentar `vivienda zonas`.
+1. **Verificar v0.14** con la salida de `vivienda nuevos && vivienda geocodificar && vivienda publicar`: que Novus
+   Florida, Atelier 68, Nau House e IVIN Refugio queden ubicados; si alguno sigue "sin ubicar", pedir el pin de
+   Google Maps y ponerlo como lat/lng en `ajustes_proyectos.toml` (o en el manual, para IVIN).
+2. **SOHO 26** (Marval): lanzamiento 5-nov-2026. Con lista de precios, plan de pagos, reglamento (renta corta),
+   fiducia y punto de equilibrio → agregarlo como manual `seguimiento = true`; considerar barrios de Salitre en
+   `[fincaraiz]` para tener comparables.
+3. **64 Estorias y Kobe 50**: se ofreció agregarlos en seguimiento (pendiente respuesta del usuario).
+4. Segunda fuente de usados (Metrocuadrado/Ciencuadras) con dedupe entre portales; probar la ruta Fincaraíz
+   `el-lago/zona-nororiental` para apartaestudios.
+5. Arriendos reales (Fincaraíz `operacion="arriendo"`) → yields de mercado.
+6. Instagram: ejecutar el plan solo si el usuario lo pide.
 
 ## 9. Historial de errores que no hay que repetir
+
+- Poner comentarios `#` dentro de comandos para copiar/pegar: zsh los rompe. Comandos limpios, sin comentarios.
+- Asignar coordenadas sin verificar: IVIN Refugio tuvo las de IVIN Lago (corregido v0.14); Torres del Valle tuvo un
+  punto de referencia a ~950 m (corregido con el pin del usuario).
+- Relajar la regla del ascensor (p. ej. "≤ 15 años"): el usuario la rechazó. Regla única: dice ascensor → sí;
+  no dice → 6+ pisos se asume con ascensor; si no → descartado, como compra y como comparable.
+- Comparar entre zonas distintas (Morato vs. Pasadena): solo misma zona.
 
 - Usar opus por defecto (el usuario lo pidió explícitamente: siempre haiku).
 - Sobre-diseñar la geografía (polígonos por esquinas en cada corrida): ahora es opcional y una sola vez.
@@ -305,3 +287,26 @@ comparables** → agregar barrios vecinos en `[fincaraiz]`. Esquinas: "Caracas" 
   (`sh: vivienda: command not found`). En scripts usar `PYTHONPATH=<proyecto>/src python3 -m vivienda ...`.
 - Redirigir la salida a un archivo sin `python3 -u` (o `PYTHONUNBUFFERED=1`): Python la guarda en búfer y el log
   se ve vacío durante minutos aunque esté corriendo. En scripts y launchd usar siempre `python3 -u`.
+
+## 10. Análisis de mercado entregados (01-nov-2026)
+
+**SOHO 26 Distrito Urbano (Marval)** — Av. Calle 26 / Ciudad Salitre, sala de ventas Cra 66 # 23-69; lote de la
+antigua Empresa de Energía (48.300 m²), ~2.000 viviendas (otras fuentes: 2.500–3.000), primera etapa 40/60/80 m²,
+primera torre 2030, lanzamiento 5-nov-2026, sin precios; primer proyecto con certificados CDCD de Renobo; EDGE;
+TransMilenio Salitre El Greco, RegioTram futuro, aeropuerto 15 min. Fuera de las zonas.
+Veredicto: buena ubicación, negocio no evaluable aún. Riesgos: plata comprometida ~4 años, oferta masiva de
+unidades iguales al entregar, renta corta incierta en conjunto grande, mecanismo CDCD sin historial. A favor:
+precio de lanzamiento. Regla de decisión: su $/m² del tipo 40 m² debe ser claramente menor que 64 Estorias
+(8,5 M/m², entrega 2028) y Kobe 50 (10,6 M/m²); si no, la espera extra no compensa.
+
+**Shortlist Estrenar (fuera o al borde de zonas):**
+| Proyecto | Dirección | Base | $/m² | Entrega | Nota |
+|---|---|---|---|---|---|
+| 64 Estorias (Accanto) | Cra 15 # 64B-11, Chapinero, E3 (4.652834,-74.065246) | 32,93 m² $280,6 M; 37,15 m² $306,9 M | 8,5 M | 1T-2028 | mejor valor; renta corta permitida; 14 pisos, 2 asc.; Fid. Davivienda |
+| Kobe 50 (CSB) | Cl 50 # 19-38, Teusaquillo, E3 (4.638341,-74.07151) | 22,38 m² $238 M | 10,6 M | 2T-2028 | renta corta permitida; 5–6 pisos, 1 asc. |
+| Reserva de la 26 (AR) | Cl 34 # 29-38, La Soledad, E4 (4.624891,-74.079283) | 27 m² $294 M; 30 m² $371 M | 10,9 M | 4T-2028 | 481 unidades, 24 pisos; política de renta corta no explícita |
+| G95 (Gallery) | Cl 95 # 14-48, Chicó, E6 (4.68083,-74.049505) | 36,76 m² ~$522 M | 14,2 M | 4T-2026 | casi entregado; caro; precios inconsistentes en la ficha |
+Descartados: 77 Estorias (Chapinero Alto, excluido), Essenza 72 (Engativá), VIS del centro (restricciones).
+
+**Otros datos:** Novus Florida = Marval VIS, Cra 8 # 10-172 Floridablanca, 41–54 m² desde $263,976 M, 4 torres × 16
+pisos. IVIN Lago: 72 % vendido, obra ~40 %, Fiduciaria Aval.
