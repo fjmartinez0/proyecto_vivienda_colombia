@@ -161,11 +161,13 @@ def _exportar(prys=None, registros=None) -> None:
     zonas = cfgmod.cargar_zonas()
     proyectos.rezonificar(prys, zonas)
     proyectos.guardar(prys)
-    datos = exportar.construir(prys, registros, zonas)
     cfg = cfgmod.cargar()
+    datos = exportar.construir(prys, registros, zonas, cfg.filtros.area_min)
+    datos["segmentos"] = {"area_corte": cfg.filtros.area_min, "area_min_micro": cfg.filtros.area_min_micro}
     if cfg.fincaraiz:
         datos["usados"] = usados_mod.para_dashboard(usados_mod.cargar(), date.today(),
-                                                    cfg.fincaraiz.dias_vigencia, cfg.filtros.area_min, zonas)
+                                                    cfg.fincaraiz.dias_vigencia, cfg.filtros.area_min, zonas,
+                                                    area_min_micro=cfg.filtros.area_min_micro)
     exportar.guardar(datos)
     print(f"Dashboard: {len(datos['proyectos'])} proyectos en el mapa, {len(datos['sin_ubicar'])} sin ubicar, "
           f"{len(datos['fuera_de_zonas'])} fuera de zonas, {len(datos['usados'])} usados vigentes "

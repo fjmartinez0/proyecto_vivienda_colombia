@@ -32,7 +32,8 @@ class EstrenarConfig:
 @dataclass(frozen=True)
 class Filtros:
     precio_max: int
-    area_min: float
+    area_min: float                 # corte entre segmentos: < area_min (construida) = MICRO
+    area_min_micro: float = 18.0    # piso del segmento micro: por debajo se descarta
 
 
 @dataclass(frozen=True)

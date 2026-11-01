@@ -132,8 +132,32 @@ def vigentes(registro: dict[str, dict], hoy: date, dias: int) -> list[dict]:
     return [r for r in registro.values() if r.get("ultimo_visto", "") >= limite]
 
 
+PUBLICADORES_CONSTRUCTORA = {"builder", "constructora", "developer"}
+
+
+def edificio_de(lat: float, lng: float) -> str:
+    """Clave de edificio: el punto redondeado a ~11 m (los anuncios de un mismo edificio comparten coordenadas)."""
+    return f"{round(lat, 4)},{round(lng, 4)}"
+
+
+def marcar_unidades_proyecto(usados: list[dict], min_unidades: int = 4) -> None:
+    """Marca `unidad_proyecto` (no es mercado de usados -> no sirve de comparable):
+    - la publica una constructora, o
+    - es parte de un edificio con >= min_unidades anuncios vigentes, todos sin antigüedad o con < 1 año
+      (constructora que sube su inventario nuevo unidad por unidad, p. ej. El Refugio / IVIN en Country)."""
+    grupos: dict[str, list[dict]] = {}
+    for u in usados:
+        u["edificio"] = edificio_de(u["lat"], u["lng"])
+        grupos.setdefault(u["edificio"], []).append(u)
+    for g in grupos.values():
+        nuevos = len(g) >= min_unidades and all(x.get("antiguedad") is None or x["antiguedad"] < 1 for x in g)
+        for u in g:
+            u["unidad_proyecto"] = bool(nuevos or (u.get("publicador") or "").lower() in PUBLICADORES_CONSTRUCTORA)
+            u["unidades_edificio"] = len(g)
+
+
 def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: float,
-                   zonas: dict | None = None) -> list[dict]:
+                   zonas: dict | None = None, area_min_micro: float | None = None) -> list[dict]:
     """Formato que espera web/index.html (mismo contrato que los usados de demostración).
     Con `zonas`, la zona se recalcula desde el punto del anuncio: si cambias una zona, los usados
     guardados se reubican en la siguiente exportación (y los que quedan fuera dejan de mostrarse)."""
@@ -146,8 +170,12 @@ def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: fl
             r = {**r, "zona": geo.zona_de(r["lat"], r["lng"], zonas)}
         area, tipo_area = (r["area_privada"], "privada") if r.get("area_privada") else \
                           (r["area_construida"], "construida") if r.get("area_construida") else (None, None)
-        if not r.get("precio") or not area or area < area_min:
+        # segmento por área CONSTRUIDA (como los proyectos); si solo hay privada, se lleva a construida (÷ 0,88)
+        area_c = r.get("area_construida") or ((r["area_privada"] / 0.88) if r.get("area_privada") else None)
+        piso = area_min_micro if area_min_micro is not None else area_min
+        if not r.get("precio") or not area or not area_c or area_c < piso:
             continue
+        seg = "micro" if area_c < area_min else "estandar"
         precios = r.get("precios") or []
         out.append({
             "id": "FR-" + r["id"], "zona": r["zona"], "lat": r["lat"], "lng": r["lng"],
@@ -157,11 +185,12 @@ def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: fl
             "ascensor": r.get("ascensor"), "ascensor_fuente": r.get("ascensor_fuente"),
             "antiguedad": r.get("antiguedad"), "antiguedad_texto": r.get("antiguedad_texto"),
             "piso": r.get("piso"), "barrio": r.get("barrio"), "tipo": r.get("tipo"),
-            "renta_corta": "desconocida", "fuentes": ["Fincaraíz"], "url": r.get("url"),
+            "renta_corta": "desconocida", "fuentes": ["Fincaraíz"], "url": r.get("url"), "segmento": seg,
             "detectado": r["primer_visto"], "ultimo_visto": r["ultimo_visto"],
             "precio_inicial": precios[0]["precio"] if precios else r["precio"],
             "precios": precios, "banos": r.get("banos"), "pisos_edificio": r.get("pisos_edificio"),
             "publicador": r.get("publicador"), "creado_portal": (r.get("creado_portal") or "")[:10] or None,
             "amenidades": r.get("amenidades") or [], "descripcion": r.get("descripcion"),
         })
+    marcar_unidades_proyecto(out)
     return out

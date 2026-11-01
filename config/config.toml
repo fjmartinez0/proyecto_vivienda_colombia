@@ -6,7 +6,8 @@ nombre = "Proyecto Vivienda Colombia"
 
 [filtros]
 precio_max = 600_000_000   # COP, precio total
-area_min = 30              # m²; excluye apartaestudios muy pequeños
+area_min = 30              # m² construidos: corte entre segmentos. Desde v0.13, < 30 m² = segmento MICRO (pestaña aparte)
+area_min_micro = 18        # m² construidos: piso del segmento micro (lo más pequeño se descarta)
 
 [agente]
 # Claude Code en modo headless (ubicación y enriquecimiento de proyectos).
@@ -260,55 +261,55 @@ ruta = "canaveral"
 ciudad = "floridablanca"
 verificado = true
 
-# --- Navarra – San Patricio: barrios que faltaban (candidatas, confirmar con --probar)
+# --- Navarra – San Patricio: barrios que faltaban (verificadas en la carga del 30-oct-2026)
 [[fincaraiz.barrios]]
 ruta = "navarra/zona-norte"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "san-patricio/zona-norte"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
-# --- Zonas agregadas el 30-oct-2026. Candidatas: confirmar con
+# --- Zonas agregadas el 30-oct-2026. Verificadas en la carga del 30-oct (todas trajeron anuncios en zona). Antes:
 #     vivienda usados --probar --barrio la-floresta andes-norte alhambra el-batan santa-barbara
 [[fincaraiz.barrios]]
 ruta = "la-floresta/zona-noroccidente"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "andes-norte/zona-noroccidente"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "alhambra/zona-noroccidente"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "el-batan/zona-noroccidente"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "santa-barbara-central/zona-norte"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "santa-barbara-occidental/zona-norte"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "los-andes/zona-noroccidente"
 ciudad = "bogota"
-verificado = false
+verificado = true
 
 [[fincaraiz.barrios]]
 ruta = "santa-barbara/zona-norte"
 ciudad = "bogota"
-verificado = false
+verificado = true

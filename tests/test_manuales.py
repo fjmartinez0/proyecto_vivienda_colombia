@@ -14,7 +14,8 @@ class TestManuales(unittest.TestCase):
 
     def test_archivo_real(self):
         ids = {m["id"] for m in self.manuales}
-        self.assertEqual(ids, {"lumina-77", "la-cite", "street-52", "distrito-kb", "mava-92", "heritage-97", "torres-del-valle", "verona-amarilo", "viu-park-home"})
+        self.assertEqual(ids, {"lumina-77", "la-cite", "street-52", "distrito-kb", "mava-92", "heritage-97", "torres-del-valle", "verona-amarilo", "viu-park-home",
+                               "alma-72", "ivin-refugio", "el-polo", "palco", "loto-122", "edificio-balmes", "altus-124"})
         zonas = {z["properties"]["id"] for z in cargar_zonas()["features"]}
         for m in self.manuales:
             self.assertTrue(set(m.get("zonas", [])) <= zonas, m["id"])
@@ -23,7 +24,7 @@ class TestManuales(unittest.TestCase):
         ts = manual.tipologias(self.manuales)
         ok, desc = filtros.aplicar(ts, Filtros(precio_max=600_000_000, area_min=30))
         self.assertEqual(len(ok), len(ts) - sum(desc.values()))   # sin precio no descarta (Lumina, Street 52)
-        self.assertEqual(dict(desc), {"área < 30 m²": 2, "sobre tope de precio": 2})   # solo Heritage 97
+        self.assertEqual(dict(desc), {"sobre tope de precio": 2})   # Heritage 97: los tipos de 25 y 27,6 m² ahora son micro
         self.assertTrue(all(t.proyecto_clave.startswith("manual:") for t in ts))
 
     def test_integracion_completa(self):
@@ -33,7 +34,7 @@ class TestManuales(unittest.TestCase):
         proyectos.sincronizar(reg, prys)
         manual.aplicar_a_proyectos(prys, self.manuales, date(2026, 10, 25))
         por_nombre = {p["nombre"]: p for p in prys.values()}
-        self.assertEqual(len(prys), 9)
+        self.assertEqual(len(prys), 16)
         self.assertEqual(por_nombre["Heritage 97"]["ubicacion"]["metodo"], "coordenadas manuales")
         self.assertTrue(por_nombre["Mava 92"]["seguimiento"])
         tdv = por_nombre["Torres del Valle"]["ubicacion"]

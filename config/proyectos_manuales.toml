@@ -162,6 +162,13 @@ notas = "196 lofts de 1–2 habitaciones, 12 pisos + terraza (sky bar, BBQ, gimn
   precio = 461_000_000
 
   [[proyecto.tipologia]]
+  nombre = "Loft 26,64 (desde, Trovit) · micro"
+  habs = 1
+  banos = 1
+  area = 26.64
+  precio = 425_000_000
+
+  [[proyecto.tipologia]]
   nombre = "Apartaestudio 40 (Trovit)"
   habs = 1
   banos = 1
@@ -277,6 +284,13 @@ notas = "Encontrado en el escaneo del 30-oct-2026. Fincaraíz: desde 32 m², $45
   area = 32.0
   precio = 450_000_000
 
+  [[proyecto.tipologia]]
+  nombre = "Apartaestudio 27 (Ciencuadras) · micro"
+  habs = 1
+  banos = 1
+  area = 27.0
+  precio = 419_000_000
+
 [[proyecto]]
 id = "viu-park-home"
 nombre = "Viu Park Home"
@@ -299,3 +313,183 @@ notas = "Encontrado en el escaneo del 30-oct-2026 (Ciencuadras, publicado en ago
   banos = 1
   area = 36.45
   precio = 394_892_000
+
+# ---------------------------------------------------------------------------------------------
+# SEGMENTO MICRO (< 30 m² construidos, tipo Alma 72), agregados el 01-nov-2026 desde el escaneo web.
+# Aparecen en la pestaña "Micro" del visor. Todos en seguimiento: algunos quedan fuera de tus zonas.
+# ---------------------------------------------------------------------------------------------
+
+[[proyecto]]
+id = "alma-72"
+nombre = "Alma 72"
+constructora = "Apiros"
+ciudad = "Bogotá"
+sector = "Alcázares / San Felipe"
+direccion = "Carrera 24 # 71A-85"
+direccion_origen = "manual"
+fuente = "https://apiros.com.co/proyecto/alma-72/"
+seguimiento = true
+estado_obra = "en construccion"
+entrega = "2028-01"                 # etapa 2; la etapa 1 se entregó en dic-2025
+notas = "Referencia del segmento micro: 1 torre de 17 pisos, 396 unidades, zonas sociales completas (piscina, gimnasio, coworking). Se comercializa para renta corta; operador visto en Fincaraíz/Airbnb: Jalo. Últimas unidades."
+
+  [[proyecto.tipologia]]
+  nombre = "A5 (26,01 m²)"
+  habs = 1
+  banos = 1
+  area = 26.01
+  area_privada = 26.01
+  precio = 311_223_420
+
+  [[proyecto.tipologia]]
+  nombre = "A (27,46 / 25,13 m²)"
+  habs = 1
+  banos = 1
+  area = 27.46
+  area_privada = 25.13
+  precio = 332_739_000
+
+[[proyecto]]
+id = "ivin-refugio"
+nombre = "IVIN Refugio"
+constructora = "IVIN"
+ciudad = "Bogotá"
+sector = "El Refugio"
+direccion = "El Refugio (Chapinero)"
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/apartaestudio-en-venta-en-el-refugio-bogota/193321486"
+seguimiento = true
+lat = 4.6667915                     # punto de los anuncios de Fincaraíz (publica K•Veintiuno)
+lng = -74.0581433
+estrato = 6
+notas = "Unidades nuevas publicadas una por una como apartaestudios usados (las detecta la regla de 'unidad de proyecto'). Lofts de 22–48 m², sin parqueadero. Amenidades: gimnasio, coworking, lavandería, terraza."
+
+  [[proyecto.tipologia]]
+  nombre = "22 m²"
+  habs = 1
+  banos = 1
+  area = 22.0
+  precio = 374_069_400
+
+  [[proyecto.tipologia]]
+  nombre = "30 m²"
+  habs = 1
+  banos = 1
+  area = 30.0
+  precio = 457_525_200
+
+[[proyecto]]
+id = "el-polo"
+nombre = "El Polo"
+constructora = "DOM Real Estate"
+ciudad = "Bogotá"
+sector = "Polo Club"
+direccion = "Calle 84 # 28B-45"
+direccion_origen = "agregador"
+fuente = "https://www.estrenarvivienda.com/el-polo/52513"
+seguimiento = true
+lat = 4.672502                      # enlace de Waze/Maps de la ficha
+lng = -74.065466
+estrato = 4
+ascensor = true                     # 4 ascensores por torre
+renta_corta = "permitida"           # la ficha: "permitidas, sujeto al reglamento de PH"
+estado_obra = "sobre planos"
+entrega = "2029-12"
+notas = "2 torres de 25 pisos, 210 unidades. Fiducia Alianza."
+
+  [[proyecto.tipologia]]
+  nombre = "Apartaestudio 28 / 24 m²"
+  habs = 1
+  banos = 1
+  area = 28.0
+  area_privada = 24.0
+  precio = 365_000_000
+
+[[proyecto]]
+id = "palco"
+nombre = "Palco"
+constructora = "CSB Inmobiliaria (comercializa)"
+ciudad = "Bogotá"
+sector = "Galerías"
+zonas = ["teu"]
+direccion = "Transversal 27A con Calle 53B"   # placa: Tv 27A # 53B-78
+direccion_origen = "agregador"
+fuente = "https://www.fincaraiz.com.co/proyectos-vivienda/palco-apartamentos-en-venta-en-teusaquillo-bogota/15018795"
+seguimiento = true
+estrato = 4
+ascensor = true
+estado_obra = "sobre planos"
+entrega = "2029-09"
+notas = "9 pisos, 132 unidades de 1 a 3 habitaciones."
+
+  [[proyecto.tipologia]]
+  nombre = "Desde 22,68 m²"
+  habs = 1
+  banos = 1
+  area = 22.68
+  precio = 282_706_200
+
+[[proyecto]]
+id = "loto-122"
+nombre = "Loto122"
+constructora = "EMV Constructora"
+ciudad = "Bogotá"
+sector = "Santa Bárbara"
+zonas = ["sba"]
+direccion = "Calle 122 # 7A-29"
+direccion_origen = "manual"
+fuente = "https://emvconstructora.com/loto122/"
+seguimiento = true
+entrega = "2027-06"                 # "primer semestre de 2027"
+notas = "Apartaestudios de 21,93 m² con balcón, parqueaderos comunales. Precio 150 SMMLV."
+
+  [[proyecto.tipologia]]
+  nombre = "21,93 m²"
+  habs = 1
+  banos = 1
+  area = 21.93
+  precio = 245_000_000
+
+[[proyecto]]
+id = "edificio-balmes"
+nombre = "Edificio Balmes"
+ciudad = "Bogotá"
+sector = "Santa Bárbara"
+zonas = ["sba"]
+direccion = "Carrera 12 # 115-25"   # sala de ventas; el lote no está publicado
+direccion_origen = "agregador"
+fuente = "https://www.metrocuadrado.com/proyecto/edificio-balmes-santa-barbara/15315-C0001"
+seguimiento = true
+estrato = 6
+ascensor = true
+estado_obra = "en construccion"
+entrega = "2026-03"
+notas = "Monoespacios; la descripción también menciona 25, 34 y 39,6 m² (no coincide con el encabezado)."
+
+  [[proyecto.tipologia]]
+  nombre = "24,88 / 21,35 m²"
+  habs = 1
+  banos = 1
+  area = 24.88
+  area_privada = 21.35
+  precio = 311_000_000
+
+[[proyecto]]
+id = "altus-124"
+nombre = "Altus 124"
+ciudad = "Bogotá"
+sector = "Santa Bárbara"
+zonas = ["sba"]
+direccion = "Carrera 7A # 124-76"   # dirección de contacto; el lote no está publicado
+direccion_origen = "agregador"
+fuente = "https://apartaestudiosaltus124.com/"
+seguimiento = true
+acabados = "obra gris"
+notas = "VIS (150 SMMLV), entrega en obra gris, 10 niveles. Cuota inicial 30 %."
+
+  [[proyecto.tipologia]]
+  nombre = "Desde 18 m²"
+  habs = 1
+  banos = 1
+  area = 18.0
+  precio = 249_900_000

@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.11.1, 30-oct-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.13.0, 01-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -184,6 +184,27 @@ puro: **no consumen Claude**.
 - Escaneo profundo zonas nuevas: Viu Park Home (Gradeco, Santa Bárbara Occ., 36,45 m², $395 M, publicado 2024 —
   confirmar vigencia) agregado. El Polo (Cl 84 # 28B-45, 28 m²), UBA y Torre de Los Andes (retirados), Altus 124
   (18 m², obra gris) no entran.
+- **Carga 30-oct (apartaestudios + rutas nuevas):** 29 barrios, sin bloqueos, las 10 rutas candidatas verificadas.
+  4.960 usados vigentes (391 apartaestudios), 2.066 de entorno. Zonas (total/cumplen): nav 987/85, sba 659/77,
+  pas 316/70, bat 181/47, chu 129/62, can 264/103, mor 87/26, lag 64/22, teu 61/26, cas 58/15, c72 56/4, and 32/13.
+- **Muestra limpia (v0.12):** `unidad_proyecto` = la publica una constructora o es de un edificio con ≥ 4 anuncios
+  todos sin antigüedad / < 1 año (inventario nuevo subido unidad por unidad: El Refugio/IVIN en Country, Chicó Norte,
+  Santa Paula; 55 marcadas). No cuentan como comparables. Máximo 2 comparables por edificio (clave = punto a ~11 m).
+  Efecto: La Cité, Lumina 77 y Metro 73 → s/c (sus "comparables" eran El Refugio). Nueva referencia informativa
+  **vs. proyectos nuevos cercanos** (unidades de proyecto + otros proyectos del radar, ≤ 1,5 km, mismas alcobas, área
+  ±25 %, $/m² de lista, mediana por edificio): La Cité −11 % (4 proyectos), Lumina −24 %, Metro 73 +8 %.
+- 77 Estorias ya no aparece en Estrenar (inactivo: vendido o retirado).
+- **Segmento MICRO (v0.13, 01-nov):** pestaña aparte en el visor ("Estándar · ≥ 30 m²" | "Micro · < 30 m²"), nunca
+  mezcladas; se recuerda en el navegador. Corte = `[filtros] area_min` (30 m² CONSTRUIDOS); piso `area_min_micro` = 18.
+  Las tipologías de 18–30 m² ya no se descartan: se exportan con `segmento: "micro"`; los usados igual (área construida,
+  o privada ÷ 0,88). Un proyecto mixto (Metro 73, Ciento5I, Zento, Heritage) sale en ambas pestañas con sus tipos.
+  Comparables micro (decisión del usuario: la renta corta es un producto nuevo): SOLO edificios con antigüedad
+  CONOCIDA ≤ `micro_max_antig` (8 años = tramos Fincaraíz "menor a 1" y "1 a 8"); sin dato de antigüedad no entra;
+  no exige alcobas; área ±20 % (±30 % ampliado, la antigüedad NO se amplía); misma zona; misma regla de ascensor,
+  limpieza de unidades de proyecto y máx. 2 por edificio. ADR micro = ADR 1 alcoba × `adr_micro` (0,85, supuesto).
+  Bandera de reglamento/regulación de renta corta en cada ficha micro. Manuales micro agregados: Alma 72, IVIN
+  Refugio, El Polo, Palco, Loto122, Edificio Balmes, Altus 124 (+ tipos micro de Verona y Mava 92). Sin ubicar aún:
+  Signature Virrey, Solara 93, Paloverde, Atelier 68, Nau House. Mockup previo: claude.ai/artifact/YJXfg9hJcSThVjee9kRryH
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.

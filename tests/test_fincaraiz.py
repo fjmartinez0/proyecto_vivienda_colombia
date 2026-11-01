@@ -182,3 +182,33 @@ class TestRezonificarUsados(unittest.TestCase):
                      "tipo": "apartamento", "primer_visto": "2026-10-25", "ultimo_visto": "2026-10-25"}}
         out = um.para_dashboard(reg, date(2026, 10, 26), 7, 30, zonas)
         self.assertEqual(sorted((u["id"], u["zona"]) for u in out), [("FR-1", "nueva"), ("FR-2", None)])
+
+
+class TestUnidadesProyecto(unittest.TestCase):
+    def test_edificio_nuevo_y_constructora(self):
+        from vivienda.pipeline.usados import marcar_unidades_proyecto
+        nuevo = [{"id": str(i), "lat": 4.66501, "lng": -74.05601, "antiguedad": None} for i in range(4)]
+        viejo = [{"id": f"v{i}", "lat": 4.67001, "lng": -74.05001, "antiguedad": 23.0} for i in range(5)]
+        suelto = [{"id": "s", "lat": 4.68, "lng": -74.06, "antiguedad": None, "publicador": "builder"},
+                  {"id": "t", "lat": 4.681, "lng": -74.061, "antiguedad": None, "publicador": "owner"}]
+        us = nuevo + viejo + suelto
+        marcar_unidades_proyecto(us)
+        m = {u["id"]: u["unidad_proyecto"] for u in us}
+        self.assertTrue(all(m[str(i)] for i in range(4)))     # 4 unidades nuevas en el mismo edificio
+        self.assertFalse(any(m[f"v{i}"] for i in range(5)))   # edificio viejo con 5 en venta: usados normales
+        self.assertTrue(m["s"])                               # publica una constructora
+        self.assertFalse(m["t"])
+
+
+class TestSegmentoUsados(unittest.TestCase):
+    def test_micro_estandar_y_piso(self):
+        from datetime import date
+        from vivienda.pipeline import usados as um
+        base = {"lat": 4.65, "lng": -74.06, "zona": "chu", "precio": 300_000_000, "tipo": "apartaestudio",
+                "primer_visto": "2026-11-01", "ultimo_visto": "2026-11-01"}
+        reg = {"a": {**base, "id": "1", "area_construida": 26},                 # micro
+               "b": {**base, "id": "2", "area_privada": 30},                    # 30/0,88 = 34 construida -> estándar
+               "c": {**base, "id": "3", "area_privada": 25},                    # 28,4 construida -> micro
+               "d": {**base, "id": "4", "area_construida": 15}}                 # bajo el piso de 18 -> fuera
+        out = {u["id"]: u["segmento"] for u in um.para_dashboard(reg, date(2026, 11, 1), 7, 30, area_min_micro=18)}
+        self.assertEqual(out, {"FR-1": "micro", "FR-2": "estandar", "FR-3": "micro"})

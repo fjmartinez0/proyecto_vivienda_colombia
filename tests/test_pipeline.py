@@ -15,9 +15,11 @@ def tip(tid, precio=400_000_000, area=45.0):
 class TestFiltros(unittest.TestCase):
     def test_descartes(self):
         f = Filtros(precio_max=600_000_000, area_min=30)
-        ok, d = filtros.aplicar([tip("1"), tip("2", precio=700_000_000), tip("3", area=21), tip("4", precio=None)], f)
-        self.assertEqual([t.typology_id for t in ok], ["1"])
+        ok, d = filtros.aplicar([tip("1"), tip("2", precio=700_000_000), tip("3", area=21), tip("4", precio=None),
+                                 tip("5", area=15)], f)
+        self.assertEqual([t.typology_id for t in ok], ["1", "3"])       # 21 m² ya no se descarta: segmento micro
         self.assertEqual(sum(d.values()), 3)
+        self.assertEqual((filtros.segmento(21, f), filtros.segmento(30, f)), ("micro", "estandar"))
 
 
 class TestSector(unittest.TestCase):

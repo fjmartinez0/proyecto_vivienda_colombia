@@ -31,7 +31,8 @@ def _zona_mas_cercana(lat: float, lng: float, zonas: dict) -> tuple[str, float]:
                 for f in zonas["features"]), key=lambda x: x[1])
 
 
-def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: dict) -> dict:
+def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: dict, area_corte: float = 30) -> dict:
+    """area_corte: tipologías con área construida < area_corte van al segmento 'micro' (pestaña aparte)."""
     tips_por_clave: dict[str, list[dict]] = {}
     for t in tipologias.values():
         if t.get("activo"):
@@ -86,6 +87,7 @@ def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: di
                 {"id": t["typology_id"], "habs": t.get("habs"), "banos": t.get("banos"),
                  "area": t.get("area"), "parq": t.get("parq") or 0, "precio": t.get("precio_desde"),
                  "url": t.get("url"),
+                 "segmento": "micro" if (t.get("area") or 0) < area_corte else "estandar",
                  "area_privada": ((p.get("areas_privadas") or {}).get(f"{t['fuente']}:{t['typology_id']}") or {}).get("valor")
                                  or t.get("area_privada")}
                 for t in sorted(ts, key=lambda t: (t.get("habs") or 0, t.get("precio_desde") or 0))

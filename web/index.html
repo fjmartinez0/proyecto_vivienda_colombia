@@ -116,6 +116,13 @@ td.n,th.n{text-align:right}
 .pin.proy .pn{font-weight:500;font-size:11px;opacity:.92;max-width:150px;overflow:hidden;text-overflow:ellipsis}
 .pin.proy .pv{font-weight:700}
 .pin.proy.fuera{border-style:dashed}
+/* Segmentos: Estándar (≥ 30 m²) | Micro (< 30 m², tipo Alma 72). Nunca se muestran juntos. */
+.seg{display:flex;gap:2px;background:var(--line);padding:3px;border-radius:9px;margin-left:12px}
+.seg button{border:0;background:transparent;color:var(--ink);font:600 12.5px Inter;padding:6px 12px;border-radius:7px;cursor:pointer;white-space:nowrap}
+.seg button.on{background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.seg button[data-s=micro].on{background:#5b3fa3;color:#fff}
+body.micro header{box-shadow:inset 0 -3px 0 #5b3fa3}
+body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rgba(0,0,0,.35)}
 .ucl{width:30px;height:30px;border-radius:50%;background:rgba(90,95,102,.85);color:#fff;font:600 11.5px Inter;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 .dot.usel{width:16px;height:16px;border:3px solid #111;box-shadow:0 0 0 2px #fff}
 .dot{width:10px;height:10px;border-radius:50%;background:#7d838a;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
@@ -144,6 +151,7 @@ td.n,th.n{text-align:right}
     <button data-v="feed">Detectados</button>
     <button data-v="sup">Supuestos</button>
   </nav>
+  <div class="seg" id="seg"><button data-s="estandar" class="on" title="Tipologías y usados de 30 m² construidos o más">Estándar · ≥ 30 m²</button><button data-s="micro" title="Micro-apartaestudios de 18 a 30 m² (tipo Alma 72), pensados para renta corta">Micro · &lt; 30 m²</button></div>
   <div class="kpis" id="kpis"></div>
 </header>
 <main>
@@ -172,6 +180,7 @@ const PARAMS = {
   precio_max: 600e6, desc_neg: 0.07, tasa_ea: 0.10, cuota_ini: 0.30, renta_perdida: true,
   acabados_m2: 900000, factor_privada: 0.88, tol_area: 0.15, max_antig: 15, exigir_parq: false,
   com_plataforma: 0.15, gestion: 0.20, servicios_mes: 450000, predial: 0.006,
+  micro_max_antig: 8, micro_tol_area: 0.20, micro_tol_area_amplia: 0.30, adr_micro: 0.85,
   min_comps: 5, radio_amplio: 1500, tol_area_amplia: 0.25, max_antig_amplia: 25
 };
 
@@ -186,6 +195,10 @@ const PARAM_META = [
   ['tol_area','Tolerancia de área (±)','pct','Para considerar un usado comparable.'],
   ['max_antig','Antigüedad máxima del usado','num','Años.'],
   ['exigir_parq','Exigir mismo número de parqueaderos','bool','Apagado = parqueadero flexible.'],
+  ['micro_max_antig','Micro: antigüedad máxima del comparable','num','Años. Solo edificios recientes (la renta corta es un producto nuevo). Sin dato de antigüedad: no entra.'],
+  ['micro_tol_area','Micro: tolerancia de área (±)','pct','Micro no exige el mismo número de alcobas: apartaestudio y loft compiten.'],
+  ['micro_tol_area_amplia','Micro: tolerancia de área ampliada (±)','pct','Si en la zona hay menos comparables que el mínimo. La antigüedad no se amplía.'],
+  ['adr_micro','Micro: ADR como fracción del de 1 alcoba','pct','Tarifa por noche de un micro frente a un apto de 1 alcoba de la misma zona (supuesto).'],
   ['min_comps','Comparables mínimos antes de ampliar criterios','num','Si la zona tiene menos, se amplían área, antigüedad y estrato (siempre dentro de la zona).'],
   ['tol_area_amplia','Tolerancia de área ampliada (±)','pct','Paso ampliado, dentro de la zona.'],
   ['max_antig_amplia','Antigüedad máxima ampliada','num','Años. Paso ampliado, dentro de la zona.'],
@@ -327,15 +340,27 @@ const distM=(a,b,c,d)=>6371000*Math.hypot((c-a)*Math.PI/180,(d-b)*Math.PI/180*Ma
 // supuesto y en zonas mixtas (Calle 72: estratos 4, 5 y 6) dejaba sin comparables a casi todos.
 function filtroComp(p,t,o){
   const ap=apNuevo(p,t), est = MODO==='real' ? p.estrato : (p.estrato || Z[p.zona].estrato), ciudad=Z[p.zona].ciudad;
-  return (o.radio ? USADOS_TODOS : USADOS).filter(u => (o.radio ? ((u.ciudad||Z[u.zona]?.ciudad)===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
-    && (est==null || u.estrato==null || Math.abs(u.estrato-est)<=(o.estr||0)) && u.habs===t.habs && elegible(u)
-    && (u.antiguedad==null || u.antiguedad<=o.antig) && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=o.tol
-    && (!PARAMS.exigir_parq || u.parq===t.parq));
+  return depurarMuestra((o.radio ? USADOS_TODOS : USADOS).filter(u => (o.radio ? ((u.ciudad||Z[u.zona]?.ciudad)===ciudad && distM(p.lat,p.lng,u.lat,u.lng)<=o.radio) : u.zona===p.zona)
+    && (est==null || u.estrato==null || Math.abs(u.estrato-est)<=(o.estr||0)) && (o.habsLibre || u.habs===t.habs) && elegible(u)
+    && (o.antigReq ? (u.antiguedad!=null && u.antiguedad<=o.antig) : (u.antiguedad==null || u.antiguedad<=o.antig))
+    && Math.abs(areaPriv(u.area,u.area_tipo)/ap-1)<=o.tol
+    && (!PARAMS.exigir_parq || u.parq===t.parq)), ap);
 }
 // Comparables SOLO de la misma zona: las zonas son submercados (Morato no se compara con Pasadena).
 // Paso 0: criterios estrictos. Paso 1 (si hay < min_comps): misma zona con área, antigüedad y estrato ampliados.
 // Con menos de 3 al final no se calcula sobreprecio (s/c).
+// MICRO: solo edificios recientes (antigüedad CONOCIDA ≤ micro_max_antig), sin exigir alcobas, área ±20 % (±30 % ampliado).
+function comparablesMicro(p,t){
+  const base={antig:PARAMS.micro_max_antig, antigReq:true, habsLibre:true};
+  const r=p.fuera_de_zona?PARAMS.radio_amplio:0, sufijo=p.fuera_de_zona?` a ≤ ${r} m (fuera de zonas)`:' misma zona';
+  const pasos=[{...base, nivel:0, tol:PARAMS.micro_tol_area, radio:r, desc:`micro${sufijo}, edificios ≤ ${PARAMS.micro_max_antig} años`},
+               {...base, nivel:1, tol:PARAMS.micro_tol_area_amplia, radio:r, estr:1,
+                desc:`micro${sufijo}, área ±${Math.round(PARAMS.micro_tol_area_amplia*100)} %, estrato ±1, edificios ≤ ${PARAMS.micro_max_antig} años`}];
+  let l; for(const o of pasos){ l=filtroComp(p,t,o); l.nivel=o.nivel; l.desc=o.desc; if(l.length>=PARAMS.min_comps) break; }
+  return l;
+}
 function comparables(p,t){
+  if(state.seg==='micro') return comparablesMicro(p,t);
   if(p.fuera_de_zona){   // proyecto en seguimiento fuera de tus zonas: no hay zona propia -> por distancia
     const r=PARAMS.radio_amplio;
     const pasosF=[{nivel:0, tol:PARAMS.tol_area, antig:PARAMS.max_antig, radio:Math.round(r*2/3), desc:`a ≤ ${Math.round(r*2/3)} m (fuera de zonas)`},
@@ -352,15 +377,45 @@ function comparables(p,t){
   for(const o of pasos){ l=filtroComp(p,t,o); l.nivel=o.nivel; l.desc=o.desc; if(l.length>=PARAMS.min_comps) break; }
   return l;
 }
+// Calidad de la muestra: fuera las unidades de proyecto nuevo publicadas como usados, y máximo 2 por edificio
+// (las de área más parecida). Sin esto, 6 unidades de un mismo edificio nuevo eran "los comparables" de La Cité.
+const MAX_POR_EDIFICIO = 2;
+function depurarMuestra(l, ap){
+  const g={}, out=[];
+  l.filter(u=>!u.unidad_proyecto)
+   .sort((a,b)=>Math.abs(areaPriv(a.area,a.area_tipo)-ap)-Math.abs(areaPriv(b.area,b.area_tipo)-ap))
+   .forEach(u=>{ const k=u.edificio||u.id; g[k]=(g[k]||0)+1; if(g[k]<=MAX_POR_EDIFICIO) out.push(u); });
+  return out;
+}
+// Referencia "vs. proyectos nuevos cercanos" (informativa, no entra en el pin): unidades de proyecto nuevo publicadas
+// en Fincaraíz + tipologías de los otros proyectos del radar, misma cantidad de alcobas, área ±25 %, a ≤ radio_amplio.
+// Precio de lista por m² de área privada contra precio de lista; un valor por edificio/proyecto (mediana), para que
+// uno con muchas unidades no domine.
+function nuevosCercanos(p,t){
+  const ap=apNuevo(p,t), r=PARAMS.radio_amplio, ciudad=Z[p.zona].ciudad, porEd={};
+  const libre = state.seg==='micro';
+  USADOS_TODOS.forEach(u=>{ if(!u.unidad_proyecto || (!libre && u.habs!==t.habs) || u.precio>PARAMS.precio_max*1.5) return;
+    const a=areaPriv(u.area,u.area_tipo); if(Math.abs(a/ap-1)>0.25 || distM(p.lat,p.lng,u.lat,u.lng)>r) return;
+    (porEd['FR '+(u.edificio||u.id)]=porEd['FR '+(u.edificio||u.id)]||{nombre:u.barrio||'Edificio sin nombre', m2:[]}).m2.push(u.precio/a); });
+  PROYECTOS.forEach(q=>{ if(q.id===p.id || Z[q.zona]?.ciudad!==ciudad || distM(p.lat,p.lng,q.lat,q.lng)>r) return;
+    q.tipologias.forEach(tq=>{ if(!tq.precio || (!libre && tq.habs!==t.habs)) return; const a=apNuevo(q,tq); if(Math.abs(a/ap-1)>0.25) return;
+      (porEd['P '+q.id]=porEd['P '+q.id]||{nombre:q.nombre, m2:[]}).m2.push(tq.precio/a); }); });
+  const eds=Object.values(porEd).map(e=>({nombre:e.nombre, m2:median(e.m2), n:e.m2.length}));
+  const med=median(eds.map(e=>e.m2));
+  return {eds, med, prima: t.precio && med ? (t.precio/ap)/med-1 : null};
+}
 // Referencia (solo informativa): usados parecidos FUERA de la zona, a ≤ radio_amplio del proyecto.
 function referenciaEntorno(p,t){
   if(p.fuera_de_zona) return [];
-  return filtroComp(p,t,{tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:PARAMS.radio_amplio, estr:1})
+  const o = state.seg==='micro'
+    ? {tol:PARAMS.micro_tol_area_amplia, antig:PARAMS.micro_max_antig, antigReq:true, habsLibre:true, radio:PARAMS.radio_amplio, estr:1}
+    : {tol:PARAMS.tol_area_amplia, antig:PARAMS.max_antig_amplia, radio:PARAMS.radio_amplio, estr:1};
+  return filtroComp(p,t,o)
     .filter(u=>u.zona!==p.zona);
 }
 function rentab(precio, ap, habs, z, adminMes, rc){
   const largo = z.arriendo_m2*ap;
-  const cortoB = z.adr[Math.min(habs,3)]*30*z.ocup;
+  const cortoB = z.adr[Math.min(habs,3)]*(state.seg==='micro'?PARAMS.adr_micro:1)*30*z.ocup;
   const cortoN = cortoB*(1-PARAMS.com_plataforma-PARAMS.gestion) - PARAMS.servicios_mes;
   const predialMes = precio*PARAMS.predial/12;
   return {largo, cortoN, yL:(largo-adminMes-predialMes)*12/precio, yC: rc==='prohibida'?null:(cortoN-adminMes-predialMes)*12/precio};
@@ -371,16 +426,18 @@ function analisis(p,ti){
   const med=median(comps.map(c=>c.a.m2)), medL=median(comps.map(c=>c.a.m2_lista));
   const ok = !!t.precio && comps.length>=3;
   // referencia fuera de la zona: se muestra en el panel, NUNCA entra en el sobreprecio del pin
-  const R=referenciaEntorno(p,t).map(u=>ajusteUsado(u)), medR=median(R.map(a=>a.m2));
+  const R=referenciaEntorno(p,t).map(u=>ajusteUsado(u)), medR=median(R.map(a=>a.m2)), NV=nuevosCercanos(p,t);
   return {t,n,comps,med,medL,nivel:L.nivel,desc:L.desc, prima:ok?n.m2/med-1:null, primaL:ok?n.m2_lista/medL-1:null,
-          ref:{n:R.length, med:medR, prima: t.precio&&R.length>=3 ? n.m2/medR-1 : null}};
+          ref:{n:R.length, med:medR, prima: t.precio&&R.length>=3 ? n.m2/medR-1 : null}, nuevos:NV};
 }
 function infoProyecto(p){
   const as=p.tipologias.map((_,i)=>analisis(p,i)), v=as.filter(a=>a.prima!==null);
-  const r=as.filter(a=>a.ref.prima!==null);
+  const r=as.filter(a=>a.ref.prima!==null), nv=as.filter(a=>a.nuevos.prima!==null && a.nuevos.eds.length>=2);
   return {prima: v.length?v.reduce((s,a)=>s+a.prima,0)/v.length:null, nivel: v.length?Math.max(...v.map(a=>a.nivel)):null,
           maxComps: Math.max(0,...as.map(a=>a.comps.length)),
-          refPrima: r.length?r.reduce((s,a)=>s+a.ref.prima,0)/r.length:null};
+          refPrima: r.length?r.reduce((s,a)=>s+a.ref.prima,0)/r.length:null,
+          nuevosPrima: nv.length?nv.reduce((s,a)=>s+a.nuevos.prima,0)/nv.length:null,
+          nuevosN: nv.length?Math.max(...nv.map(a=>a.nuevos.eds.length)):0};
 }
 function primaProyecto(p){return infoProyecto(p).prima}
 const desde = p => { const v=p.tipologias.map(t=>t.precio).filter(x=>x); return v.length?Math.min(...v):null; };
@@ -400,7 +457,8 @@ const ascNota = u => u.ascensor===true && (u.ascensor_fuente||'').startsWith('pr
 
 /* ---------- Estado ---------- */
 const state = {ciudad:'Bogotá', zonas:new Set(ZONAS.map(z=>z.id)), estados:new Set(['Sobre planos','En construcción','Entrega inmediata','Sin dato']),
-  habs:new Set([1,2,3]), soloRC:false, soloRCok:false, capa:'nuevos', selU:null, precioMax:600e6, sel:null, tip:0, sort:{k:'detectado',d:-1}, q:'', tipo:'Todos', excl:false};
+  habs:new Set([1,2,3]), soloRC:false, soloRCok:false, capa:'nuevos', selU:null, precioMax:600e6, sel:null, tip:0, sort:{k:'detectado',d:-1}, q:'', tipo:'Todos', excl:false,
+  seg:(()=>{ try{ return localStorage.getItem('vivienda.seg')==='micro'?'micro':'estandar'; }catch(e){ return 'estandar'; } })()};
 
 function proyFiltrados(){
   return PROYECTOS.filter(p => p.ciudad===state.ciudad && state.zonas.has(p.zona) && state.estados.has(p.estado)
@@ -448,12 +506,13 @@ function renderMapa(){
     const etiqueta = pr!==null ? (I.nivel>0?'≈':'')+pct(pr) : desde(p)===null ? 's/precio' : USADOS.length ? 's/c' : fM(desde(p));
     const motivo = pr!==null ? (I.nivel>0?'Sobreprecio vs. usados de la zona con criterios ampliados (área, antigüedad, estrato)':`Sobreprecio real vs. usados comparables de la zona`)
       : desde(p)===null ? 'Precio no publicado: no se puede comparar'
-      : USADOS.length ? `Sin comparables suficientes en la zona (${I.maxComps} de 3 mínimos)${I.refPrima!==null?`. Referencia fuera de la zona: ${pct(I.refPrima)}`:''}` : '';
+      : USADOS.length ? `Sin usados comparables suficientes en la zona (${I.maxComps} de 3 mínimos)${I.refPrima!==null?`. Referencia usados fuera de la zona: ${pct(I.refPrima)}`:''}` : '';
+    const motivoNuevos = I.nuevosPrima!==null ? `<br><span style="color:#666">vs. ${I.nuevosN} proyectos nuevos cercanos (precio de lista): ${pct(I.nuevosPrima)}</span>` : '';
     const estadoTxt = (p.estado && p.estado!=='Sin dato' ? p.estado : `Entrega ${p.entrega||'s/d'}`)
       + (p.fuera_de_zona ? ` · fuera de tus zonas (a ${p.distancia_zona_m} m de ${Z[p.zona].nombre})` : '');
     const icon=L.divIcon({className:'pinwrap',html:`<div class="pin proy ${c} ${p.fuera_de_zona?'fuera':''} ${state.sel===p.id?'sel':''}"><span class="pn">${p.nombre}</span><span class="pv">${etiqueta}</span></div>`,iconSize:[80,30],iconAnchor:[40,34]});
     L.marker([p.lat,p.lng],{icon,zIndexOffset:1000}).on('click',()=>selProyecto(p.id))
-      .bindTooltip(`<b>${p.nombre}</b><br>${estadoTxt} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}${motivo?`<br><span style="color:#666">${etiqueta} = ${motivo}</span>`:''}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
+      .bindTooltip(`<b>${p.nombre}</b><br>${estadoTxt} · ${desde(p)?'desde '+fM(desde(p)):'precio no publicado'}${motivo?`<br><span style="color:#666">${etiqueta} = ${motivo}</span>`:''}${motivoNuevos}`,{direction:'top',offset:[0,-30]}).addTo(projLayer);
   });
   if(state.capa!=='nuevos'){
     const us=usadosFiltrados(), medZ={};
@@ -516,7 +575,7 @@ function renderFiltros(){
     <span class="sw" style="background:#2f7d4a"></span>&lt; 15%<br>
     <span class="sw" style="background:#c58a22"></span>15–30%<br>
     <span class="sw" style="background:#b23a3a"></span>&gt; 30%<br>
-    <span class="sw" style="background:#5a5f66"></span>${USADOS.length?'s/c = menos de 3 comparables · s/precio = precio no publicado<br><b>≈</b> = pocos usados parecidos en la zona: criterios ampliados (siempre dentro de la zona)':'sin usados aún (muestra precio desde)'}
+    <span class="sw" style="background:#5a5f66"></span>${USADOS.length?'s/c = menos de 3 comparables · s/precio = precio no publicado<br><b>≈</b> = pocos usados parecidos en la zona: criterios ampliados (siempre dentro de la zona)'+(state.seg==='micro'?'<br><b>Micro</b>: comparables solo de edificios ≤ '+PARAMS.micro_max_antig+' años, sin exigir alcobas':''):'sin usados aún (muestra precio desde)'}
   </div>`}
   ${MODO==='real'&&PENDIENTES.sin_ubicar.length?`<h4>Sin ubicar (${PENDIENTES.sin_ubicar.length})</h4><div class="legend">${PENDIENTES.sin_ubicar.map(x=>x.nombre).join('<br>')}<br><span class="mono">vivienda ubicar</span></div>`:''}
   ${MODO==='real'&&PENDIENTES.fuera.length?`<h4>Fuera de zonas (${PENDIENTES.fuera.length})</h4><div class="legend">${PENDIENTES.fuera.map(x=>x.nombre).join('<br>')}</div>`:''}`;
@@ -560,9 +619,11 @@ function renderDetalle(){
   if(p.acabados==='Obra gris') flags.push(`Obra gris: se suman ${fK(PARAMS.acabados_m2)}/m² de acabados (${fM(n.acab)}).`);
   if(p.renta_corta==='desconocida') flags.push('Renta corta sin confirmar: revisar el reglamento de propiedad horizontal.');
   if(n.m>0) flags.push(`Entrega en ${n.m} meses: precio llevado a valor presente${PARAMS.renta_perdida?` + ${fM(n.rentaPerd)} de arriendo no percibido`:''}.`);
+  if(state.seg==='micro') flags.push(`<b>Micro (renta corta)</b>: comparables solo de edificios con antigüedad conocida ≤ ${PARAMS.micro_max_antig} años, sin exigir alcobas. Confirma en el reglamento de propiedad horizontal que permite renta corta: es un uso en debate regulatorio en Bogotá (Concejo, abr-2026).`);
   if(p.fuera_de_zona) flags.push(`<b>En seguimiento, fuera de tus zonas</b> (a ${p.distancia_zona_m} m de ${z.nombre}). Comparables por distancia, de cualquier zona; arriendo, ADR y estrato típico tomados de ${z.nombre} (supuesto).`);
   if(A.nivel>0 && A.comps.length && !p.fuera_de_zona) flags.push(`Pocos usados parecidos en la zona: comparables con criterios ampliados (<b>${A.desc}</b>).`);
   if(A.comps.length<3) flags.push(`Solo ${A.comps.length} comparable(s) en la zona aun ampliando criterios: no alcanza para calcular sobreprecio. En la zona casi no hay usados de este tamaño con ascensor.`);
+  if(A.nuevos.eds.length) flags.push(`<b>vs. proyectos nuevos cercanos</b> (≤ ${PARAMS.radio_amplio} m, ${t.habs} alc., área ±25 %, precio de lista/m² privado): ${A.nuevos.eds.length} proyecto(s), mediana ${fM1(A.nuevos.med)}/m²${A.nuevos.prima!==null?` → este proyecto está <b>${pct(A.nuevos.prima)}</b>`:''}. ${A.nuevos.eds.slice(0,5).map(e=>`${e.nombre} ${fM1(e.m2)}`).join(' · ')}.`);
   if(A.ref.n) flags.push(`Referencia fuera de la zona (no entra en el cálculo): ${A.ref.n} usados parecidos a ≤ ${PARAMS.radio_amplio} m en otras zonas, mediana ${fM1(A.ref.med)}/m² ajustado${A.ref.prima!==null?` → este proyecto estaría ${pct(A.ref.prima)} frente a ellos`:''}.`);
   const nf=A.comps.filter(c=>c.u.area_tipo!=='privada').length;
   if(nf) flags.push(`${nf} de ${A.comps.length} comparables con área no confirmada como privada.`);
@@ -885,7 +946,25 @@ async function cargarDatos(){
     $('#subtitulo').textContent = `≤ ${fM(PARAMS.precio_max)} · ${USADOS.length} usados · act. ${new Date(GENERADO).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}`;
   }catch(e){ console.warn('Sin dashboard.json: modo demo.', e); }
 }
-cargarDatos().then(()=>{ dibujarZonas(); renderAll(); fitCiudad(); });
+// Segmentos: cada pestaña ve solo sus tipologías y sus usados (Estándar ≥ 30 m² | Micro < 30 m² construidos).
+// Un proyecto mixto (p. ej. Metro 73) aparece en las dos, cada vez con sus propias tipologías.
+let TODOS_P = null, TODOS_U = null;
+const segDe = x => x.segmento || 'estandar';
+function aplicarSegmento(k){
+  if(TODOS_P===null){ TODOS_P = PROYECTOS; TODOS_U = USADOS_TODOS; }
+  state.seg = k; state.sel = null; state.selU = null; state.tip = 0;
+  try{ localStorage.setItem('vivienda.seg', k); }catch(e){}
+  PROYECTOS = TODOS_P.map(p=>({...p, tipologias:p.tipologias.filter(t=>segDe(t)===k)})).filter(p=>p.tipologias.length);
+  USADOS_TODOS = TODOS_U.filter(u=>segDe(u)===k);
+  USADOS = USADOS_TODOS.filter(u=>u.zona);
+  document.body.classList.toggle('micro', k==='micro');
+  $('#seg').querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.s===k));
+  if(MODO==='real' && GENERADO) $('#subtitulo').textContent =
+    `${k==='micro'?'Micro < 30 m²':'≤ '+fM(PARAMS.precio_max)} · ${USADOS.length} usados · act. ${new Date(GENERADO).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}`;
+}
+$('#seg').addEventListener('click', e=>{ const b=e.target.closest('button[data-s]'); if(!b || b.dataset.s===state.seg) return;
+  aplicarSegmento(b.dataset.s); renderAll(); });
+cargarDatos().then(()=>{ aplicarSegmento(state.seg); dibujarZonas(); renderAll(); fitCiudad(); });
 </script>
 </body>
 </html>

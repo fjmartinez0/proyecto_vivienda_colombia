@@ -200,6 +200,13 @@ Un paso que falla no detiene los demás: queda en `errores` y dispara la alerta 
 - Publicación: `docs/` = `web/index.html` + `dashboard.json` **sin descripción ni publicador** de los anuncios.
   `data/`, `logs/`, `.run/`, `proposals/` y el tema de ntfy nunca entran al repo (`.gitignore`).
 
+## Segmentos: Estándar y Micro (v0.13)
+
+El visor tiene dos pestañas que nunca se mezclan: **Estándar** (≥ 30 m² construidos) y **Micro** (18–30 m², tipo
+Alma 72, pensado para renta corta). El corte está en `[filtros] area_min` y el piso en `area_min_micro`.
+En Micro los comparables salen solo de edificios con antigüedad conocida ≤ 8 años (ajustable en Supuestos),
+sin exigir el mismo número de alcobas.
+
 ## Cómo agregar o corregir un sector
 
 En `config/config.toml`:
