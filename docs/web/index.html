@@ -138,6 +138,36 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
  .bars .row{grid-template-columns:110px 1fr 64px}
 }
 #tbl a,.ctab a{color:inherit;text-decoration:underline dotted}
+/* ---------- Estadísticas ---------- */
+:root{--st-used:#c97a2c;--st-used-soft:#f3e3cf;--st-new:#2f6db5;--st-rest:#d9d6cf;--st-grid:#ecebe6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--st-used:#bd8038;--st-used-soft:#3a2d1f;--st-new:#5b8fd6;--st-rest:#3a3e43;--st-grid:#262a2e}}
+.st-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:14px 0}
+.st-kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.st-kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.st-kpi .v{font-size:24px;font-weight:700;margin:3px 0 1px;font-variant-numeric:tabular-nums}
+.st-kpi .s{font-size:12px;color:var(--muted)}
+.st-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.st-grid .card.wide{grid-column:1/-1}
+.st-grid .card h4{margin:0 0 2px;font-size:14.5px}
+.st-q{color:var(--muted);font-size:12.5px;margin:0 0 8px}
+.st-take{font-size:12.5px;background:var(--soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.st-leg{display:flex;gap:16px;font-size:12px;color:var(--muted);margin:0 0 6px;flex-wrap:wrap}
+.st-leg i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.st-leg i.bar{border-radius:2px;width:14px;height:8px}
+.st-leg i.dia{border-radius:1px;transform:rotate(45deg);width:9px;height:9px}
+.st-svg{display:block;width:100%;height:auto;overflow:visible}
+.st-svg text{fill:var(--muted);font-size:11px;font-family:Inter,system-ui,sans-serif}
+.st-svg text.ink{fill:var(--ink)}
+#st-tip{position:fixed;pointer-events:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.14);opacity:0;z-index:2000;max-width:280px}
+#st-tip b{display:block;margin-bottom:2px}
+.st-src{font-size:10px;font-weight:600;padding:1px 6px;border-radius:5px;display:inline-block;margin-top:3px;letter-spacing:.02em;text-transform:none}
+.st-src.m{background:var(--accent-soft);color:var(--accent)}
+.st-src.s{background:var(--warn-soft);color:var(--warn)}
+.st-src.d{background:var(--soft);color:var(--muted)}
+.st-tbl td small{color:var(--muted)}
+.st-tbl tr.op{cursor:pointer}.st-tbl tr.op:hover td{background:var(--soft)}
+.st-tbtn{float:right;font:12px Inter;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:7px;padding:3px 9px;cursor:pointer}
+@media (max-width:900px){.st-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -150,6 +180,7 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
     <button data-v="usados">Usados</button>
     <button data-v="feed">Detectados</button>
     <button data-v="sup">Supuestos</button>
+    <button data-v="est">Estadísticas</button>
   </nav>
   <div class="seg" id="seg"><button data-s="estandar" class="on" title="Tipologías y usados de 30 m² construidos o más">Estándar · ≥ 30 m²</button><button data-s="micro" title="Micro-apartaestudios de 18 a 30 m² (tipo Alma 72), pensados para renta corta">Micro · &lt; 30 m²</button></div>
   <div class="kpis" id="kpis"></div>
@@ -164,7 +195,9 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
   <section class="view" id="v-usados"></section>
   <section class="view" id="v-feed"></section>
   <section class="view" id="v-sup"></section>
+  <section class="view" id="v-est"></section>
 </main>
+<div id="st-tip"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
@@ -900,11 +933,11 @@ function renderSup(){
   $('#v-sup').innerHTML=`<div class="page"><h2>Supuestos del modelo</h2>
   <p class="muted">Editables; recalculan mapa, comparador, tabla y feed al instante.</p>
   <div class="grid2"><div class="card">${rows}</div>
-  <div><div class="card"><b>Parámetros por zona (ficticios)</b>
+  <div><div class="card"><b>Parámetros por zona (supuestos)</b>
    <div class="ctab" style="margin-top:8px"><table><thead><tr><th>Zona</th><th class="n">Estr.</th><th class="n">Arr. $/m²</th><th class="n">ADR 1/2/3h</th><th class="n">Ocup.</th></tr></thead><tbody>
    ${ZONAS.map(z=>`<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${z.color}"></i> ${z.nombre}<br><small class="muted">${z.desc}</small></td><td class="n">${z.estrato}</td><td class="n">${fK(z.arriendo_m2)}</td><td class="n">${[1,2,3].map(h=>Math.round(z.adr[h]/1000)).join('/')}k</td><td class="n">${(z.ocup*100).toFixed(0)}%</td></tr>`).join('')}
    </tbody></table></div>
-   <p class="muted" style="font-size:12px">Polígonos dibujados a mano (<span class="mono">config/zonas_dibujadas.geojson</span>, editable en geojson.io). Estrato, arriendo, ADR y ocupación por zona son supuestos.</p></div>
+   <p class="muted" style="font-size:12px">Polígonos dibujados a mano (<span class="mono">config/zonas_dibujadas.geojson</span>, editable en geojson.io). Estrato, arriendo, ADR y ocupación por zona son supuestos (valores puestos a mano). Lo que sí se mide de los anuncios (estrato, $/m², administración, rebajas, días publicado) está en la pestaña <b>Estadísticas</b>.</p></div>
    <div class="card" style="margin-top:16px"><b>Contrato de datos</b><p class="muted" style="font-size:12.5px">Lo que el proceso diario debe producir. Descarga el JSON de ejemplo para ver la estructura de zonas, proyectos y usados.</p>
    <button class="btn" id="dl">Descargar data.json de ejemplo</button></div></div></div></div>`;
   $('#v-sup').querySelectorAll('input[data-k]').forEach(i=>i.onchange=()=>{
@@ -914,6 +947,234 @@ function renderSup(){
   });
   $('#dl').onclick=()=>{const b=new Blob([JSON.stringify({generado:HOY,zonas:ZONAS,proyectos:PROYECTOS,usados:USADOS},null,2)],{type:'application/json'});
     const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='data.json';a.click()};
+}
+
+/* ---------- Estadísticas ----------
+   Todo sale de lo que ya carga el dashboard (usados vigentes de la pestaña de segmento + tipologías nuevas).
+   Muestra: usados elegibles (ascensor y ≤ tope) sin unidades de proyecto ni duplicados; $/m² de lista sobre área
+   privada (igual que la pestaña Usados). Proyectos nuevos: un valor por proyecto (mediana de sus tipologías) para que
+   uno con muchas tipologías no domine; los que están fuera de zonas no entran en la comparación por zona. */
+const ST_MIN_N = 5;        // menos que esto: la mediana de la zona se marca "pocos datos"
+const ST_OPORT = -0.10;    // oportunidad: $/m² ≥ 10 % bajo la mediana de su zona (mismo umbral que el verde del mapa)
+const TRAMOS = [['menor a 1',0.5],['1 a 8',4.5],['9 a 15',12],['16 a 30',23],['más de 30',35]];
+const stQ = (a,p) => { if(!a.length) return null; const s=[...a].sort((x,y)=>x-y), i=(s.length-1)*p, lo=Math.floor(i);
+  return s[lo]+(s[Math.min(lo+1,s.length-1)]-s[lo])*(i-lo); };
+const stModa = a => { const c={}; a.forEach(v=>c[v]=(c[v]||0)+1); const k=Object.keys(c).sort((x,y)=>c[y]-c[x])[0]; return k==null?null:+k; };
+const stP = (v,d=0) => v==null||isNaN(v) ? '—' : (v*100).toLocaleString('es-CO',{maximumFractionDigits:d,minimumFractionDigits:d})+' %';
+const stPesos = v => v==null||isNaN(v) ? '—' : '$'+(Math.round(v/100)*100).toLocaleString('es-CO');
+const stDias = (a,b) => Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/864e5);
+const stEsc = t => String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const stSvg = (w,h,g) => `<svg class="st-svg" viewBox="0 0 ${w} ${h}" role="img">${g}</svg>`;
+const stBar = (x,yTop,w,yBase) => yBase-yTop<4 ? `M${x},${yBase}V${yTop}H${x+w}V${yBase}Z`   // barra con punta redondeada de 4 px
+  : `M${x},${yBase}V${yTop+4}q0,-4 4,-4H${x+w-4}q4,0 4,4V${yBase}Z`;
+let ST_TABLA = false;
+
+function stDatos(){
+  const ciudad = state.ciudad, zs = ZONAS.filter(z=>z.ciudad===ciudad);
+  const todos = USADOS.filter(u=>u.ciudad===ciudad);
+  const el = sinDuplicados(todos.filter(u=>elegible(u) && !u.unidad_proyecto)).map(u=>{
+    const ap=areaPriv(u.area,u.area_tipo), ini=u.precio_inicial||u.precio;
+    const maxP=Math.max(ini, ...(u.precios||[]).map(x=>x.precio));
+    return {...u, ap, m2:u.precio/ap, adm2:u.admin?u.admin/ap:null,
+      rebaja: u.precio<maxP ? 1-u.precio/maxP : 0,
+      dias: stDias(u.creado_portal||u.detectado, HOY),
+      tramo: u.antiguedad==null ? null : (TRAMOS.find(([,v])=>Math.abs(v-u.antiguedad)<0.01)||[u.antiguedad<1?'menor a 1':u.antiguedad<=8?'1 a 8':u.antiguedad<=15?'9 a 15':u.antiguedad<=30?'16 a 30':'más de 30'])[0]};
+  });
+  const nuevos = PROYECTOS.filter(p=>p.ciudad===ciudad && !p.fuera_de_zona).map(p=>{
+    const v=p.tipologias.filter(t=>t.precio).map(t=>({area:apNuevo(p,t), m2:t.precio/apNuevo(p,t)}));
+    return {p, tipos:v, m2:median(v.map(x=>x.m2))};
+  }).filter(x=>x.tipos.length);
+  const porZona = zs.map(z=>{
+    const u=el.filter(x=>x.zona===z.id), n=nuevos.filter(x=>x.p.zona===z.id), m2=u.map(x=>x.m2);
+    const arr = z.arriendo_m2, med = median(m2), adm = median(u.filter(x=>x.adm2).map(x=>x.adm2));
+    return {z, n:u.length, total:todos.filter(x=>x.zona===z.id).length, p25:stQ(m2,.25), p50:med, p75:stQ(m2,.75),
+      nuevo: median(n.map(x=>x.m2)), nN:n.length, estrato: stModa(u.map(x=>x.estrato).filter(x=>x!=null)),
+      adm2: adm, dias: median(u.map(x=>x.dias)), conRebaja: u.length? u.filter(x=>x.rebaja>0).length/u.length : null,
+      yB: med ? arr*12/med : null,
+      yN: med ? ((arr-(adm||0))*12)/med - PARAMS.predial : null};
+  });
+  return {ciudad, zs, todos, el, nuevos, porZona};
+}
+
+function renderEst(){
+  const el = $('#v-est'); if(!el) return;
+  const D = stDatos(), Z0 = D.porZona, conN = Z0.filter(z=>z.n>=ST_MIN_N);
+  const micro = state.seg==='micro';
+  if(!D.el.length){ el.innerHTML=`<div class="page"><h2>Estadísticas</h2><div class="empty">No hay usados elegibles en ${D.ciudad} para este segmento.</div></div>`; return; }
+
+  // KPIs
+  const primas = Z0.filter(z=>z.nN && z.n>=ST_MIN_N).map(z=>z.nuevo/z.p50-1);
+  const reb = D.el.filter(u=>u.rebaja>0);
+  const seguimiento = median(D.el.map(u=>stDias(u.detectado,HOY)));
+  const kpis = [
+    ['Usados que cumplen', D.el.length.toLocaleString('es-CO'), `de ${D.todos.length.toLocaleString('es-CO')} vigentes · ${D.nuevos.length} proyectos nuevos con precio`],
+    ['$/m² mediano usado', fM1(median(D.el.map(u=>u.m2))), 'precio de lista sobre área privada'],
+    ['Prima mediana de lo nuevo', primas.length ? pct(median(primas)) : '—', `nuevo vs. usado, misma zona (${primas.length} zonas)`],
+    ['Rebaja observada', reb.length ? stP(median(reb.map(u=>u.rebaja)),1) : '—', `mediana · ${stP(reb.length/D.el.length)} de los anuncios bajó precio`],
+    ['Días publicado', Math.round(median(D.el.map(u=>u.dias)))+' días', 'mediana desde la publicación en el portal'],
+  ];
+
+  // 1 · rango de $/m² por zona y prima de lo nuevo
+  const c1 = (()=>{
+    const zs = Z0.filter(z=>z.n>=3).sort((a,b)=>b.p50-a.p50);
+    if(!zs.length) return {svg:'<div class="empty">Sin datos.</div>', take:'', tabla:''};
+    const W=1100, L=230, R=80, row=30, H=zs.length*row+34;
+    const vals = zs.flatMap(z=>[z.p25,z.p75,z.nuevo]).filter(v=>v!=null);
+    const lo=Math.floor(Math.min(...vals)/1e6)*1e6, hi=Math.ceil(Math.max(...vals)/1e6)*1e6, paso=(hi-lo)>8e6?2e6:1e6;
+    const x=v=>L+(v-lo)/(hi-lo)*(W-L-R);
+    let g='';
+    for(let t=lo;t<=hi;t+=paso) g+=`<line x1="${x(t)}" x2="${x(t)}" y1="6" y2="${H-26}" stroke="var(--st-grid)"/><text x="${x(t)}" y="${H-10}" text-anchor="middle">${t/1e6} M</text>`;
+    zs.forEach((z,i)=>{
+      const y=14+i*row, pr=z.nuevo!=null ? z.nuevo/z.p50-1 : null, poco=z.n<ST_MIN_N;
+      const tip=`<b>${z.z.nombre}</b>Usados: mediana ${fM1(z.p50)}/m² · rango ${fM1(z.p25)}–${fM1(z.p75)} (n=${z.n})${poco?' · pocos datos':''}<br>`+
+        (z.nN?`Nuevos: mediana ${fM1(z.nuevo)}/m² (${z.nN} proyecto${z.nN>1?'s':''})<br>Prima: ${pct(pr)}`:'Sin proyectos nuevos con precio en esta zona');
+      g+=`<g data-tip="${stEsc(tip)}"><rect x="0" y="${y-13}" width="${W}" height="${row}" fill="transparent"/>
+        <text x="0" y="${y+4}" class="ink">${z.z.nombre}</text><text x="${L-10}" y="${y+4}" text-anchor="end">n=${z.n}${poco?' ·':''}</text>
+        <rect x="${x(z.p25)}" y="${y-5}" width="${Math.max(2,x(z.p75)-x(z.p25))}" height="10" rx="4" fill="var(--st-used-soft)" stroke="var(--st-used)" ${poco?'stroke-dasharray="3 2"':''}/>
+        ${pr!=null?`<line x1="${x(z.p50)}" x2="${x(z.nuevo)}" y1="${y}" y2="${y}" stroke="var(--muted)" stroke-dasharray="2 3"/>`:''}
+        <circle cx="${x(z.p50)}" cy="${y}" r="5" fill="var(--st-used)" stroke="var(--panel)" stroke-width="2"/>
+        ${pr!=null?`<rect x="${x(z.nuevo)-5}" y="${y-5}" width="10" height="10" transform="rotate(45 ${x(z.nuevo)} ${y})" fill="var(--st-new)" stroke="var(--panel)" stroke-width="2"/>`:''}
+        <text x="${W-4}" y="${y+4}" text-anchor="end" class="${pr!=null?'ink':''}">${pr!=null?pct(pr):'—'}</text></g>`;
+    });
+    const conP = zs.filter(z=>z.nuevo!=null && z.n>=ST_MIN_N).sort((a,b)=>(a.nuevo/a.p50)-(b.nuevo/b.p50));
+    const take = conP.length>=2 ? `Con al menos ${ST_MIN_N} usados de referencia, la prima de lo nuevo va de <b>${pct(conP[0].nuevo/conP[0].p50-1)}</b> (${conP[0].z.nombre}) a <b>${pct(conP.at(-1).nuevo/conP.at(-1).p50-1)}</b> (${conP.at(-1).z.nombre}). Es precio de lista contra precio de lista: el sobreprecio real (valor presente, obra gris, arriendo perdido y negociación) está en el mapa.`
+      : 'Hay muy pocas zonas con proyectos nuevos y suficientes usados para comparar.';
+    const tabla = `<table class="st-tbl"><thead><tr><th>Zona</th><th class="n">n</th><th class="n">P25</th><th class="n">Mediana</th><th class="n">P75</th><th class="n">Nuevo</th><th class="n">Prima</th></tr></thead><tbody>${
+      zs.map(z=>`<tr><td>${z.z.nombre}</td><td class="n">${z.n}</td><td class="n">${fM1(z.p25)}</td><td class="n">${fM1(z.p50)}</td><td class="n">${fM1(z.p75)}</td><td class="n">${z.nN?fM1(z.nuevo):'—'}</td><td class="n">${z.nN?pct(z.nuevo/z.p50-1):'—'}</td></tr>`).join('')}</tbody></table>`;
+    return {svg:stSvg(W,H,g), take, tabla};
+  })();
+
+  // 2 · $/m² según tamaño
+  const c2 = (()=>{
+    const W=540, H=300, L=48, B=30, T=8, R=10;
+    const nv = D.nuevos.flatMap(x=>x.tipos.map(t=>({...t, p:x.p})));
+    const xs=[...D.el.map(u=>u.ap),...nv.map(t=>t.area)], ys=[...D.el.map(u=>u.m2),...nv.map(t=>t.m2)];
+    const paso = micro?2:10;
+    const x0=Math.floor(stQ(xs,.01)/paso)*paso, x1=Math.ceil(stQ(xs,.99)/paso)*paso;
+    const y0=Math.floor(stQ(ys,.01)/1e6)*1e6, y1=Math.ceil(stQ(ys,.99)/1e6)*1e6;
+    const cl=(v,a,b)=>Math.min(Math.max(v,a),b);
+    const x=v=>L+(cl(v,x0,x1)-x0)/(x1-x0)*(W-L-R), y=v=>T+(1-(cl(v,y0,y1)-y0)/(y1-y0))*(H-T-B);
+    const py=(y1-y0)>8e6?2e6:1e6;
+    let g='';
+    for(let t=y0;t<=y1;t+=py) g+=`<line x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--st-grid)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${t/1e6} M</text>`;
+    for(let t=x0;t<=x1;t+=paso) g+=`<text x="${x(t)}" y="${H-10}" text-anchor="middle">${t} m²</text>`;
+    D.el.forEach(u=>g+=`<circle cx="${x(u.ap)}" cy="${y(u.m2)}" r="4" fill="var(--st-used)" fill-opacity=".45" data-tip="${stEsc(`<b>Usado · ${Z[u.zona].nombre}</b>${u.ap.toFixed(0)} m² priv. · ${fM(u.precio)} · ${fM1(u.m2)}/m²`)}" data-u="${u.id}"/>`);
+    nv.forEach(t=>g+=`<circle cx="${x(t.area)}" cy="${y(t.m2)}" r="4.5" fill="var(--st-new)" stroke="var(--panel)" stroke-width="2" data-tip="${stEsc(`<b>${t.p.nombre}</b>${t.area.toFixed(1)} m² priv. · ${fM1(t.m2)}/m² (lista)`)}"/>`);
+    const curva=(arr,ax,col)=>{ const pts=[]; for(let a=x0;a<x1;a+=paso){ const s=arr.filter(d=>ax(d)>=a&&ax(d)<a+paso); if(s.length>=3) pts.push([x(a+paso/2),y(median(s.map(d=>d.m2)))]); }
+      return pts.length>1?`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round"/>`:''; };
+    g+=curva(D.el,u=>u.ap,'var(--st-used)')+curva(nv,t=>t.area,'var(--st-new)');
+    const cortes = micro?[20,25]:[40,60];
+    const ch=D.el.filter(u=>u.ap<cortes[0]), gr=D.el.filter(u=>u.ap>=cortes[1]);
+    const take = ch.length>=5 && gr.length>=5
+      ? `Un usado de menos de ${cortes[0]} m² privados cuesta <b>${pct(median(ch.map(u=>u.m2))/median(gr.map(u=>u.m2))-1)} por m²</b> frente a uno de ${cortes[1]} m² o más (medianas, n=${ch.length} y ${gr.length}). Por eso comparar con unidades más grandes infla el sobreprecio de un proyecto pequeño.`
+      : 'Pocos anuncios en los extremos de tamaño para comparar.';
+    return {svg:stSvg(W,H,g), take};
+  })();
+
+  // 3 · rebajas observadas vs. supuesto de negociación
+  const c3 = (()=>{
+    const r = reb.map(u=>u.rebaja*100);
+    if(r.length<5) return {svg:`<div class="empty">Todavía hay muy pocas rebajas registradas (${r.length}). El historial de precios se llena con las corridas diarias.</div>`, take:''};
+    const W=540, H=250, L=36, B=30, T=14, R=10, bins=[0,2,4,6,8,10,12,14,100], bw=(W-L-R)/(bins.length-1);
+    const cnt=bins.slice(0,-1).map((b,i)=>r.filter(v=>v>=b&&v<bins[i+1]).length), mx=Math.max(...cnt,1);
+    const xv=v=>{ const i=Math.max(0,bins.findIndex((b,k)=>v>=b&&v<bins[k+1])); return L+i*bw+Math.min(1,(v-bins[i])/(bins[i+1]-bins[i]))*bw; };
+    const y=v=>T+(1-v/mx)*(H-T-B);
+    let g='';
+    [0,.5,1].forEach(f=>{ const v=Math.round(mx*f); g+=`<line x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--st-grid)"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`; });
+    cnt.forEach((c,i)=>{ const lbl=i===cnt.length-1?`${bins[i]} % o más`:`${bins[i]}–${bins[i+1]} %`;
+      g+=`<g data-tip="${stEsc(`<b>Rebaja ${lbl}</b>${c} anuncios (${stP(c/r.length)})`)}"><rect x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent"/>
+        ${c?`<path d="${stBar(L+i*bw+1,y(c),bw-2,y(0))}" fill="var(--st-used)"/>`:''}</g>
+        <text x="${L+i*bw+bw/2}" y="${H-10}" text-anchor="middle">${i===cnt.length-1?bins[i]+'+':bins[i]+'–'+bins[i+1]} %</text>`; });
+    const m=median(r), sup=PARAMS.desc_neg*100;
+    g+=`<line x1="${xv(sup)}" x2="${xv(sup)}" y1="${T-6}" y2="${y(0)}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/><text x="${xv(sup)+5}" y="${T+2}" class="ink">supuesto ${sup.toLocaleString('es-CO')} %</text>`;
+    g+=`<line x1="${xv(m)}" x2="${xv(m)}" y1="${T+12}" y2="${y(0)}" stroke="var(--ink)" stroke-width="1.5"/><rect x="${xv(m)+4}" y="${H-B-24}" width="96" height="18" rx="4" fill="var(--panel)"/><text x="${xv(m)+8}" y="${H-B-11}" class="ink">mediana ${m.toLocaleString('es-CO',{maximumFractionDigits:1})} %</text>`;
+    const sobre=r.filter(v=>v>=sup).length/r.length;
+    return {svg:stSvg(W,H,g), take:`<b>${stP(r.length/D.el.length)}</b> de los anuncios bajó precio desde que lo vemos (seguimiento mediano: ${seguimiento} días) y la rebaja mediana fue <b>${m.toLocaleString('es-CO',{maximumFractionDigits:1})} %</b>; ${stP(sobre)} rebajó ${sup.toLocaleString('es-CO')} % o más. Es rebaja publicada, no precio de cierre (que suele ser menor): si la mediana queda lejos del supuesto, ajústalo en Supuestos.`};
+  })();
+
+  // 4 · administración por m² según antigüedad
+  const c4 = (()=>{
+    const v=TRAMOS.map(([t])=>{ const s=D.el.filter(u=>u.tramo===t && u.adm2); return {t, m:median(s.map(u=>u.adm2)), n:s.length}; });
+    const ok=v.filter(d=>d.n>=3);
+    if(ok.length<2) return {svg:'<div class="empty">Pocos anuncios con administración y antigüedad.</div>', take:''};
+    const W=540, H=230, L=64, B=30, T=18, R=10, mx=Math.ceil(Math.max(...ok.map(d=>d.m))/2000)*2000, bw=(W-L-R)/v.length;
+    const y=val=>T+(1-val/mx)*(H-T-B);
+    let g='';
+    for(let t=0;t<=mx;t+=2000) g+=`<line x1="${L}" x2="${W-R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--st-grid)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">${stPesos(t)}</text>`;
+    v.forEach((d,i)=>{ g+=`<text x="${L+i*bw+bw/2}" y="${H-10}" text-anchor="middle">${d.t} años</text>`;
+      if(d.n<3) return; const x0=L+i*bw+bw*.22, w=bw*.56;
+      g+=`<g data-tip="${stEsc(`<b>Edificio ${d.t} años</b>Admin mediana ${stPesos(d.m)}/m² al mes (n=${d.n})<br>Apto de 40 m²: ${stPesos(d.m*40)} al mes`)}"><rect x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent"/>
+        <path d="${stBar(x0,y(d.m),w,y(0))}" fill="var(--st-used)"/><text x="${x0+w/2}" y="${y(d.m)-6}" text-anchor="middle" class="ink">${stPesos(d.m)}</text></g>`; });
+    const a=ok[0], b=ok.at(-1);
+    return {svg:stSvg(W,H,g), take:`Edificio de ${a.t} años: <b>${stPesos(a.m)}/m²</b> al mes; de ${b.t} años: <b>${stPesos(b.m)}/m²</b> (${pct(a.m/b.m-1)}). En 40 m² la diferencia es ${fM1((a.m-b.m)*40*12)} al año, que sale directo de la renta neta.`};
+  })();
+
+  // 5 · oferta que pasa tus reglas
+  const c5 = (()=>{
+    const zs=[...Z0].sort((a,b)=>b.total-a.total), W=540, L=200, R=64, row=22, H=zs.length*row+8, mx=Math.max(1,...zs.map(z=>z.total));
+    const x=v=>L+v/mx*(W-L-R);
+    let g='';
+    zs.forEach((z,i)=>{ const y=4+i*row, w1=x(z.n)-L, w2=x(z.total)-x(z.n);
+      g+=`<g data-tip="${stEsc(`<b>${z.z.nombre}</b>${z.total} usados vigentes · ${z.n} cumplen (${stP(z.total?z.n/z.total:0)})`)}"><rect x="0" y="${y}" width="${W}" height="${row}" fill="transparent"/>
+        <text x="0" y="${y+14}" class="ink">${z.z.nombre}</text>
+        ${z.n?`<rect x="${L}" y="${y+5}" width="${Math.max(w1-1,2)}" height="12" rx="3" fill="var(--st-used)"/>`:''}
+        ${w2>1?`<rect x="${L+w1+1}" y="${y+5}" width="${w2-1}" height="12" rx="3" fill="var(--st-rest)"/>`:''}
+        <text x="${x(z.total)+6}" y="${y+14}">${z.n} / ${z.total}</text></g>`; });
+    const pocos=Z0.filter(z=>z.n<ST_MIN_N).map(z=>z.z.nombre);
+    return {svg:stSvg(W,H,g), take: pocos.length ? `Con menos de ${ST_MIN_N} usados que cumplen: <b>${pocos.join(', ')}</b>. Ahí las medianas son poco confiables y los proyectos suelen quedar sin comparables (s/c).` : `Todas las zonas tienen al menos ${ST_MIN_N} usados que cumplen.`};
+  })();
+
+  // 6 · oportunidades: usados bajo la mediana de su zona
+  const medZ={}; Z0.forEach(z=>{ if(z.n>=ST_MIN_N) medZ[z.z.id]=z; });
+  const oport = D.el.filter(u=>medZ[u.zona]).map(u=>{ const z=medZ[u.zona], zz=Z[u.zona];
+    const yN = ((zz.arriendo_m2*u.ap-(u.admin||0))*12)/u.precio - PARAMS.predial;
+    return {...u, desv:u.m2/z.p50-1, yN}; }).filter(u=>u.desv<=ST_OPORT).sort((a,b)=>a.desv-b.desv).slice(0,12);
+
+  // 7 · parámetros por zona
+  const SRC = {m:'<span class="st-src m">medido</span>', s:'<span class="st-src s">supuesto</span>', d:'<span class="st-src d">derivado</span>'};
+  const filas = [...Z0].sort((a,b)=>(b.p50||0)-(a.p50||0)).map(z=>{ const ok=z.n>=ST_MIN_N, pc='<small>pocos datos</small>', zz=z.z;
+    return `<tr><td><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${zz.color}"></i> ${zz.nombre}</td><td class="n">${z.n}</td>
+      <td class="n">${z.estrato??'—'}</td><td class="n">${ok?fM1(z.p50):pc}</td><td class="n">${ok?stPesos(z.adm2):'—'}</td>
+      <td class="n">${ok?Math.round(z.dias)+' d':'—'}</td><td class="n">${ok?stP(z.conRebaja):'—'}</td>
+      <td class="n">${fK(zz.arriendo_m2)}</td><td class="n">${fK(zz.adr[1]*(micro?PARAMS.adr_micro:1))}</td><td class="n">${stP(zz.ocup)}</td>
+      <td class="n">${ok?stP(z.yB,1):'—'}</td><td class="n">${ok?stP(z.yN,1):'—'}</td></tr>`; }).join('');
+
+  el.innerHTML = `<div class="page"><h2>Estadísticas · ${D.ciudad}</h2>
+  <p class="muted">Lo que dicen los anuncios recolectados: usados vigentes que cumplen tus reglas (ascensor, ≤ ${fM(PARAMS.precio_max)}; sin unidades de proyecto ni duplicados) y tipologías de proyectos nuevos en zona. Segmento ${micro?'Micro · &lt; 30 m²':'Estándar · ≥ 30 m²'}. Se recalcula con cada corrida.</p>
+  <div class="toolbar"><div class="seg" style="margin-left:0">${['Bogotá','Bucaramanga'].map(c=>`<button data-stc="${c}" class="${state.ciudad===c?'on':''}">${c}</button>`).join('')}</div></div>
+  <div class="st-kpis">${kpis.map(k=>`<div class="st-kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('')}</div>
+  <div class="st-grid">
+   <div class="card wide"><button class="st-tbtn" id="st-tbtn">${ST_TABLA?'Ocultar tabla':'Ver tabla'}</button>
+    <h4>¿Cuánto cuesta el m² en cada zona, y cuánto más cobra lo nuevo?</h4>
+    <p class="st-q">Barra = mitad central de los usados (percentil 25 a 75). Punto = mediana de usados. Rombo = mediana de proyectos nuevos (precio de lista). A la derecha, la prima de lo nuevo. Barra punteada = menos de ${ST_MIN_N} anuncios.</p>
+    <div class="st-leg"><span><i class="bar" style="background:var(--st-used-soft);outline:1px solid var(--st-used)"></i>Usados: rango central</span><span><i style="background:var(--st-used)"></i>Usados: mediana</span><span><i class="dia" style="background:var(--st-new)"></i>Nuevos: mediana</span></div>
+    ${c1.svg}<div class="ctab" style="display:${ST_TABLA?'block':'none'};margin-top:8px">${c1.tabla}</div>${c1.take?`<div class="st-take">${c1.take}</div>`:''}</div>
+   <div class="card"><h4>Entre más chica la unidad, más caro el m²</h4><p class="st-q">Cada punto es un anuncio. Líneas = mediana por rango de tamaño (área privada).</p>
+    <div class="st-leg"><span><i style="background:var(--st-used)"></i>Usados</span><span><i style="background:var(--st-new)"></i>Nuevos</span></div>${c2.svg}<div class="st-take">${c2.take}</div></div>
+   <div class="card"><h4>¿El ${(PARAMS.desc_neg*100).toLocaleString('es-CO')} % de negociación es realista?</h4><p class="st-q">Usados que bajaron de precio mientras los seguíamos, por tamaño de la rebaja.</p>
+    <div class="st-leg"><span><i class="bar" style="background:var(--st-used)"></i>Anuncios</span><span style="color:var(--ink)">┆ supuesto actual</span></div>${c3.svg}${c3.take?`<div class="st-take">${c3.take}</div>`:''}</div>
+   <div class="card"><h4>Administración por m² según la edad del edificio</h4><p class="st-q">Mediana de administración mensual por m² privado.</p>${c4.svg}${c4.take?`<div class="st-take">${c4.take}</div>`:''}</div>
+   <div class="card"><h4>¿Cuánta oferta pasa tus reglas?</h4><p class="st-q">Usados vigentes por zona: los que cumplen frente al resto.</p>
+    <div class="st-leg"><span><i class="bar" style="background:var(--st-used)"></i>Cumplen</span><span><i class="bar" style="background:var(--st-rest)"></i>No cumplen</span></div>${c5.svg}<div class="st-take">${c5.take}</div></div>
+   <div class="card wide"><h4>Oportunidades: usados ≥ ${Math.abs(ST_OPORT*100)} % bajo la mediana de su zona</h4>
+    <p class="st-q">Solo zonas con al menos ${ST_MIN_N} anuncios que cumplen. Un precio bajo puede tener razón (piso bajo, interior, para remodelar): es una lista para revisar, no para comprar. Clic en una fila para verla en el mapa.</p>
+    ${oport.length?`<div class="ctab"><table class="st-tbl"><thead><tr><th>Zona</th><th>Barrio</th><th>Tipo</th><th class="n">Á. priv</th><th class="n">Precio</th><th class="n">$/m²</th><th class="n">vs. zona</th><th class="n">Admin</th><th>Antig.</th><th class="n">Publicado</th><th class="n">Δ precio</th><th class="n">Rentab. neta est.</th></tr></thead><tbody>${
+      oport.map(u=>`<tr class="op" data-op="${u.id}"><td>${Z[u.zona].nombre}</td><td>${u.barrio||'—'}</td><td>${nombreUsado(u)}</td><td class="n">${u.ap.toFixed(0)} m²</td><td class="n">${fM(u.precio)}</td><td class="n">${fM1(u.m2)}</td><td class="n neg">${pct(u.desv)}</td><td class="n">${fK(u.admin)}</td><td>${antig(u)}</td><td class="n">${u.dias} d</td><td class="n">${u.rebaja?'−'+stP(u.rebaja,1):'—'}</td><td class="n">${stP(u.yN,1)}</td></tr>`).join('')}</tbody></table></div>
+      <p class="muted" style="font-size:12px">Rentabilidad neta estimada = (arriendo supuesto de la zona × área − administración) × 12 ÷ precio − predial. Indicativa mientras el arriendo sea supuesto.</p>`
+     :'<div class="empty">Ningún usado está 10 % o más bajo la mediana de su zona.</div>'}</div>
+   <div class="card wide"><h4>Parámetros por zona</h4>
+    <p class="st-q">Cada columna dice de dónde sale: <span class="st-src m">medido</span> = calculado de los anuncios; <span class="st-src s">supuesto</span> = valor puesto a mano mientras no haya fuente; <span class="st-src d">derivado</span> = cuenta con los anteriores.</p>
+    <div class="ctab"><table class="st-tbl"><thead><tr><th>Zona</th><th class="n">n</th><th class="n">Estrato<br>${SRC.m}</th><th class="n">Venta $/m²<br>${SRC.m}</th><th class="n">Admin/m²<br>${SRC.m}</th><th class="n">Días publ.<br>${SRC.m}</th><th class="n">Con rebaja<br>${SRC.m}</th><th class="n">Arriendo $/m²<br>${SRC.s}</th><th class="n">ADR ${micro?'micro':'1H'}<br>${SRC.s}</th><th class="n">Ocupación<br>${SRC.s}</th><th class="n">Rentab. bruta<br>${SRC.d}</th><th class="n">Rentab. neta<br>${SRC.d}</th></tr></thead><tbody>${filas}</tbody></table></div>
+    <p class="muted" style="font-size:12px;margin-bottom:0">Estrato = el más frecuente. Días publicado = mediana desde la fecha de publicación en el portal (liquidez: más días, más margen para negociar). Rentabilidad bruta = arriendo × 12 ÷ $/m²; neta = descontando administración y predial (${stP(PARAMS.predial,1)}). Hoy el arriendo es supuesto, así que las rentabilidades son indicativas; con el módulo de arriendos esa columna pasa a medida. ADR y ocupación de renta corta no tienen fuente gratuita: seguirán como supuestos.</p></div>
+  </div></div>`;
+
+  const tip=$('#st-tip');
+  el.querySelectorAll('[data-tip]').forEach(n=>{ n.addEventListener('mousemove',e=>{ tip.innerHTML=n.dataset.tip; tip.style.opacity=1;
+      tip.style.left=Math.min(e.clientX+14,innerWidth-290)+'px'; tip.style.top=(e.clientY+14)+'px'; });
+    n.addEventListener('mouseleave',()=>tip.style.opacity=0); });
+  el.querySelectorAll('[data-stc]').forEach(b=>b.onclick=()=>{ state.ciudad=b.dataset.stc; state.sel=null; renderAll(); fitCiudad(); });
+  $('#st-tbtn').onclick=()=>{ ST_TABLA=!ST_TABLA; renderEst(); };
+  el.querySelectorAll('[data-op]').forEach(r=>r.onclick=()=>{ tip.style.opacity=0; $('#tabs button[data-v="mapa"]').click(); selUsado(r.dataset.op); });
 }
 
 /* ---------- KPIs y orquestación ---------- */
@@ -926,7 +1187,7 @@ function renderKPIs(){
    <div class="kpi"><b>${hoy}</b><span>Detectados hoy</span></div>`;
 }
 function renderAll(withSup=true){
-  renderKPIs(); renderFiltros(); renderMapa(); renderDetalle(); renderTabla(); renderUsados(); renderFeed(); if(withSup) renderSup();
+  renderKPIs(); renderFiltros(); renderMapa(); renderDetalle(); renderTabla(); renderUsados(); renderFeed(); renderEst(); if(withSup) renderSup();
 }
 $('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
   $('#tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));

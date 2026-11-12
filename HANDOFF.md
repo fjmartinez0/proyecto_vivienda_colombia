@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.14.1, 01-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.15.0, 12-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -68,7 +68,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 5. **Blueprint completo:** corrida diaria con launchd (`vivienda programar`), git + GitHub Pages
    (`vivienda publicar`) y alertas ntfy ya están implementados (v0.10+).
 
-## 4. Estado actual (v0.14.1, 01-nov-2026)
+## 4. Estado actual (v0.15.0, 12-nov-2026)
 
 | Módulo | Estado |
 |---|---|
@@ -83,6 +83,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 | Zonas dibujadas (geojson, 12 polígonos) | ✅ |
 | Corrida diaria (`diario`, `programar` → launchd), alertas ntfy `fmz_proyecto_vivienda`, publicación en Pages | ✅ |
 | Dashboard publicado | https://fjmartinez0.github.io/proyecto_vivienda_colombia/web/ (repo público fjmartinez0/proyecto_vivienda_colombia) |
+| Pestaña Estadísticas (v0.15) | ✅ en el navegador, sin Python nuevo |
 | Arriendos reales / ADR medido | ❌ supuestos en `web/index.html` |
 | Segunda fuente de usados (Metrocuadrado/Ciencuadras) + dedupe entre portales | ❌ siguiente módulo recomendado |
 | Instagram de constructoras | ❌ solo plan (Graph API Business Discovery) |
@@ -239,6 +240,17 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
   ~1 km de teu) y G95 (Chicó Norte, ~490 m de nav). Nueva regla en `ajustes.aplicar`: si un manual y un proyecto de
   portal tienen el mismo nombre, manda el manual y el del portal se marca `excluido` + `duplicado_de` (evita doble pin).
   Si Estrenar usa otro nombre, agregar ese nombre a `[excluir]`. Zonas nuevas: NO se crearon (ver recomendación).
+- **v0.15.0 (12-nov): pestaña Estadísticas** (mockup aprobado: claude.ai/artifact/NE3YeXH6LJnuEDsZX7SE3T). Función
+  `renderEst()` en `web/index.html`, calculada en el navegador sobre USADOS/PROYECTOS del segmento y la ciudad.
+  Muestra = `elegible()` sin `unidad_proyecto` y `sinDuplicados`; $/m² de lista sobre área privada (igual que Usados).
+  Nuevos: mediana por proyecto, sin los `fuera_de_zona`. Rebaja = 1 − precio actual / máximo del historial `precios`;
+  días publicado = HOY − `creado_portal` (o `detectado`). Mínimo 5 anuncios por zona para medianas confiables
+  (`ST_MIN_N`); oportunidad = $/m² ≤ −10 % de la mediana de su zona (`ST_OPORT`), mismo umbral que el verde del mapa.
+  Paleta de gráficos validada (usados ámbar `#c97a2c`, nuevos azul `#2f6db5`; tonos propios en modo oscuro).
+  Tabla "Parámetros por zona (ficticios)" de Supuestos renombrada a "(supuestos)"; los valores medidos viven en
+  Estadísticas. Pedido del usuario: "pensado para un inversionista" → se agregaron Oportunidades, liquidez (días
+  publicado, % con rebaja) y rentabilidad neta por zona. La rentabilidad sale casi plana entre zonas porque el arriendo
+  supuesto es proporcional al precio: no sirve para elegir zona hasta medir arriendos.
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
@@ -266,7 +278,8 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
 3. **64 Estorias y Kobe 50**: se ofreció agregarlos en seguimiento (pendiente respuesta del usuario).
 4. Segunda fuente de usados (Metrocuadrado/Ciencuadras) con dedupe entre portales; probar la ruta Fincaraíz
    `el-lago/zona-nororiental` para apartaestudios.
-5. Arriendos reales (Fincaraíz `operacion="arriendo"`) → yields de mercado.
+5. Arriendos reales (Fincaraíz `operacion="arriendo"`) → yields de mercado. **Prioridad alta tras v0.15**: convierte
+   las columnas de arriendo y rentabilidad de Estadísticas en medidas.
 6. Instagram: ejecutar el plan solo si el usuario lo pide.
 
 ## 9. Historial de errores que no hay que repetir

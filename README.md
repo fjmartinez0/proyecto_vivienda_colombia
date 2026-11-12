@@ -213,6 +213,20 @@ Alma 72, pensado para renta corta). El corte está en `[filtros] area_min` y el 
 En Micro los comparables salen solo de edificios con antigüedad conocida ≤ 8 años (ajustable en Supuestos),
 sin exigir el mismo número de alcobas.
 
+## Pestaña Estadísticas (v0.15)
+
+Se calcula en el navegador con lo que ya trae `dashboard.json` (no hay paso nuevo en Python). Respeta el segmento
+(Estándar/Micro) y la ciudad. Muestra: usados elegibles (ascensor y ≤ tope, sin unidades de proyecto ni duplicados) y
+proyectos nuevos en zona (un valor por proyecto).
+
+- KPIs: usados que cumplen, $/m² mediano, prima mediana de lo nuevo, rebaja observada, días publicado.
+- Rango de $/m² por zona (P25–P75 + mediana) contra la mediana de proyectos nuevos, con tabla.
+- $/m² según tamaño, rebajas observadas contra el supuesto de negociación, administración/m² por antigüedad,
+  oferta que cumple por zona.
+- Oportunidades: usados ≥ 10 % bajo la mediana de su zona (zonas con ≥ 5 anuncios); clic → mapa.
+- Parámetros por zona marcados como medido / supuesto / derivado (rentabilidad bruta y neta). El arriendo sigue
+  siendo supuesto hasta que exista el módulo de arriendos; ADR y ocupación no tienen fuente gratuita.
+
 ## Cómo agregar o corregir un sector
 
 En `config/config.toml`:
