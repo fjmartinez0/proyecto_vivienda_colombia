@@ -154,6 +154,21 @@ def descartar_ubicaciones_genericas(usados: list[dict], min_anuncios: int = 10, 
     return n
 
 
+# Datos imposibles (casi siempre un error de digitación del anuncio, p. ej. 803 m² en vez de 80,3 m²).
+M2_MIN, M2_MAX = 1_500_000, 30_000_000      # $/m² construido fuera de este rango no existe en las zonas
+AREA_MAX_POR_HAB = 120                      # m² construidos por habitación (803 m² con 2 hab = 401)
+
+
+def motivo_sospechoso(precio: float, area_c: float, habs: int | None) -> str | None:
+    """Por qué un anuncio no es creíble, o None. Se usa para sacarlo del análisis (no se borra del historial)."""
+    m2 = precio / area_c
+    if m2 < M2_MIN or m2 > M2_MAX:
+        return f"$/m² imposible ({m2 / 1e6:.1f} M)"
+    if habs and area_c / habs > AREA_MAX_POR_HAB:
+        return f"área imposible para {habs} hab. ({area_c:.0f} m²)"
+    return None
+
+
 def edificio_de(lat: float, lng: float) -> str:
     """Clave de edificio: el punto redondeado a ~11 m (los anuncios de un mismo edificio comparten coordenadas)."""
     return f"{round(lat, 4)},{round(lng, 4)}"
@@ -193,6 +208,9 @@ def para_dashboard(registro: dict[str, dict], hoy: date, dias: int, area_min: fl
         area_c = r.get("area_construida") or ((r["area_privada"] / 0.88) if r.get("area_privada") else None)
         piso = area_min_micro if area_min_micro is not None else area_min
         if not r.get("precio") or not area or not area_c or area_c < piso:
+            continue
+        habs = int(r["habs"]) if r.get("habs") else None
+        if motivo_sospechoso(r["precio"], area_c, habs):
             continue
         seg = "micro" if area_c < area_min else "estandar"
         precios = r.get("precios") or []

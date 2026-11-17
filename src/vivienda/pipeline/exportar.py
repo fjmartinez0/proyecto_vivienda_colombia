@@ -11,6 +11,7 @@ from pathlib import Path
 
 from vivienda import reglas
 from vivienda.config import PROCESSED_DIR
+from vivienda.pipeline import historial
 from vivienda.pipeline.proyectos import clave_proyecto
 
 ARCHIVO = PROCESSED_DIR / "dashboard.json"
@@ -81,12 +82,15 @@ def construir(proyectos: dict[str, dict], tipologias: dict[str, dict], zonas: di
                               if b.get("estado") == "procesado" and reglas.es_url(b.get("url"))), None),
             "fuente": p.get("fuente_nombre") or "Estrenar Vivienda",
             "notas": p.get("notas"),
+            "contacto": p.get("contacto"),
             "url": p.get("url"),
             "detectado": p.get("primer_visto"),
             "tipologias": [
                 {"id": t["typology_id"], "habs": t.get("habs"), "banos": t.get("banos"),
                  "area": t.get("area"), "parq": t.get("parq") or 0, "precio": t.get("precio_desde"),
                  "url": t.get("url"),
+                 "primer_visto": t.get("primer_visto"),
+                 "precios": historial.serie_precios(t),
                  "segmento": "micro" if (t.get("area") or 0) < area_corte else "estandar",
                  "area_privada": ((p.get("areas_privadas") or {}).get(f"{t['fuente']}:{t['typology_id']}") or {}).get("valor")
                                  or t.get("area_privada")}

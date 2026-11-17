@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.15.0, 12-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.17.0, 16-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -68,7 +68,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 5. **Blueprint completo:** corrida diaria con launchd (`vivienda programar`), git + GitHub Pages
    (`vivienda publicar`) y alertas ntfy ya están implementados (v0.10+).
 
-## 4. Estado actual (v0.15.0, 12-nov-2026)
+## 4. Estado actual (v0.17.0, 16-nov-2026)
 
 | Módulo | Estado |
 |---|---|
@@ -84,11 +84,13 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 | Corrida diaria (`diario`, `programar` → launchd), alertas ntfy `fmz_proyecto_vivienda`, publicación en Pages | ✅ |
 | Dashboard publicado | https://fjmartinez0.github.io/proyecto_vivienda_colombia/web/ (repo público fjmartinez0/proyecto_vivienda_colombia) |
 | Pestaña Estadísticas (v0.15) | ✅ en el navegador, sin Python nuevo |
+| Pestaña Nuevo vs Reventa (v0.17, reemplaza la valorización de v0.16) | ✅ automática + semilla Open C60; se llena con las corridas diarias |
+| Oportunidades por zona y tamaño + filtro de anuncios imposibles (v0.17) | ✅ |
 | Arriendos reales / ADR medido | ❌ supuestos en `web/index.html` |
 | Segunda fuente de usados (Metrocuadrado/Ciencuadras) + dedupe entre portales | ❌ siguiente módulo recomendado |
 | Instagram de constructoras | ❌ solo plan (Graph API Business Discovery) |
 
-93 pruebas pasan: `PYTHONPATH=src python3 -m unittest discover -s tests` (los fixtures HTML no se publican en el repo).
+109 pruebas pasan: `PYTHONPATH=src python3 -m unittest discover -s tests` (los fixtures HTML no se publican en el repo).
 
 ## 5. Mapa del código
 
@@ -101,6 +103,8 @@ config/zonas.toml                nombres/metadatos y respaldo de círculos
 config/proyectos_manuales.toml   proyectos fuera de portales (lat/lng, precision, seguimiento, tipologías)
 config/ajustes_proyectos.toml    correcciones por nombre a proyectos de Estrenar + exclusiones
 config/ntfy_tema.txt             tema ntfy (fuera del repo)
+config/nuevo_vs_reventa.toml     semilla manual de la pestaña Nuevo vs Reventa (solo Open C60)
+config/indices.toml              IPC (cargado; línea de referencia y tasas reales de Nuevo vs Reventa)
 src/vivienda/cli.py              todos los comandos; _proyectos_al_dia = manuales → sincronizar → ajustes → rezonificar
 src/vivienda/ajustes.py          aplica ajustes_proyectos.toml (marca `excluido`, dirección 'manual', lat/lng)
 src/vivienda/sources/estrenar/   fetcher, parser (tarjeta = tipología), ficha (dirección, entrega, categorías)
@@ -109,6 +113,8 @@ src/vivienda/sources/manual.py, brochure.py
 src/vivienda/pipeline/           historial, proyectos, filtros (segmento), geocodificar, aplicar, brochures,
                                  usados (para_dashboard: rezonifica, segmento, ubicaciones genéricas, unidades de proyecto),
                                  zonas, exportar (construir: seguimiento/fuera_de_zona, segmento por tipología), diario
+src/vivienda/pipeline/valorizacion.py  pestaña Nuevo vs Reventa (unidad base, reventas del edificio, entrega,
+                                 ①②③, prima automática en Fincaraíz); `vivienda nvr`
 src/vivienda/geo.py              asignar_zona (tolerancia 150 m para proyectos), distancia_a_poligono_m, bbox
 src/vivienda/geocodificacion.py  cruce de vías (Overpass, 3 servidores), alias (Caracas=Cra 14, Tv 60=Av. Suba…)
 src/vivienda/agente.py           Claude Code headless (haiku), solo escribe en proposals/
@@ -251,6 +257,34 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
   Estadísticas. Pedido del usuario: "pensado para un inversionista" → se agregaron Oportunidades, liquidez (días
   publicado, % con rebaja) y rentabilidad neta por zona. La rentabilidad sale casi plana entre zonas porque el arriendo
   supuesto es proporcional al precio: no sirve para elegir zona hasta medir arriendos.
+- **v0.16.0 (16-nov): valorización** (metodología del usuario: preventa → entrega → hoy, mediana de 8–12 proyectos,
+  nominal/real/vs. índice). Ajustes acordados: (1) lo transferible es el EXCESO sobre el índice, no la cifra nominal
+  (2014–2019 no se parece a 2026–2028); (2) obra vs. IPVN DANE (por estrato: bajo 1-3, medio 4, alto 5-6) y después de
+  la entrega vs. IPVU BanRep (el IPVN no mide usados); (3) mediana siempre con n y rango, mínimo 5 completos;
+  (4) la fase post-entrega mezcla la caída única de la prima de lo nuevo con la tendencia (pendiente separarlas: la
+  prima nuevo/usado por zona ya está en Estadísticas). Archive.org NO es alcanzable desde el sandbox (WebFetch lo
+  bloquea): el usuario captura los snapshots o habilita el dominio. Piloto = 64 Estorias (Chapinero); muestra
+  candidata en `config/valorizacion.toml` (7 Estorias de Accanto —mismo constructor—, Studio 48, Portal 40, View 63,
+  Open C60; Urbano 48 y Estación 59 son micro, con pista de preventa ~2021 de la feria de Estrenar). Hallazgo: casi no
+  hay unidades pequeñas entregadas hace 4–8 años en Chapinero; la ventana se amplió a entregas 2020–2025.
+  Plan B / complemento ("comencemos con los proyectos que tenemos"): `historial.serie_precios` guarda la serie completa
+  de cada tipología (migra registros viejos con fecha aproximada); `valorizacion.seguimiento` mide el cambio de lista
+  desde el primer día visto, anualiza desde 180 días, toma el precio de entrega de la serie y las reventas del edificio.
+  IPC 2011–2025 cargado en `config/indices.toml`; IPVN e IPVU vacíos (pendiente). Sin pin verificado no se buscan
+  reventas (no inventar coordenadas). 64 Estorias: Accanto anunció lanzamiento 16–17 nov; su web dice "desde
+  $271,85 M" vs. $280,6 M del manual (otra unidad o precio de lanzamiento): actualizar el manual con la lista oficial.
+- **v0.17.0 (16-nov): Nuevo vs Reventa + Oportunidades.** La valorización de v0.16 se sacó de Estadísticas. Wayback
+  y archive.ph no sirvieron (sin snapshots útiles), así que el estudio retrospectivo se abandonó: se mide hacia
+  adelante y se compara constructora vs. reventas en el mismo edificio. Pestaña separada visualmente del grupo de 6
+  pestañas; el selector Estándar/Micro se atenúa solo en ella. Regla C: base (constructora) → entrega (constructora,
+  cuando la entrega es probable/confirmada) → hoy (reventas a ≤ 40 m, antigüedad < 2); tasas solo entre la misma
+  fuente (① obra, ② prima, ③ post). Entran solos los proyectos del radar en zona o a ≤ 150 m; sin tope de precio,
+  ascensor ni segmento. Única carga manual: Open C60 (`config/nuevo_vs_reventa.toml`; base dic-2024 ≈ 25,39 m²
+  $300 M, may-2026 26,65 m² $305 M, nov-2026 35,68 m² $360 M; reventas nov-2026 36 m² $340 M y 20 m² $215 M "por
+  verificar"; ① −3,1 %, ② −6 %). Por qué las reventas piden menos que la lista: compraron en preventa, la entrega
+  crea vendedores apurados, la lista incluye plan de pagos/descuentos privados, listas viejas que siguen publicadas.
+  Oportunidades: el primer resultado era Pasadena "803 m²" a $550 M (error de digitación) → filtro en
+  `usados.motivo_sospechoso` y comparación por zona × rango de tamaño (el $/m² baja con el tamaño).
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
@@ -269,6 +303,9 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
 
 ## 8. Próximos pasos
 
+0. **Nuevo vs Reventa:** revisar tras unas corridas que las reventas detectadas por pin sean del edificio (si hay
+   falsos positivos, subir la exigencia a que el anuncio nombre el edificio). Filtros propios de la pestaña (ciudad,
+   zona) pendientes. Borrar la semilla de Open C60 cuando haya ≥ 5 edificios automáticos.
 1. **Verificar v0.14** con la salida de `vivienda nuevos && vivienda geocodificar && vivienda publicar`: que Novus
    Florida, Atelier 68, Nau House e IVIN Refugio queden ubicados; si alguno sigue "sin ubicar", pedir el pin de
    Google Maps y ponerlo como lat/lng en `ajustes_proyectos.toml` (o en el manual, para IVIN).

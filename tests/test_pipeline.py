@@ -56,6 +56,24 @@ class TestHistorial(unittest.TestCase):
         self.assertEqual(r.desaparecidas, [])
         self.assertTrue(reg["estrenarvivienda:1"]["activo"])
 
+    def test_serie_de_precios(self):
+        reg, f = {}, {"estrenarvivienda"}
+        historial.actualizar(reg, [tip("1")], date(2026, 10, 25), f)
+        historial.actualizar(reg, [tip("1")], date(2026, 10, 26), f)
+        historial.actualizar(reg, [tip("1", precio=420_000_000)], date(2026, 11, 20), f)
+        self.assertEqual(reg["estrenarvivienda:1"]["precios"],
+                         [{"fecha": "2026-10-25", "precio": 400_000_000}, {"fecha": "2026-11-20", "precio": 420_000_000}])
+
+    def test_serie_migra_registros_viejos(self):
+        viejo = {"fuente": "estrenarvivienda", "typology_id": "1", "primer_visto": "2026-10-20",
+                 "ultimo_visto": "2026-11-01", "precio_desde": 410_000_000, "precio_anterior": 400_000_000}
+        serie = historial.serie_precios(viejo)
+        self.assertEqual(serie[0], {"fecha": "2026-10-20", "precio": 400_000_000})
+        self.assertTrue(serie[1]["fecha_aprox"])
+        reg = {"estrenarvivienda:1": viejo}
+        historial.actualizar(reg, [tip("1", precio=410_000_000)], date(2026, 11, 2), {"estrenarvivienda"})
+        self.assertEqual(len(reg["estrenarvivienda:1"]["precios"]), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

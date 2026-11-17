@@ -223,9 +223,29 @@ proyectos nuevos en zona (un valor por proyecto).
 - Rango de $/m² por zona (P25–P75 + mediana) contra la mediana de proyectos nuevos, con tabla.
 - $/m² según tamaño, rebajas observadas contra el supuesto de negociación, administración/m² por antigüedad,
   oferta que cumple por zona.
-- Oportunidades: usados ≥ 10 % bajo la mediana de su zona (zonas con ≥ 5 anuncios); clic → mapa.
+- Oportunidades: usados ≥ 10 % bajo la mediana de su zona **y rango de tamaño** (grupos con ≥ 5 anuncios); más de
+  45 % por debajo se descarta como dato sospechoso; clic → mapa. Al exportar se sacan anuncios imposibles
+  ($/m² construido fuera de $1,5–30 M o más de 120 m² por habitación: típico error de digitación, p. ej. 803 m²).
 - Parámetros por zona marcados como medido / supuesto / derivado (rentabilidad bruta y neta). El arriendo sigue
   siendo supuesto hasta que exista el módulo de arriendos; ADR y ocupación no tienen fuente gratuita.
+
+## Nuevo vs Reventa (v0.17)
+
+Pestaña aparte (no usa los segmentos Estándar / Micro): cuánto se paga por estrenar y cómo se mueve el precio en el
+tiempo. `vivienda exportar` la calcula (`pipeline/valorizacion.py`) y `vivienda nvr` la imprime en texto.
+
+- **Entran solos** los proyectos del radar (Estrenar + manuales) dentro de las zonas o a ≤ 150 m. Lo único manual es
+  la semilla `config/nuevo_vs_reventa.toml` (Open C60), que se puede borrar cuando haya datos automáticos.
+- **Cada día:** (1) se guarda un punto si cambia la lista de la constructora (historial de tipologías); (2) se buscan
+  reventas en el edificio de cada proyecto (usados a ≤ 40 m del pin, no unidades de proyecto, antigüedad < 2 años);
+  (3) se revisan señales de entrega: estimada → probable (pasó la fecha, "entrega inmediata" o anuncios con
+  administración en el pin) → confirmada (dos señales, una de ellas una reventa).
+- **Tres números**, siempre entre precios de la misma fuente: ① lista en obra (constructora → constructora, mismo
+  metraje ± 10 %, 6+ meses); ② prima de "nuevo" (reventas vs. lista, área ± 25 %, < 9 meses); ③ después de entregar
+  (reventas → reventas).
+- **② automática:** edificios de Fincaraíz donde el mismo punto tiene anuncios de la constructora (publicador
+  builder/developer) y de dueños o inmobiliarias.
+- `contacto` (opcional) en `proyectos_manuales.toml` sale en la tabla de detalle.
 
 ## Cómo agregar o corregir un sector
 

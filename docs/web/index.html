@@ -168,12 +168,83 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
 .st-tbl tr.op{cursor:pointer}.st-tbl tr.op:hover td{background:var(--soft)}
 .st-tbtn{float:right;font:12px Inter;border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:7px;padding:3px 9px;cursor:pointer}
 @media (max-width:900px){.st-grid{grid-template-columns:1fr}}
+/* ---------- Nuevo vs Reventa (v0.17) ---------- */
+.grupo{display:flex;gap:8px;align-items:center;padding:3px;border:1px solid var(--line);border-radius:11px}
+.grupo .seg{margin-left:0}
+.tabsep{width:1px;align-self:stretch;background:var(--line)}
+.tabs.solo{background:var(--accent-soft)}
+.tabs.solo button.on{color:var(--accent)}
+body.nvr #seg{opacity:.4;pointer-events:none}
+body.nvr #kpis{display:none}
+body.nvr header{box-shadow:none}
+#v-nvr{overflow:auto}
+.nv-intro{color:var(--muted);margin:2px 0 14px;max-width:900px}
+.nv-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:14px}
+.nv-kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.nv-kpi .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.nv-kpi .v{font-size:24px;font-weight:650;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.nv-kpi .s{font-size:12px;color:var(--muted)}
+.nv-sec{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:22px 0 8px;font-weight:600}
+.nv-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.nv-card h3{margin:0 0 2px;font-size:15px;text-transform:none;letter-spacing:0;color:var(--ink)}
+.nv-q{color:var(--muted);font-size:12.5px;margin:0 0 10px}
+.nv-take{font-size:12.5px;background:var(--soft);border-radius:8px;padding:8px 10px;margin-top:8px}
+.nv-leg{display:flex;gap:16px;font-size:12px;color:var(--muted);margin:0 0 6px;flex-wrap:wrap}
+.nv-leg i{display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:3px;border-radius:2px}
+.nv-leg i.dot{width:10px;height:10px;border-radius:50%;vertical-align:-1px}
+.nv-leg i.band{height:9px;vertical-align:-1px}
+.nv svg{display:block;width:100%;height:auto;overflow:visible}
+.nv svg text{fill:var(--muted);font-size:11px;font-family:Inter,system-ui,sans-serif}
+.nv svg text.ink{fill:var(--ink)}
+.nv table{width:100%;border-collapse:collapse;font-size:13px}
+.nv th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;text-align:right;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+.nv th.l,.nv td.l{text-align:left;white-space:normal}
+.nv td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;font-variant-numeric:tabular-nums;vertical-align:top}
+.nv td small,.nv small{color:var(--muted)}
+.nv-chip{font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.nv-chip.ok{background:var(--accent-soft);color:var(--accent)}
+.nv-chip.mid{background:var(--new-soft);color:var(--new)}
+.nv-chip.no{background:var(--soft);color:var(--muted)}
+.nv-chip.w{background:var(--warn-soft);color:var(--warn)}
+.nv-chip.c{background:color-mix(in srgb,var(--st-new) 15%,transparent);color:var(--st-new)}
+.nv-chip.m{background:color-mix(in srgb,var(--st-used) 18%,transparent);color:var(--st-used)}
+.nv-proj{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;align-items:start}
+.nv-big{font-size:22px;font-weight:650;font-variant-numeric:tabular-nums}
+.nv-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line);font-size:13px}
+.nv-exp{margin:4px 0 12px;padding-left:18px;color:var(--muted);font-size:12.5px}.nv-exp li{margin:2px 0}.nv-exp b{color:var(--ink);font-weight:600}
+.nv-ph{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-bottom:4px}
+select.nv-sel{font:inherit;font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink);min-width:220px;float:right}
+.nv-na{color:var(--muted);font-weight:600}
+.nv-pp{margin:2px 0 6px;line-height:1.35}
+.nv-nota{font-size:12.5px;color:var(--muted);margin:6px 0}
+.nv-lock{margin-top:12px;font-size:13px;background:var(--soft);border:1px dashed var(--line);border-radius:8px;padding:10px 12px}
+details.nv-lp{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+details.nv-lp>summary{cursor:pointer;padding:14px 18px;list-style:none;font-size:14px}
+details.nv-lp>summary::-webkit-details-marker{display:none}
+details.nv-lp>summary::before{content:"▸ ";color:var(--muted)}details.nv-lp[open]>summary::before{content:"▾ "}
+.nv-lpbody{padding:0 18px 18px}
+details.nv-pr{border:1px solid var(--line);border-radius:10px;margin:8px 0;background:var(--panel)}
+details.nv-pr.man{border-left:3px solid var(--warn)}
+details.nv-pr summary,.nv-hdr{display:grid;grid-template-columns:2.1fr 1fr 1fr 1fr 1.1fr 1.1fr 1fr;gap:10px;align-items:center}
+details.nv-pr summary{list-style:none;cursor:pointer;padding:10px 14px}
+details.nv-pr summary::-webkit-details-marker{display:none}
+details.nv-pr summary .pn::before{content:"▸ ";color:var(--muted)}details.nv-pr[open] summary .pn::before{content:"▾ "}
+details.nv-pr summary small{display:block;color:var(--muted);font-size:11px}
+.nv-hdr{padding:0 14px 0 30px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600;margin-top:8px}
+.nv-pm{font-variant-numeric:tabular-nums;font-size:13px}
+.nv-pd{padding:4px 14px 12px;border-top:1px solid var(--line)}
+.nv-pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+.nv-otros{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+.nv-calc{margin-top:10px;font-size:12.5px;line-height:1.9;background:var(--soft);border-radius:8px;padding:8px 10px}
+i.nv-src{display:inline-block;width:8px;height:8px;border-radius:50%;vertical-align:1px}i.nv-src.c{background:var(--st-new)}i.nv-src.m{background:var(--st-used)}
+@media (max-width:900px){.nv-proj{grid-template-columns:1fr}details.nv-pr summary,.nv-hdr{grid-template-columns:1fr 1fr 1fr}.nv-pgrid{grid-template-columns:1fr}.nv-hdr{display:none}}
 </style>
 </head>
 <body>
 <header>
   <div class="brand">Radar Vivienda <span class="tag" id="modo">DEMO · DATOS FICTICIOS</span>
     <small id="subtitulo">Nuevos vs. usados ≤ $600 M · Bogotá y Bucaramanga</small></div>
+  <div class="grupo">
   <nav class="tabs" id="tabs">
     <button data-v="mapa" class="on">Mapa</button>
     <button data-v="tabla">Tabla</button>
@@ -182,7 +253,10 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
     <button data-v="sup">Supuestos</button>
     <button data-v="est">Estadísticas</button>
   </nav>
-  <div class="seg" id="seg"><button data-s="estandar" class="on" title="Tipologías y usados de 30 m² construidos o más">Estándar · ≥ 30 m²</button><button data-s="micro" title="Micro-apartaestudios de 18 a 30 m² (tipo Alma 72), pensados para renta corta">Micro · &lt; 30 m²</button></div>
+  <div class="seg" id="seg" title="Aplica a las pestañas de la izquierda; Nuevo vs Reventa no usa segmentos"><button data-s="estandar" class="on" title="Tipologías y usados de 30 m² construidos o más">Estándar · ≥ 30 m²</button><button data-s="micro" title="Micro-apartaestudios de 18 a 30 m² (tipo Alma 72), pensados para renta corta">Micro · &lt; 30 m²</button></div>
+  </div>
+  <div class="tabsep"></div>
+  <nav class="tabs solo" id="tabs2"><button data-v="nvr">Nuevo vs Reventa</button></nav>
   <div class="kpis" id="kpis"></div>
 </header>
 <main>
@@ -196,6 +270,7 @@ body.micro .pin.proy{border-radius:6px;box-shadow:0 0 0 2px #5b3fa3,0 2px 6px rg
   <section class="view" id="v-feed"></section>
   <section class="view" id="v-sup"></section>
   <section class="view" id="v-est"></section>
+  <section class="view" id="v-nvr"></section>
 </main>
 <div id="st-tip"></div>
 
@@ -955,7 +1030,8 @@ function renderSup(){
    privada (igual que la pestaña Usados). Proyectos nuevos: un valor por proyecto (mediana de sus tipologías) para que
    uno con muchas tipologías no domine; los que están fuera de zonas no entran en la comparación por zona. */
 const ST_MIN_N = 5;        // menos que esto: la mediana de la zona se marca "pocos datos"
-const ST_OPORT = -0.10;    // oportunidad: $/m² ≥ 10 % bajo la mediana de su zona (mismo umbral que el verde del mapa)
+const ST_OPORT = -0.10;    // oportunidad: $/m² ≥ 10 % bajo la mediana de su zona y tamaño (mismo umbral que el verde del mapa)
+const ST_SOSP = -0.45;     // más de 45 % bajo su grupo: casi seguro un error del anuncio -> se excluye
 const TRAMOS = [['menor a 1',0.5],['1 a 8',4.5],['9 a 15',12],['16 a 30',23],['más de 30',35]];
 const stQ = (a,p) => { if(!a.length) return null; const s=[...a].sort((x,y)=>x-y), i=(s.length-1)*p, lo=Math.floor(i);
   return s[lo]+(s[Math.min(lo+1,s.length-1)]-s[lo])*(i-lo); };
@@ -1124,11 +1200,18 @@ function renderEst(){
     return {svg:stSvg(W,H,g), take: pocos.length ? `Con menos de ${ST_MIN_N} usados que cumplen: <b>${pocos.join(', ')}</b>. Ahí las medianas son poco confiables y los proyectos suelen quedar sin comparables (s/c).` : `Todas las zonas tienen al menos ${ST_MIN_N} usados que cumplen.`};
   })();
 
-  // 6 · oportunidades: usados bajo la mediana de su zona
-  const medZ={}; Z0.forEach(z=>{ if(z.n>=ST_MIN_N) medZ[z.z.id]=z; });
-  const oport = D.el.filter(u=>medZ[u.zona]).map(u=>{ const z=medZ[u.zona], zz=Z[u.zona];
+  // 6 · oportunidades: usados bajo la mediana de SU ZONA Y SU TAMAÑO (el $/m² baja con el tamaño: comparar contra
+  // toda la zona hacía ver "baratos" a los apartamentos grandes). Más de 45 % bajo = dato sospechoso, no oportunidad.
+  const TAM=[[0,30],[30,45],[45,60],[60,80],[80,100],[100,1e9]];
+  const tamDe=u=>{ const ac=u.area_tipo==='privada'?u.area/0.88:u.area; return TAM.findIndex(([a,b])=>ac>=a&&ac<b); };
+  const grupoT={}; D.el.forEach(u=>{ const k=u.zona+'|'+tamDe(u); (grupoT[k]=grupoT[k]||[]).push(u.m2); });
+  const medT={}; Object.entries(grupoT).forEach(([k,v])=>{ if(v.length>=ST_MIN_N) medT[k]=median(v); });
+  let sospechosos=0;
+  const oport = D.el.filter(u=>medT[u.zona+'|'+tamDe(u)]).map(u=>{ const t=TAM[tamDe(u)], zz=Z[u.zona];
     const yN = ((zz.arriendo_m2*u.ap-(u.admin||0))*12)/u.precio - PARAMS.predial;
-    return {...u, desv:u.m2/z.p50-1, yN}; }).filter(u=>u.desv<=ST_OPORT).sort((a,b)=>a.desv-b.desv).slice(0,12);
+    return {...u, desv:u.m2/medT[u.zona+'|'+tamDe(u)]-1, yN, rango:t[1]>1e8?`${t[0]}+ m²`:`${t[0]}–${t[1]} m²`}; })
+    .filter(u=>{ if(u.desv<ST_SOSP){ sospechosos++; return false; } return u.desv<=ST_OPORT; })
+    .sort((a,b)=>a.desv-b.desv).slice(0,12);
 
   // 7 · parámetros por zona
   const SRC = {m:'<span class="st-src m">medido</span>', s:'<span class="st-src s">supuesto</span>', d:'<span class="st-src d">derivado</span>'};
@@ -1156,12 +1239,12 @@ function renderEst(){
    <div class="card"><h4>Administración por m² según la edad del edificio</h4><p class="st-q">Mediana de administración mensual por m² privado.</p>${c4.svg}${c4.take?`<div class="st-take">${c4.take}</div>`:''}</div>
    <div class="card"><h4>¿Cuánta oferta pasa tus reglas?</h4><p class="st-q">Usados vigentes por zona: los que cumplen frente al resto.</p>
     <div class="st-leg"><span><i class="bar" style="background:var(--st-used)"></i>Cumplen</span><span><i class="bar" style="background:var(--st-rest)"></i>No cumplen</span></div>${c5.svg}<div class="st-take">${c5.take}</div></div>
-   <div class="card wide"><h4>Oportunidades: usados ≥ ${Math.abs(ST_OPORT*100)} % bajo la mediana de su zona</h4>
-    <p class="st-q">Solo zonas con al menos ${ST_MIN_N} anuncios que cumplen. Un precio bajo puede tener razón (piso bajo, interior, para remodelar): es una lista para revisar, no para comprar. Clic en una fila para verla en el mapa.</p>
-    ${oport.length?`<div class="ctab"><table class="st-tbl"><thead><tr><th>Zona</th><th>Barrio</th><th>Tipo</th><th class="n">Á. priv</th><th class="n">Precio</th><th class="n">$/m²</th><th class="n">vs. zona</th><th class="n">Admin</th><th>Antig.</th><th class="n">Publicado</th><th class="n">Δ precio</th><th class="n">Rentab. neta est.</th></tr></thead><tbody>${
-      oport.map(u=>`<tr class="op" data-op="${u.id}"><td>${Z[u.zona].nombre}</td><td>${u.barrio||'—'}</td><td>${nombreUsado(u)}</td><td class="n">${u.ap.toFixed(0)} m²</td><td class="n">${fM(u.precio)}</td><td class="n">${fM1(u.m2)}</td><td class="n neg">${pct(u.desv)}</td><td class="n">${fK(u.admin)}</td><td>${antig(u)}</td><td class="n">${u.dias} d</td><td class="n">${u.rebaja?'−'+stP(u.rebaja,1):'—'}</td><td class="n">${stP(u.yN,1)}</td></tr>`).join('')}</tbody></table></div>
+   <div class="card wide"><h4>Oportunidades: usados ≥ ${Math.abs(ST_OPORT*100)} % bajo la mediana de su zona y tamaño</h4>
+    <p class="st-q">Cada usado se compara con los de su misma zona y rango de tamaño (el $/m² baja con el tamaño); solo grupos con al menos ${ST_MIN_N} anuncios que cumplen. Más de ${Math.abs(ST_SOSP*100)} % por debajo se descarta como dato sospechoso${sospechosos?` (${sospechosos} descartado${sospechosos>1?'s':''})`:''}. Un precio bajo puede tener razón (piso bajo, interior, para remodelar): es una lista para revisar, no para comprar. Clic en una fila para verla en el mapa.</p>
+    ${oport.length?`<div class="ctab"><table class="st-tbl"><thead><tr><th>Zona</th><th>Barrio</th><th>Tipo</th><th class="n">Á. priv</th><th class="n">Precio</th><th class="n">$/m²</th><th class="n">vs. zona y tamaño</th><th class="n">Admin</th><th>Antig.</th><th class="n">Publicado</th><th class="n">Δ precio</th><th class="n">Rentab. neta est.</th></tr></thead><tbody>${
+      oport.map(u=>`<tr class="op" data-op="${u.id}"><td>${Z[u.zona].nombre}</td><td>${u.barrio||'—'}</td><td>${nombreUsado(u)}</td><td class="n">${u.ap.toFixed(0)} m²<br><small>grupo ${u.rango}</small></td><td class="n">${fM(u.precio)}</td><td class="n">${fM1(u.m2)}</td><td class="n neg">${pct(u.desv)}</td><td class="n">${fK(u.admin)}</td><td>${antig(u)}</td><td class="n">${u.dias} d</td><td class="n">${u.rebaja?'−'+stP(u.rebaja,1):'—'}</td><td class="n">${stP(u.yN,1)}</td></tr>`).join('')}</tbody></table></div>
       <p class="muted" style="font-size:12px">Rentabilidad neta estimada = (arriendo supuesto de la zona × área − administración) × 12 ÷ precio − predial. Indicativa mientras el arriendo sea supuesto.</p>`
-     :'<div class="empty">Ningún usado está 10 % o más bajo la mediana de su zona.</div>'}</div>
+     :'<div class="empty">Ningún usado está 10 % o más bajo la mediana de su zona y tamaño.</div>'}</div>
    <div class="card wide"><h4>Parámetros por zona</h4>
     <p class="st-q">Cada columna dice de dónde sale: <span class="st-src m">medido</span> = calculado de los anuncios; <span class="st-src s">supuesto</span> = valor puesto a mano mientras no haya fuente; <span class="st-src d">derivado</span> = cuenta con los anteriores.</p>
     <div class="ctab"><table class="st-tbl"><thead><tr><th>Zona</th><th class="n">n</th><th class="n">Estrato<br>${SRC.m}</th><th class="n">Venta $/m²<br>${SRC.m}</th><th class="n">Admin/m²<br>${SRC.m}</th><th class="n">Días publ.<br>${SRC.m}</th><th class="n">Con rebaja<br>${SRC.m}</th><th class="n">Arriendo $/m²<br>${SRC.s}</th><th class="n">ADR ${micro?'micro':'1H'}<br>${SRC.s}</th><th class="n">Ocupación<br>${SRC.s}</th><th class="n">Rentab. bruta<br>${SRC.d}</th><th class="n">Rentab. neta<br>${SRC.d}</th></tr></thead><tbody>${filas}</tbody></table></div>
@@ -1177,6 +1260,282 @@ function renderEst(){
   el.querySelectorAll('[data-op]').forEach(r=>r.onclick=()=>{ tip.style.opacity=0; $('#tabs button[data-v="mapa"]').click(); selUsado(r.dataset.op); });
 }
 
+
+/* ---------- Nuevo vs Reventa (v0.17) ----------
+   Datos: d.nuevo_vs_reventa (pipeline/valorizacion.py). No usa los segmentos Estándar / Micro. */
+let NVR = null, NV_SEL = null;
+const NV_MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const nvF = s => { const [a,m,d] = String(s).slice(0,10).split('-').map(Number); return new Date(a, (m||7)-1, d||15); };
+const nvAnios = (a,b) => (nvF(b)-nvF(a))/(365.25*864e5);
+const nvFecha = s => s ? (d => NV_MES[d.getMonth()]+'-'+d.getFullYear())(nvF(s)) : '—';
+const nvP = (v,d=1) => v==null||isNaN(v) ? '—' : (v>0?'+':v<0?'−':'')+(Math.abs(v)*100).toLocaleString('es-CO',{minimumFractionDigits:d,maximumFractionDigits:d})+' %';
+const nvM = v => v==null ? '—' : '$'+(v/1e6).toLocaleString('es-CO',{maximumFractionDigits:1})+' M';
+const nvM2 = p => p.precio/p.area;
+const nvMed = a => median(a.filter(v=>v!=null));
+const nvZona = z => (Z[z] && Z[z].nombre) || z || '—';
+const nvEst = {estimada:['no','estimada'], probable:['mid','probable'], confirmada:['ok','confirmada']};
+
+function renderNvr(){
+  const el = $('#v-nvr'); if(!el) return;
+  if(!NVR){
+    el.innerHTML = `<div class="page nv"><h2>Nuevo vs Reventa</h2><div class="empty">Sin datos todavía. Corre <code>vivienda exportar</code> (o espera la corrida diaria) para llenar esta pestaña.</div></div>`;
+    return;
+  }
+  const HOYD = nvF(HOY), IPC = NVR.ipc_anual ?? 0.05;
+  const filas = NVR.proyectos, radar = filas.filter(f=>!f.manual), R = NVR.resumen;
+  const tipAttr = h => `data-tip="${stEsc(h)}"`;
+
+  /* ---- 1 · prima de "nuevo" ---- */
+  const PR = [...filas.filter(f=>f.metricas.prima).map(f=>({n:f.nombre, zona:nvZona(f.zona), tipo:f.manual?'manual · semilla':'proyecto del radar', p:f.metricas.prima})),
+              ...NVR.prima_auto.map(a=>({n:'Edificio en '+(a.barrio||nvZona(a.zona)), zona:nvZona(a.zona), tipo:`automático · ${a.n_constructora} de la constructora / ${a.n_reventa} reventa${a.n_reventa>1?'s':''}`, p:a.prima, url:a.url}))]
+             .sort((a,b)=>a.p.v-b.p.v);
+  let c0 = '<div class="empty">Aún no hay edificios con reventas y lista de la constructora a la vez.</div>';
+  if(PR.length){
+    const W=560,L=210,R2=50,row=46,T=10,H=PR.length*row+44;
+    const lo=Math.min(-0.2,Math.floor(Math.min(...PR.map(o=>o.p.min))*20)/20), hi=Math.max(0.1,Math.ceil(Math.max(...PR.map(o=>o.p.max))*20)/20);
+    const x=v=>L+(v-lo)/(hi-lo)*(W-L-R2);
+    let g='';
+    for(let t=lo;t<=hi+1e-9;t+=0.05){ const z=Math.abs(t)<1e-9;
+      g+=`<line x1="${x(t)}" x2="${x(t)}" y1="${T}" y2="${H-26}" stroke="${z?'var(--ink)':'var(--st-grid)'}" ${z?'stroke-width="1.5"':''}/><text x="${x(t)}" y="${H-8}" text-anchor="middle">${Math.round(t*100)} %</text>`; }
+    g+=`<text x="${x(0)+4}" y="${T+8}" class="ink" style="font-size:10px">= lista</text>`;
+    PR.forEach((o,i)=>{ const y=T+20+i*row, p=o.p;
+      g+=`<g ${tipAttr(`<b>${o.n}</b>Reventas vs. lista: ${nvP(p.v,0)} (mediana, ${p.n} comparación${p.n>1?'es':''})${p.n>1?`<br>Rango ${nvP(p.min,0)} a ${nvP(p.max,0)}`:''}${p.verificar?'<br>Incluye precios por verificar':''}`)}><rect x="0" y="${y-16}" width="${W}" height="${row}" fill="transparent"/>
+        <text x="0" y="${y+4}" class="ink" style="font-weight:600">${stEsc(o.n.length>30?o.n.slice(0,29)+'…':o.n)}</text><text x="0" y="${y+17}" style="font-size:10px">${stEsc(o.tipo)}</text>
+        ${p.n>1?`<line x1="${x(p.min)}" x2="${x(p.max)}" y1="${y}" y2="${y}" stroke="var(--st-used)" stroke-opacity=".35" stroke-width="10" stroke-linecap="round"/>`:''}
+        <circle cx="${x(p.v)}" cy="${y}" r="7" fill="var(--st-used)" stroke="${p.verificar?'var(--warn)':'var(--panel)'}" stroke-width="2.5"/>
+        <text x="${x(p.v)}" y="${y-12}" text-anchor="middle" class="ink">${nvP(p.v,0)}${p.verificar?' ?':''}</text></g>`; });
+    c0 = `<div class="nv-leg"><span><i class="dot" style="background:var(--st-used)"></i>Mediana de reventas vs. lista</span><span><i class="band" style="background:color-mix(in srgb,var(--st-used) 35%,transparent)"></i>Rango</span><span><i class="dot" style="background:var(--panel);outline:2px solid var(--warn)"></i>Incluye precio por verificar</span></div><svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  }
+  const pm = R.prima_mediana;
+  const k0 = PR.length ? `<b>Lectura:</b> en ${PR.length} edificio${PR.length>1?'s':''} con reventas, los dueños piden en mediana <b>${nvP(pm,0)}</b> frente a la lista de la constructora.${pm!=null&&pm<0?` Revender al entregar lo comprado hoy sobre planos implicaría vender por debajo de la lista: el negocio está en la renta o en negociar descuento al comprar.`:''}${PR.length<5?' Muestra pequeña: señal, no conclusión.':''}` : 'Se llena solo a medida que Fincaraíz publique edificios nuevos con anuncios de la constructora y de dueños en el mismo punto.';
+
+  /* ---- 1b · comparación por edad del edificio ---- */
+  const conPin = filas.filter(f=>f.lat!=null && f.base.length);
+  if(!NV_SEL || !conPin.some(f=>f.id===NV_SEL)) NV_SEL = (conPin.find(f=>f.manual===false)||conPin[0]||{}).id;
+  const edadHtml = () => {
+    const f = conPin.find(x=>x.id===NV_SEL); if(!f) return {c:'<div class="empty">Sin proyectos con ubicación.</div>', r:'', k:''};
+    const b = f.base[f.base.length-1], m2b = nvM2(b);
+    const cerca = USADOS_TODOS.filter(u=>u.lat!=null && !u.unidad_proyecto && distM(f.lat,f.lng,u.lat,u.lng)<=1500)
+      .map(u=>({u, ac:u.area_tipo==='privada'?u.area/0.88:u.area})).filter(o=>o.ac>=25&&o.ac<=60);
+    const tramo = (a,b2) => cerca.filter(o=>o.u.antiguedad!=null && o.u.antiguedad>=a && o.u.antiguedad<b2).map(o=>o.u.precio/o.ac);
+    const T3 = [['Usados < 1 año',tramo(0,1)],['Usados 1–8 años',tramo(1,9)],['Usados 9–15 años',tramo(9,16)]];
+    const ref = filas.filter(o=>o.id!==f.id && o.hoy.length && o.lat!=null && distM(f.lat,f.lng,o.lat,o.lng)<=1500)
+      .map(o=>[`Reventas ${o.nombre}`, nvMed(o.hoy.map(nvM2))]);
+    const bars = [[`${f.nombre} (lista)`, m2b, 'var(--st-new)', null], ...T3.filter(t=>t[1].length).map(t=>[t[0], median(t[1]), 'var(--st-used)', t[1].length]), ...ref.map(r=>[r[0], r[1], 'var(--accent)', null])];
+    const W=560,L=190,R2=110,row=34,H=bars.length*row+30, hi=Math.ceil(Math.max(...bars.map(x=>x[1]))/1e6)*1e6+1e6, x=v=>L+v/hi*(W-L-R2);
+    const paso = hi>16e6?4e6:2e6;
+    let g=''; for(let t=0;t<=hi;t+=paso) g+=`<line x1="${x(t)}" x2="${x(t)}" y1="4" y2="${H-24}" stroke="var(--st-grid)"/><text x="${x(t)}" y="${H-8}" text-anchor="middle">$${t/1e6} M</text>`;
+    bars.forEach((br,i)=>{ const y=10+i*row, d=br[1]/m2b-1;
+      g+=`<text x="0" y="${y+14}" class="ink">${stEsc(br[0].length>28?br[0].slice(0,27)+'…':br[0])}</text><path d="M${x(0)},${y+4}H${Math.max(x(0),x(br[1])-4)}q4,0 4,4V${y+16}q0,4 -4,4H${x(0)}Z" fill="${br[2]}" ${tipAttr(`<b>${br[0]}</b>${nvM(br[1])}/m²${br[3]?` · n=${br[3]}`:''}`)}/>
+        <text x="${x(br[1])+6}" y="${y+16}" class="ink">${nvM(br[1])}${i?` <tspan style="fill:var(--muted)">(${nvP(-d/(1+d),0)})</tspan>`:''}</text>`; });
+    const u1 = T3[0][1], u18 = T3[1][1];
+    const prima = u1.length ? m2b/median(u1)-1 : null, prima18 = u18.length ? m2b/median(u18)-1 : null;
+    const r = `<div class="nv-big">${prima!=null?nvP(prima,0):nvP(prima18,0)}</div><div class="muted" style="margin-bottom:10px">prima de la lista sobre usados de ${prima!=null?'menos de 1 año':'1–8 años'} cerca</div>
+      <div class="nv-row"><span>Lista del proyecto (unidad base)</span><span>${nvM(m2b)}/m²</span></div>
+      ${T3.map(t=>`<div class="nv-row"><span>${t[0]} (n=${t[1].length})</span><span>${t[1].length?nvM(median(t[1]))+'/m²':'—'}</span></div>`).join('')}
+      ${prima18!=null?`<div class="nv-row"><span>Prima sobre 1–8 años</span><span>${nvP(prima18,0)}</span></div>`:''}
+      ${ref.map(x2=>`<div class="nv-row"><span>${x2[0]}</span><span>${nvM(x2[1])}/m²</span></div>`).join('')}
+      <div class="nv-row"><span>Muestra</span><span>${u1.length<5?'<span class="nv-chip w">pocos datos de &lt; 1 año</span>':'<span class="nv-chip ok">suficiente</span>'}</span></div>`;
+    const pr = prima ?? prima18;
+    const k = pr==null ? 'Sin usados de 25–60 m² con antigüedad conocida a menos de 1,5 km.' :
+      pr<0 ? `Lectura: ${f.nombre} se vende <b>por debajo</b> de lo que piden por usados ${prima!=null?'casi nuevos':'de 1–8 años'} cerca (${nvP(pr,0)}). Aquí no se paga prima de "nuevo"; el riesgo está en la obra, no en el precio.`
+           : `Lectura: ${f.nombre} cobra <b>${nvP(pr,0)}</b> sobre usados ${prima!=null?'de menos de 1 año':'de 1–8 años'} cerca. Para recuperarlo al entregar, la zona tendría que subir eso${f.entrega?' antes de '+nvFecha(f.entrega):' antes de la entrega'}.`;
+    return {c:`<svg viewBox="0 0 ${W} ${H}">${g}</svg>`, r, k, n:f.nombre};
+  };
+  const E = edadHtml();
+
+  /* ---- 2 · índice de la lista vs. IPC ---- */
+  const series = radar.map(f=>{ const b=f.base; if(!b.length) return null;
+    const a0=b[0]; const pts=b.filter(p=>Math.abs(p.area/a0.area-1)<=0.10).map(p=>[nvF(p.fecha), nvM2(p)/nvM2(a0)*100]);
+    return {f, pts, d0:nvF(a0.fecha)}; }).filter(Boolean);
+  let c4 = '<div class="empty">Aún no hay proyectos con historia de precio.</div>', k4 = '';
+  if(series.length){
+    const x0 = new Date(Math.min(...series.map(s=>s.d0))), semanas=[];
+    for(let d=new Date(x0); d<=HOYD; d.setDate(d.getDate()+7)) semanas.push(new Date(d));
+    if(+semanas.at(-1)!==+HOYD) semanas.push(new Date(HOYD));
+    const sem = semanas.map(d=>{ const vs=series.map(s=>{ if(d<s.d0) return null; const p=[...s.pts].reverse().find(q=>q[0]<=d); return p?p[1]:100; }).filter(v=>v!=null);
+      if(!vs.length) return null; const s=[...vs].sort((a,b)=>a-b);
+      return [d, s[Math.floor((s.length-1)*.25)], median(vs), s[Math.ceil((s.length-1)*.75)], vs.length]; }).filter(Boolean);
+    const x1 = new Date(Math.max(+HOYD, +x0 + 90*864e5));
+    const ipcAt = d => 100*Math.pow(1+IPC, (d-x0)/(365.25*864e5));
+    const vals = sem.flatMap(p=>[p[1],p[3]]).concat([ipcAt(x1)]);
+    const y0 = Math.min(96, Math.floor(Math.min(...vals)/2)*2), y1 = Math.max(104, Math.ceil(Math.max(...vals)/2)*2);
+    const W=1100,H=260,L=46,R2=24,T=14,B=30, x=d=>L+(d-x0)/(x1-x0)*(W-L-R2), y=v=>T+(1-(v-y0)/(y1-y0))*(H-T-B);
+    const pasoY = (y1-y0)>16?4:2;
+    let g='';
+    for(let v=y0; v<=y1; v+=pasoY) g+=`<line x1="${L}" x2="${W-R2}" y1="${y(v)}" y2="${y(v)}" stroke="${v===100?'var(--muted)':'var(--st-grid)'}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+    for(let d=new Date(x0.getFullYear(), x0.getMonth()+1, 1); d<=x1; d.setMonth(d.getMonth()+1)) g+=`<text x="${x(d)}" y="${H-8}" text-anchor="middle">${NV_MES[d.getMonth()]}${d.getMonth()===0?' '+String(d.getFullYear()).slice(2):''}</text>`;
+    if(sem.length>1 && sem.some(p=>p[4]>=3)) g+=`<path d="M${sem.map(p=>`${x(p[0])},${y(p[1])}`).join('L')}L${[...sem].reverse().map(p=>`${x(p[0])},${y(p[3])}`).join('L')}Z" fill="color-mix(in srgb,var(--st-new) 16%,transparent)"/>`;
+    g+=`<polyline points="${sem.map(p=>`${x(p[0])},${y(p[2])}`).join(' ')}" fill="none" stroke="var(--st-new)" stroke-width="2"/>`;
+    g+=`<polyline points="${[x0, HOYD, x1].map(d=>`${x(d)},${y(ipcAt(d))}`).join(' ')}" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/>`;
+    g+=`<line x1="${x(HOYD)}" x2="${x(HOYD)}" y1="${T}" y2="${H-B}" stroke="var(--muted)" stroke-dasharray="2 3"/><text x="${x(HOYD)+5}" y="${T+10}">hoy</text>`;
+    const ult = sem.at(-1); g+=`<circle cx="${x(ult[0])}" cy="${y(ult[2])}" r="4" fill="var(--st-new)" stroke="var(--panel)" stroke-width="2"/><text x="${x(ult[0])-6}" y="${y(ult[2])-9}" text-anchor="end" class="ink">${ult[2].toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})}</text>`;
+    sem.forEach(p=>g+=`<rect x="${x(p[0])-6}" y="${T}" width="12" height="${H-T-B}" fill="transparent" ${tipAttr(`<b>Semana del ${p[0].toLocaleDateString('es-CO')}</b>Mediana ${p[2].toFixed(1)} · mitad central ${p[1].toFixed(1)}–${p[3].toFixed(1)} · ${p[4]} proyecto${p[4]>1?'s':''}<br>IPC ${ipcAt(p[0]).toFixed(1)}`)}/>`);
+    c4 = `<div class="nv-leg"><span><i style="background:var(--st-new)"></i>Mediana de los proyectos</span><span><i class="band" style="background:color-mix(in srgb,var(--st-new) 16%,transparent)"></i>Mitad central</span><span><i style="background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 7px)"></i>IPC acumulado (${nvP(IPC)}/año)</span></div><svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+    const dias = Math.round((HOYD-x0)/864e5);
+    k4 = `${dias} días de historia (${series.length} proyectos). Hoy la mediana está en <b>${ult[2].toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})}</b> frente a ${ipcAt(HOYD).toLocaleString('es-CO',{minimumFractionDigits:1,maximumFractionDigits:1})} del IPC: ${ult[2]>ipcAt(HOYD)+0.5?'las listas suben en términos reales (descontado el IPC)':ult[2]<ipcAt(HOYD)-0.5?'las listas bajan en términos reales (descontado el IPC)':'las listas van al ritmo del IPC'}.${dias<180?' Con menos de 6 meses es ruido: la lectura útil llega con la historia.':''}`;
+  }
+
+  /* ---- 2b · detalle por proyecto ---- */
+  const ordenT = [...radar].sort((a,b)=>(b.variacion.cambio??-9)-(a.variacion.cambio??-9));
+  const t5 = `<table><tr><th class="l">Proyecto</th><th class="l">Zona</th><th>Unidad base</th><th>$/m² base</th><th>Cotización</th><th>Variación del precio<br><small>desde el primer día visto</small></th><th>Variación anual</th><th>Entrega</th><th class="l">Contacto</th></tr>`+
+    ordenT.map(f=>{ const b=f.base[f.base.length-1], v=f.variacion, e=nvEst[f.entrega_estado.estado];
+      const varC = v.cambio_unidad ? '<span class="nv-chip w">cambió la unidad base</span>' : `${nvP(v.cambio)}<br><small>desde ${nvFecha(f.base[0].fecha)}</small>`;
+      const anual = v.cambio_unidad ? '—' : v.anual!=null ? nvP(v.anual) : `<small>disponible en ${Math.max(0,180-(v.dias||0))} días</small>`;
+      return `<tr><td class="l">${stEsc(f.nombre)}<br><small>${stEsc(f.constructora||'')}</small></td><td class="l">${nvZona(f.zona)}</td>
+        <td>${b.area.toLocaleString('es-CO')} m² · ${nvM(b.precio)}<br><small>desde · ${stEsc(b.origen||'')}</small></td><td>${nvM(nvM2(b))}</td>
+        <td>${f.cotizacion?`<span class="nv-chip mid">${nvM(f.cotizacion)}</span>`:'<small>—</small>'}</td><td>${varC}</td><td>${anual}</td>
+        <td>${nvFecha(f.entrega)}<br><span class="nv-chip ${e[0]}" ${tipAttr(f.entrega_estado.senales.length?f.entrega_estado.senales.join('<br>'):'Sin señales de entrega todavía')}>${e[1]}</span></td>
+        <td class="l" style="min-width:130px">${f.contacto?stEsc(f.contacto):'<small>sin dato</small>'}</td></tr>`; }).join('')+'</table>';
+
+  /* ---- 3 · tres momentos ---- */
+  const chipE = e => e==='verificar'?'<span class="nv-chip w">por verificar</span>':e==='aprox'?'<span class="nv-chip ok">válido ≈</span>':'<span class="nv-chip ok">válido</span>';
+  const chipO = o => o==='c'?'<span class="nv-chip c">constructora</span>':'<span class="nv-chip m">mercado</span>';
+  const celda = (arr,futuro) => !arr.length ? `<span class="nv-na">N/A</span>${futuro?`<br><small>esperado ${nvFecha(futuro)}</small>`:''}` :
+    arr.map(p=>`<div class="nv-pp">${nvM(nvM2(p))}/m² ${chipO(p.fuente)}<br><small>${p.area.toLocaleString('es-CO')} m² · ${nvM(p.precio)} · ${nvFecha(p.fecha)}${p.estado==='aprox'?' ≈':''} · ${p.url?`<a href="${p.url}" target="_blank" rel="noopener">${stEsc(p.origen||'fuente')}</a>`:stEsc(p.origen||'')}</small> ${chipE(p.estado)}</div>`).join('');
+  const resumenM = (arr,futuro,primero) => {
+    if(!arr.length) return `<span class="nv-na">N/A</span>${futuro?` <small style="display:inline">· ${nvFecha(futuro)}</small>`:''}`;
+    const val = primero ? nvM2(arr[0]) : arr[0].fuente==='m' ? nvMed(arr.map(nvM2)) : nvM2(arr[arr.length-1]);
+    return `<b>${nvM(val)}</b> <i class="nv-src ${arr[0].fuente}" title="${arr[0].fuente==='c'?'constructora':'mercado'}"></i>${arr.some(p=>p.estado==='verificar')?' <span class="nv-chip w">?</span>':''}`;
+  };
+  const todosPts = f => [...f.base, ...f.entrega_pts, ...f.lista, ...f.hoy];
+  const mini = f => { const pts=todosPts(f); if(pts.length<2) return '';
+    const W=520,H=150,L=56,R2=16,T=12,B=26, fs=pts.map(p=>nvF(p.fecha)), v=pts.map(nvM2);
+    const x0=new Date(Math.min(...fs)-60*864e5), x1=new Date(Math.max(...fs,+HOYD)+60*864e5), y0=Math.floor(Math.min(...v)/1e6)*1e6, y1=Math.max(Math.ceil(Math.max(...v)/1e6)*1e6, y0+1e6);
+    const x=s=>L+(nvF(s)-x0)/(x1-x0)*(W-L-R2), y=val=>T+(1-(val-y0)/(y1-y0))*(H-T-B), py=(y1-y0)>4e6?2e6:1e6;
+    let g=''; for(let t=y0;t<=y1;t+=py) g+=`<line x1="${L}" x2="${W-R2}" y1="${y(t)}" y2="${y(t)}" stroke="var(--st-grid)"/><text x="${L-6}" y="${y(t)+4}" text-anchor="end">$${t/1e6} M</text>`;
+    for(let a=x0.getFullYear();a<=x1.getFullYear();a++) for(const m of [0,6]){ const d=new Date(a,m,1); if(d>x0&&d<x1) g+=`<text x="${L+(d-x0)/(x1-x0)*(W-L-R2)}" y="${H-8}" text-anchor="middle">${m?'jul':'ene'} ${String(a).slice(2)}</text>`; }
+    const col={c:'var(--st-new)',m:'var(--st-used)'};
+    ['c','m'].forEach(o=>{ const s=pts.filter(p=>p.fuente===o).sort((a,b)=>nvF(a.fecha)-nvF(b.fecha)); if(s.length>1) g+=`<polyline points="${s.map(p=>`${x(p.fecha)},${y(nvM2(p))}`).join(' ')}" fill="none" stroke="${col[o]}" stroke-width="2" stroke-opacity=".6"/>`; });
+    pts.forEach(p=>g+=`<circle cx="${x(p.fecha)}" cy="${y(nvM2(p))}" r="5.5" fill="${col[p.fuente]}" stroke="${p.estado==='verificar'?'var(--warn)':'var(--panel)'}" stroke-width="2" ${tipAttr(`<b>${p.fuente==='c'?'Constructora':'Mercado'}</b>${nvM(nvM2(p))}/m² · ${p.area} m² · ${nvM(p.precio)}<br>${nvFecha(p.fecha)}${p.estado==='aprox'?' ≈':''} · ${p.origen||''}`)}/>`);
+    return `<svg viewBox="0 0 ${W} ${H}" style="max-width:560px">${g}</svg>`; };
+  const ordenL = [...filas].sort((a,b)=>(b.manual-a.manual) || (todosPts(b).length-todosPts(a).length) || String(a.entrega).localeCompare(String(b.entrega)));
+  const t1 = ordenL.map(f=>{ const M=f.metricas, ent=f.entrega_estado.estado!=='estimada', fut=ent?null:f.entrega;
+    const m1 = M.obra?`<b>${nvP(M.obra.acc)}</b>${M.obra.verificar?' <span class="nv-chip w">?</span>':''}<small>${nvP(M.obra.anual)}/año</small>`:'<span class="nv-na">—</span>';
+    const m2c = M.prima?`<b>${nvP(M.prima.v,0)}</b>${M.prima.verificar?' <span class="nv-chip w">?</span>':''}<small>mercado vs. lista</small>`:'<span class="nv-na">—</span>';
+    const m3 = M.post?`<b>${nvP(M.post.anual)}/año</b>`:'<span class="nv-na">—</span>';
+    const mn = mini(f);
+    return `<details class="nv-pr ${f.manual?'man':''}"><summary>
+      <span class="pn"><b>${stEsc(f.nombre)}</b>${f.manual?' <span class="nv-chip w">manual · semilla</span>':''}<small>${nvZona(f.zona)} · ${f.fase||('entrega '+nvEst[f.entrega_estado.estado][1])}</small></span>
+      <span class="nv-pm">${resumenM(f.base,null,1)}<small>${nvFecha(f.base[0].fecha)}</small></span><span class="nv-pm">${resumenM(f.entrega_pts,fut)}</span><span class="nv-pm">${resumenM(f.hoy,fut)}</span>
+      <span class="nv-pm">${m1}</span><span class="nv-pm">${m2c}</span><span class="nv-pm">${m3}</span></summary>
+      <div class="nv-pd">${f.nota?`<div class="nv-nota">${stEsc(f.nota)}</div>`:''}
+        <div class="nv-pgrid"><div><div class="nv-ph">Base</div>${celda(f.base)}</div><div><div class="nv-ph">Entrega</div>${celda(f.entrega_pts,fut)}</div><div><div class="nv-ph">Hoy</div>${celda(f.hoy,fut)}</div></div>
+        ${f.lista.length?`<div class="nv-otros"><div class="nv-ph">Lista de la constructora después de entregar</div>${celda(f.lista)}</div>`:''}
+        ${mn?`<div class="nv-otros"><div class="nv-ph">Precios en el tiempo · azul constructora · ámbar mercado</div>${mn}</div>`:''}
+        <div class="nv-calc"><span class="nv-chip c">① Lista en obra</span> ${M.obra?`${nvP(M.obra.acc)} entre ${nvFecha(M.obra.desde)} y ${nvFecha(M.obra.hasta)} (${nvP(M.obra.anual)}/año; real (descontado el IPC) ${nvP((1+M.obra.anual)/(1+IPC)-1)}/año)`:'falta un segundo precio de la constructora del mismo metraje (±10 %), 6+ meses después'}
+          <br><span class="nv-chip m">② Prima de "nuevo"</span> ${M.prima?`los dueños piden ${nvP(M.prima.v,0)} frente a la lista de la constructora para unidades parecidas (${M.prima.n} comparación${M.prima.n>1?'es':''})`:ent?'falta una reventa del edificio a menos de 9 meses de un precio de la constructora':'se mide cuando el edificio se entregue y aparezcan reventas'}
+          <br><span class="nv-chip m">③ Después de entregar</span> ${M.post?nvP(M.post.anual)+'/año':'faltan reventas en dos fechas separadas 6+ meses'}</div>
+      </div></details>`; }).join('');
+
+  // línea de tiempo por fuente (solo proyectos con 2+ precios o entrega detectada, para que no sea una lista de puntos sueltos)
+  const TL = ordenL.filter(f=>todosPts(f).length>=2 || f.entrega_estado.estado!=='estimada').slice(0,12);
+  let c1 = '<div class="empty">La línea de tiempo aparece cuando un proyecto tenga dos o más precios.</div>';
+  if(TL.length){
+    const fechas = TL.flatMap(f=>todosPts(f).map(p=>nvF(p.fecha)).concat(f.entrega?[nvF(f.entrega)]:[]));
+    const x0 = new Date(Math.min(...fechas, +HOYD)-90*864e5), x1 = new Date(Math.max(...fechas, +HOYD)+120*864e5);
+    const W=1100,L=170,R2=110,row=46,T=10,H=TL.length*row+40, x=s=>L+((s instanceof Date?s:nvF(s))-x0)/(x1-x0)*(W-L-R2);
+    let g='';
+    for(let a=x0.getFullYear()+1;a<=x1.getFullYear();a++){ const xx=x(new Date(a,0,1)); g+=`<line x1="${xx}" x2="${xx}" y1="${T}" y2="${H-26}" stroke="var(--st-grid)"/><text x="${xx}" y="${H-8}" text-anchor="middle">${a}</text>`; }
+    g+=`<line x1="${x(HOYD)}" x2="${x(HOYD)}" y1="${T}" y2="${H-26}" stroke="var(--muted)" stroke-dasharray="2 3"/><text x="${x(HOYD)+4}" y="${T+8}">hoy</text>`;
+    TL.forEach((f,i)=>{ const y=T+22+i*row, M=f.metricas;
+      g+=`<text x="0" y="${y+4}" class="ink" style="font-weight:600">${stEsc(f.nombre.length>22?f.nombre.slice(0,21)+'…':f.nombre)}</text><text x="0" y="${y+18}" style="font-size:10px">${f.manual?'manual · semilla':'radar · entrega '+nvEst[f.entrega_estado.estado][1]}</text>`;
+      [['c','var(--st-new)'],['m','var(--st-used)']].forEach(([o,col])=>{ const arr=todosPts(f).filter(p=>p.fuente===o).sort((a,b)=>nvF(a.fecha)-nvF(b.fecha));
+        for(let j=0;j+1<arr.length;j++){ const a=arr[j], b=arr[j+1]; if(a.fecha===b.fecha) continue;
+          g+=`<line x1="${x(a.fecha)}" x2="${x(b.fecha)}" y1="${y}" y2="${y}" stroke="${col}" stroke-width="5" stroke-linecap="round"/>`;
+          if(x(b.fecha)-x(a.fecha)>50 && nvAnios(a.fecha,b.fecha)>=0.49 && Math.abs(b.area/a.area-1)<=0.1) g+=`<text x="${(x(a.fecha)+x(b.fecha))/2}" y="${y-9}" text-anchor="middle" class="ink">${nvP(Math.pow(nvM2(b)/nvM2(a),1/nvAnios(a.fecha,b.fecha))-1)}/año</text>`; }
+        arr.forEach(p=>g+=`<circle cx="${x(p.fecha)}" cy="${y}" r="6" fill="${col}" stroke="${p.estado==='verificar'?'var(--warn)':'var(--panel)'}" stroke-width="2.5" ${tipAttr(`<b>${f.nombre} · ${o==='c'?'constructora':'mercado'}</b>${nvM(nvM2(p))}/m² · ${p.area} m² · ${nvM(p.precio)}<br>${nvFecha(p.fecha)}${p.estado==='aprox'?' ≈':''} · ${p.origen||''}`)}/>`); });
+      if(f.entrega){ const e=nvF(f.entrega);
+        if(e>HOYD) g+=`<circle cx="${x(e)}" cy="${y}" r="6" fill="var(--panel)" stroke="var(--muted)" stroke-dasharray="2 2" stroke-width="1.5" ${tipAttr(`<b>${f.nombre}</b>Entrega esperada ${nvFecha(f.entrega)}`)}/><text x="${x(e)}" y="${y+20}" text-anchor="middle" style="font-size:10px">entrega</text>`;
+        else g+=`<line x1="${x(e)}" x2="${x(e)}" y1="${y-9}" y2="${y+9}" stroke="var(--muted)" stroke-width="2"/><text x="${x(e)}" y="${y+22}" text-anchor="middle" style="font-size:10px">entregado</text>`; }
+      if(M.prima) g+=`<text x="${W-R2+10}" y="${y+4}" class="ink">② ${nvP(M.prima.v,0)}${M.prima.verificar?' ?':''}</text>`; });
+    c1 = `<div class="nv-leg"><span><i class="dot" style="background:var(--st-new)"></i>Constructora</span><span><i class="dot" style="background:var(--st-used)"></i>Mercado (reventas)</span><span><i class="dot" style="background:var(--panel);outline:2px dashed var(--muted)"></i>Entrega esperada</span><span><i class="dot" style="background:var(--panel);outline:2px solid var(--warn)"></i>Por verificar</span></div><svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+  }
+  const completos = radar.filter(f=>f.base.length && f.entrega_pts.length).length;
+  const proxEnt = radar.map(f=>f.entrega).filter(e=>e && nvF(e)>HOYD).sort()[0];
+
+  /* ---- KPIs ---- */
+  const posts = filas.filter(f=>f.metricas.post).map(f=>f.metricas.post.anual);
+  const kp = [
+    ['② Prima de "nuevo"', nvP(pm,0), `mediana · ${R.n_prima} edificio${R.n_prima===1?'':'s'} (${R.n_prima_auto} automático${R.n_prima_auto===1?'':'s'})`],
+    ['① Lista durante la obra', R.obra_mediana!=null?nvP(R.obra_mediana):'—', R.n_obra?`${R.n_obra} proyecto${R.n_obra===1?'':'s'} con 6+ meses de historia`:'se mide al cumplir 6 meses de historia'],
+    ['Edificios nuevos con reventas', String(R.n_prima_auto), 'detectados en Fincaraíz'],
+    ['Proyectos del radar seguidos', String(radar.length), `lista revisada cada día · ${R.entregas.probable+R.entregas.confirmada} con entrega detectada`],
+    ['③ Después de entregar', posts.length?nvP(nvMed(posts))+'/año':'pendiente', posts.length?`${posts.length} edificio${posts.length>1?'s':''}`:'requiere reventas en dos fechas 6+ meses'],
+  ];
+
+  el.innerHTML = `<div class="page nv">
+  <h2>Nuevo vs Reventa</h2>
+  <p class="nv-intro">Cuánto se paga por estrenar y cómo se mueve el precio en el tiempo. Compara la lista de la constructora con las reventas del mismo edificio, sigue la lista de los proyectos del radar mientras se construyen y, a largo plazo, arma los tres momentos de cada proyecto (base → entrega → hoy). Todo sale de lo que ya se descarga (Estrenar y Fincaraíz); solo Open C60 está cargado a mano como semilla. No usa los segmentos Estándar / Micro (filtros propios pendientes).</p>
+  <div class="nv-kpis">${kp.map(k=>`<div class="nv-kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('')}</div>
+
+  <div class="nv-sec">1 · Lo que ya sabemos: cuánto se paga por estrenar</div>
+  <div class="nv-card">
+    <h3>Prima de "nuevo": reventas vs. lista de la constructora, mismo edificio</h3>
+    <p class="nv-q">Automático: en los usados de Fincaraíz, edificios donde el mismo pin tiene anuncios <b>de la constructora</b> (lista) y <b>de dueños o inmobiliarias</b> (reventas). Se comparan unidades parecidas (±25 % de área) publicadas con menos de 9 meses de diferencia. Más los proyectos del radar cuando se entreguen y Open C60 (semilla). Punto = mediana; barra = rango.</p>
+    <div class="nv-proj"><div>${c0}</div>
+      <div><div class="nv-ph">Por qué las reventas suelen pedir menos</div>
+        <ul class="nv-exp" style="margin-top:4px">
+          <li><b>El dueño compró más barato</b> en preventa: puede vender bajo la lista actual y aun así ganar.</li>
+          <li><b>La entrega crea vendedores apurados:</b> quien no quiere o no puede tomar el crédito del saldo vende, y todos a la vez con unidades iguales.</li>
+          <li><b>La lista de la constructora incluye plan de pagos, garantía y estrenar</b>, y suele negociarse en privado: su precio real de cierre es menor que la lista.</li>
+          <li><b>A veces la lista ya no existe:</b> la constructora deja publicado un precio aunque ya no le queden unidades.</li>
+        </ul><div class="nv-take">${k0}</div></div></div>
+  </div>
+  <div class="nv-card">
+    <select class="nv-sel" id="nv-selp">${conPin.map(f=>`<option value="${f.id}" ${f.id===NV_SEL?'selected':''}>${stEsc(f.nombre)}</option>`).join('')}</select>
+    <h3>Comparación por edad del edificio · ${stEsc(E.n||'')}</h3>
+    <p class="nv-q">Lo que se puede saber hoy sin historia: $/m² de la unidad base del proyecto frente a usados cercanos (≤ 1,5 km, 25–60 m² construidos) según la edad de su edificio, y frente a reventas de proyectos entregados cerca. Responde: ¿cuánto de lo que pagas es prima de "nuevo"?</p>
+    <div class="nv-proj"><div>${E.c}</div><div>${E.r}</div></div>
+    <div class="nv-take">${E.k}</div>
+  </div>
+
+  <div class="nv-sec">2 · Lo que se mide cada día: la lista durante la obra</div>
+  <div class="nv-card">
+    <h3>¿Cómo se ha movido el precio desde que lo vemos?</h3>
+    <p class="nv-q">$/m² de la unidad base de cada proyecto (precio desde ÷ área desde), indexado a 100 el primer día visto. La línea punteada es el IPC: por encima, el proyecto sube en términos reales (descontado el IPC).</p>
+    ${c4}<div class="nv-take">${k4||'—'}</div>
+  </div>
+  <div class="nv-card">
+    <h3>Detalle por proyecto</h3>
+    <ul class="nv-exp">
+      <li><b>Unidad base:</b> el "área desde X · precio desde Y" que publica el proyecto. Y siempre va con X.</li>
+      <li><b>$/m² base:</b> precio desde ÷ área desde. Es la referencia que se sigue en el tiempo.</li>
+      <li><b>Cotización:</b> precio real de una unidad pedido a la sala de ventas (manual). Si existe, manda sobre la unidad base.</li>
+      <li><b>Variación del precio:</b> cuánto ha subido o bajado el $/m² base desde el primer día que vimos el proyecto. Si cambia el área desde, se marca "cambió la unidad base" y no cuenta como subida.</li>
+      <li><b>Variación anual:</b> lo mismo llevado a un año. Aparece al cumplir 180 días de historia; antes es ruido.</li>
+      <li><b>Entrega:</b> estimada (sin señales) · probable (pasó la fecha, "entrega inmediata" o anuncios con administración en el edificio) · confirmada (dos señales, una de ellas una reventa).</li>
+    </ul>
+    <div style="overflow:auto">${t5}</div>
+  </div>
+
+  <div class="nv-sec">3 · Largo plazo: tres momentos por proyecto</div>
+  <details class="nv-lp"><summary><b>Base → entrega → hoy</b> · ${filas.length} proyectos · ${completos} con base y entrega medidas <span class="muted">(clic para abrir)</span></summary>
+  <div class="nv-lpbody">
+    <ul class="nv-exp">
+      <li><b>Base (constructora):</b> la unidad base el primer día visto (o el precio más antiguo con fecha en la semilla).</li>
+      <li><b>Entrega (constructora):</b> la unidad base cuando la entrega pasa a probable o confirmada.</li>
+      <li><b>Hoy (mercado):</b> reventas en el mismo edificio (pin ≤ 40 m; "por verificar" si el anuncio no nombra el edificio).</li>
+      <li><b>Regla de cálculo:</b> una tasa solo se calcula entre precios de la <b>misma fuente</b>:
+        <span class="nv-chip c">① Lista en obra</span> constructora → constructora;
+        <span class="nv-chip m">② Prima de "nuevo"</span> mercado vs. constructora a menos de 9 meses (diferencia, no tasa anual);
+        <span class="nv-chip m">③ Después de entregar</span> mercado → mercado.</li>
+      <li><b>Regla de un precio:</b> metraje (construida o privada ÷ 0,88), fecha (≈ = estimada) y variación creíble; más de 25 % en un año para el mismo metraje → <span class="nv-chip w">por verificar</span>.</li>
+    </ul>
+    <div class="nv-hdr"><span>Proyecto · clic para ver el detalle</span><span>Base</span><span>Entrega</span><span>Hoy</span><span>① Lista en obra</span><span>② Prima de "nuevo"</span><span>③ Después</span></div>
+    ${t1}
+    <div class="nv-card" style="margin-top:14px"><h3>Línea de tiempo</h3>
+      <p class="nv-q">Precios en fechas reales, coloreados por fuente. Las líneas solo unen precios de la misma fuente; encima, su variación anual si el tramo dura 6+ meses con el mismo metraje (±10 %). A la derecha, la prima de "nuevo" cuando existe.</p>${c1}</div>
+    <div class="nv-lock">🔒 <b>Escenario a la entrega:</b> se activa cuando haya al menos 5 proyectos del radar con base y entrega medidas. Hoy: <b>${completos} de 5</b>.${proxEnt?` Próxima entrega estimada del radar: <b>${nvFecha(proxEnt)}</b>.`:''}</div>
+  </div></details>
+  <p class="muted" style="font-size:12px;margin-top:16px">Sesgos que no se corrigen: los precios son pedidos, no de cierre; la constructora puede mantener una lista que ya nadie paga; las reventas visibles se inclinan a dueños que quieren salir. Lo único manual es la semilla de Open C60 (config/nuevo_vs_reventa.toml), que se puede borrar cuando haya suficientes edificios automáticos.</p>
+  </div>`;
+
+  const tip = $('#st-tip');
+  el.querySelectorAll('[data-tip]').forEach(n=>{ n.onmousemove=e=>{ tip.innerHTML=n.dataset.tip; tip.style.opacity=1; tip.style.left=Math.min(e.clientX+14,innerWidth-290)+'px'; tip.style.top=(e.clientY+14)+'px'; }; n.onmouseleave=()=>tip.style.opacity=0; });
+  const sel = $('#nv-selp'); if(sel) sel.onchange = () => { NV_SEL = sel.value; renderNvr(); };
+}
+
 /* ---------- KPIs y orquestación ---------- */
 function renderKPIs(){
   const ps=proyFiltrados(), pr=ps.map(primaProyecto).filter(x=>x!==null);
@@ -1187,10 +1546,11 @@ function renderKPIs(){
    <div class="kpi"><b>${hoy}</b><span>Detectados hoy</span></div>`;
 }
 function renderAll(withSup=true){
-  renderKPIs(); renderFiltros(); renderMapa(); renderDetalle(); renderTabla(); renderUsados(); renderFeed(); renderEst(); if(withSup) renderSup();
+  renderKPIs(); renderFiltros(); renderMapa(); renderDetalle(); renderTabla(); renderUsados(); renderFeed(); renderEst(); renderNvr(); if(withSup) renderSup();
 }
-$('#tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{
-  $('#tabs').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+document.querySelectorAll('#tabs button, #tabs2 button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button, #tabs2 button').forEach(x=>x.classList.toggle('on',x===b));
+  document.body.classList.toggle('nvr', b.dataset.v==='nvr');
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
   if(b.dataset.v==='mapa') setTimeout(()=>map.invalidateSize(),50);
 });
@@ -1213,7 +1573,7 @@ async function cargarDatos(){
     COMP_UT = USADOS_TODOS; COMP_U = USADOS;
     if(d.generado) HOY = d.generado.slice(0,10);
     PENDIENTES = {sin_ubicar:d.sin_ubicar||[], fuera:d.fuera_de_zonas||[]};
-    GENERADO = d.generado; MODO = 'real';
+    GENERADO = d.generado; MODO = 'real'; NVR = d.nuevo_vs_reventa || null;
     $('#modo').textContent = USADOS.length ? 'DATOS REALES' : 'DATOS REALES · USADOS PENDIENTES';
     $('#subtitulo').textContent = `≤ ${fM(PARAMS.precio_max)} · ${USADOS.length} usados · act. ${new Date(GENERADO).toLocaleString('es-CO',{dateStyle:'medium',timeStyle:'short'})}`;
   }catch(e){ console.warn('Sin dashboard.json: modo demo.', e); }

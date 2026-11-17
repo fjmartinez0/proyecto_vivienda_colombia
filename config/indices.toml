@@ -1,0 +1,35 @@
+# Índices de precios para la valorización (pipeline/valorizacion.py).
+# Variación ANUAL en %, por año calendario (para IPC: diciembre contra diciembre).
+# Un año sin dato se toma con la última variación conocida y el resultado queda marcado "índice estimado".
+# Actualizar a mano una vez al año (enero, cuando el DANE publica el IPC de diciembre).
+
+[ipc]
+nombre = "IPC Colombia (dic.–dic.)"
+fuente = "https://www.gerencie.com/ipc-historico.html"   # serie DANE recopilada; 2025: https://www.valoraanalitik.com/inflacion-en-colombia-en-2025/
+anual = { 2011 = 3.73, 2012 = 2.44, 2013 = 1.94, 2014 = 3.66, 2015 = 6.77, 2016 = 5.75, 2017 = 4.09, 2018 = 3.18, 2019 = 3.80, 2020 = 1.61, 2021 = 5.62, 2022 = 13.12, 2023 = 9.28, 2024 = 5.20, 2025 = 5.10 }
+
+# IPVN del DANE (vivienda nueva en proceso de construcción y terminada sin vender), Bogotá, variación anual
+# del IV trimestre. Categorías del DANE: bajo = estratos 1-3, medio = 4, alto = 5-6.
+# PENDIENTE: llenar desde los boletines IPVN (tabla "variación anual Bogotá por estratos"). Sin dato, el estudio
+# calcula valorización nominal y real pero no el exceso sobre el mercado.
+[ipvn_bogota_medio]
+nombre = "IPVN Bogotá, estrato medio (4)"
+fuente = "https://www.dane.gov.co/files/operaciones/IPVN/bol-IPVN-IItrim2026.pdf"
+anual = {}
+
+[ipvn_bogota_alto]
+nombre = "IPVN Bogotá, estrato alto (5-6)"
+fuente = "https://www.dane.gov.co/files/operaciones/IPVN/bol-IPVN-IItrim2026.pdf"
+anual = {}
+
+[ipvn_bogota_bajo]
+nombre = "IPVN Bogotá, estrato bajo (1-3)"
+fuente = "https://www.dane.gov.co/files/operaciones/IPVN/bol-IPVN-IItrim2026.pdf"
+anual = {}
+
+# IPVU del Banco de la República (vivienda usada, a partir de avalúos hipotecarios), Bogotá, variación anual nominal.
+# Referencia para la fase DESPUÉS de la entrega. PENDIENTE: llenar desde la serie anual por ciudad.
+[ipvu_bogota]
+nombre = "IPVU Bogotá (Banco de la República)"
+fuente = "https://banrep.gov.co/es/glosario/ipvu"
+anual = {}

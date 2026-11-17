@@ -33,7 +33,7 @@ from vivienda.checks import Bitacora
 from vivienda.models import Tipologia
 from vivienda.pipeline import aplicar as merger
 from vivienda.pipeline import brochures as brpipe
-from vivienda.pipeline import exportar, filtros, geocodificar, historial, proyectos
+from vivienda.pipeline import exportar, filtros, geocodificar, historial, proyectos, valorizacion
 from vivienda.pipeline import usados as usados_mod
 from vivienda.pipeline import zonas as zonas_mod
 from vivienda.sources import estrenar
@@ -169,6 +169,10 @@ def _exportar(prys=None, registros=None) -> None:
         datos["usados"] = usados_mod.para_dashboard(usados_mod.cargar(), date.today(),
                                                     cfg.fincaraiz.dias_vigencia, cfg.filtros.area_min, zonas,
                                                     area_min_micro=cfg.filtros.area_min_micro)
+    try:
+        datos["nuevo_vs_reventa"] = valorizacion.construir(datos, date.today())
+    except (ValueError, KeyError, TypeError, ZeroDivisionError) as e:   # un error aquí no tumba el dashboard
+        log.warning("Nuevo vs Reventa: %s", e)
     exportar.guardar(datos)
     print(f"Dashboard: {len(datos['proyectos'])} proyectos en el mapa, {len(datos['sin_ubicar'])} sin ubicar, "
           f"{len(datos['fuera_de_zonas'])} fuera de zonas, {len(datos['usados'])} usados vigentes "
@@ -201,6 +205,15 @@ def _proyectos_al_dia(registros: dict[str, dict] | None = None) -> dict[str, dic
     proyectos.rezonificar(prys, cfgmod.cargar_zonas())
     proyectos.guardar(prys)
     return prys
+
+
+def cmd_valorizacion(args) -> None:
+    """Pestaña Nuevo vs Reventa en texto: prima de 'nuevo', lista en obra, entregas y reventas por proyecto."""
+    import json
+    if not exportar.ARCHIVO.exists():
+        _exportar()
+    datos = json.loads(exportar.ARCHIVO.read_text(encoding="utf-8"))
+    print(valorizacion.reporte(valorizacion.construir(datos, date.today())))
 
 
 def cmd_exportar(args) -> None:
@@ -814,6 +827,7 @@ def main(argv: list[str] | None = None) -> None:
 
     sub.add_parser("estado", help="estado de ubicación de los proyectos").set_defaults(func=cmd_estado)
     sub.add_parser("exportar", help="regenerar dashboard.json").set_defaults(func=cmd_exportar)
+    sub.add_parser("nuevo-vs-reventa", aliases=["nvr"], help="resumen de la pestaña Nuevo vs Reventa (prima de nuevo, lista en obra, entregas)").set_defaults(func=cmd_valorizacion)
 
     w = sub.add_parser("web", help="abrir el dashboard en el navegador")
     w.add_argument("--puerto", type=int, default=8000)

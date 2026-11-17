@@ -67,6 +67,7 @@ def aplicar_a_proyectos(registro: dict[str, dict], manuales: list[dict], hoy: da
         p["fuente_nombre"] = "Manual"
         p["url"] = m.get("fuente") if reglas.es_url(m.get("fuente")) else None
         p["notas"] = m.get("notas")
+        p["contacto"] = m.get("contacto")
         p["zonas_candidatas"] = list(m.get("zonas", []))
         p["seguimiento"] = bool(m.get("seguimiento"))   # fuera de zonas pero visible en el mapa
         if m.get("lat") is not None and m.get("lng") is not None:

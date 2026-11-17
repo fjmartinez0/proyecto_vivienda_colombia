@@ -1,0 +1,60 @@
+# Semilla manual de la pestaña "Nuevo vs Reventa" (pipeline/valorizacion.py).
+# Es la ÚNICA parte manual: un proyecto entregado con buena información, para que la pestaña muestre algo real
+# mientras la parte automática (proyectos del radar + edificios nuevos detectados en Fincaraíz) se llena.
+# Se puede borrar cuando haya suficientes edificios automáticos.
+#
+# momento: base (constructora, antes de entregar) | entrega (constructora, ±6 meses de la entrega)
+#          | lista (constructora, después de entregar) | hoy (mercado: reventas del edificio)
+# estado:  ok | aprox (fecha estimada con pistas) | verificar
+# area:    m² construidos (si el portal solo da privada, dividir por 0,88)
+
+[[proyecto]]
+id = "semilla-open-c60"
+nombre = "Open C60"
+constructora = "Constructora Open"
+zona = "chu"
+fase = "etapa 1 entregada (jun-2025) · etapa 2 en obra"
+entrega = "2025-06"
+entrega_obra = "2028-03"          # la etapa 2 sigue en obra: sus precios cuentan como lista en obra
+nota = "Cargado a mano (semilla). La constructora sigue vendiendo la etapa 2: sus precios son la serie de lista. Las reventas no nombran el edificio: confirmar."
+
+  [[proyecto.precio]]
+  momento = "base"
+  fecha = "2024-12"
+  area = 25.39
+  precio = 300_000_000
+  estado = "aprox"
+  origen = "openc60.com (≈ dic-2024)"
+  url = "https://www.openc60.com/"
+
+  [[proyecto.precio]]
+  momento = "base"
+  fecha = "2026-05-04"
+  area = 26.65
+  precio = 305_000_000
+  origen = "Fincaraíz, anuncio de la constructora"
+  url = "https://www.fincaraiz.com.co/open-c60-apartamentos-en-venta-en-chapinero-bogota/193705203"
+
+  [[proyecto.precio]]
+  momento = "base"
+  fecha = "2026-11"
+  area = 35.68
+  precio = 360_000_000
+  origen = "Estrenar Vivienda"
+  url = "https://www.estrenarvivienda.com/open-c60/47463"
+
+  [[proyecto.precio]]
+  momento = "hoy"
+  fecha = "2026-11"
+  area = 36
+  precio = 340_000_000
+  estado = "verificar"
+  origen = "Fincaraíz, reventa (admin $456.000; confirmar edificio)"
+
+  [[proyecto.precio]]
+  momento = "hoy"
+  fecha = "2026-11"
+  area = 20
+  precio = 215_000_000
+  estado = "verificar"
+  origen = "Fincaraíz, reventa (admin $340.000; confirmar edificio)"

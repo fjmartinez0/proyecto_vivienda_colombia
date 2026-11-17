@@ -8,7 +8,8 @@
 #   direccion_origen "manual" (dato oficial: brochure, cotización) o "agregador" (portal / sala de ventas)
 #   fuente           URL o archivo de donde salen los datos
 #   opcionales: estrato, ascensor (true/false), renta_corta ("permitida"/"prohibida"),
-#               entrega ("AAAA-MM"), acabados ("full"/"semi"/"obra gris"), notas
+#               entrega ("AAAA-MM"), acabados ("full"/"semi"/"obra gris"), notas,
+#               contacto (teléfono o WhatsApp de la sala de ventas; sale en la pestaña Nuevo vs Reventa)
 #   seguimiento      true = mostrarlo en el mapa aunque quede fuera de tus zonas (comparables por distancia)
 #   lat, lng         coordenadas si se conocen (enlace de Waze/Maps de la ficha): no se geocodifica
 #   precision        "media" (por defecto con lat/lng) o "baja" si las coordenadas son aproximadas

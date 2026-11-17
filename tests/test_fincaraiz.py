@@ -176,9 +176,9 @@ class TestRezonificarUsados(unittest.TestCase):
         from vivienda.pipeline import usados as um
         from vivienda.pipeline.zonas import a_geojson
         zonas = a_geojson([{"id": "nueva", "centro": [4.65, -74.06], "radio_m": 500}])
-        reg = {"a": {"id": "1", "zona": "vieja", "lat": 4.65, "lng": -74.06, "precio": 1, "area_privada": 40,
+        reg = {"a": {"id": "1", "zona": "vieja", "lat": 4.65, "lng": -74.06, "precio": 400_000_000, "area_privada": 40,
                      "tipo": "apartamento", "primer_visto": "2026-10-25", "ultimo_visto": "2026-10-25"},
-               "b": {"id": "2", "zona": "vieja", "lat": 4.70, "lng": -74.06, "precio": 1, "area_privada": 40,
+               "b": {"id": "2", "zona": "vieja", "lat": 4.70, "lng": -74.06, "precio": 400_000_000, "area_privada": 40,
                      "tipo": "apartamento", "primer_visto": "2026-10-25", "ultimo_visto": "2026-10-25"}}
         out = um.para_dashboard(reg, date(2026, 10, 26), 7, 30, zonas)
         self.assertEqual(sorted((u["id"], u["zona"]) for u in out), [("FR-1", "nueva"), ("FR-2", None)])
