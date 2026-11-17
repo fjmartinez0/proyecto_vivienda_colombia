@@ -49,17 +49,38 @@ class TestNuevoVsReventa(unittest.TestCase):
         self.assertEqual(est["estado"], "estimada")
 
     def test_entrega_confirmada_con_reventa_y_fecha(self):
-        p = proyecto(entrega="2026-06")
-        rev, pin = v.reventas_edificio(LAT, LNG, [usado()], p["nombre"])
-        self.assertEqual(v.estado_entrega(p, pin, HOY)["estado"], "confirmada")
+        p = proyecto(entrega="2026-06", estado=None)
+        rev, _ = v.reventas_edificio(LAT, LNG, [usado()], p["nombre"])
+        self.assertEqual(v.estado_entrega(p, rev, HOY)["estado"], "confirmada")
         self.assertEqual(rev[0]["estado"], "ok")         # el anuncio nombra el edificio
 
     def test_reventa_lejos_no_cuenta(self):
         rev, pin = v.reventas_edificio(LAT, LNG, [usado(lat=LAT + 0.002)], "Torre Prueba")
         self.assertEqual((rev, pin), ([], []))
 
+    # casos reales del 16-nov-2026 (salida de `vivienda nvr`)
+    def test_los_robles_entrega_lejana_no_tiene_reventas(self):
+        u = usado(descripcion="apartamento en Morato", antiguedad=0.5)
+        datos = {"proyectos": [proyecto(entrega="2028-09", estado="Sin dato")], "usados": [u]}
+        f = v.construir(datos, HOY, semilla=Path("/no/existe.toml"))["proyectos"][0]
+        self.assertEqual((f["entrega_estado"]["estado"], f["hoy"]), ("estimada", []))
+
+    def test_torres_del_valle_pin_con_edificios_viejos(self):
+        us = [usado(id="a", descripcion="", antiguedad=0.5), usado(id="b", descripcion="", antiguedad=12.0)]
+        rev, cerca = v.reventas_edificio(LAT, LNG, us, "Torres del Valle")
+        self.assertEqual((rev, len(cerca)), ([], 2))
+
+    def test_pin_limpio_menor_a_un_anio_es_por_verificar(self):
+        rev, _ = v.reventas_edificio(LAT, LNG, [usado(descripcion="", antiguedad=0.5)], "Torres del Valle")
+        self.assertEqual(rev[0]["estado"], "verificar")
+
+    def test_balmes_fecha_vencida_en_construccion(self):
+        est = v.estado_entrega(proyecto(entrega="2026-03", estado="En construcción"), [], HOY)
+        self.assertEqual(est["estado"], "estimada")
+        self.assertIn("revisar la fecha", est["aviso"])
+
     def test_construir_prima_solo_tras_entrega(self):
-        datos = {"proyectos": [proyecto(entrega="2026-06")], "usados": [usado()]}
+        datos = {"proyectos": [proyecto(entrega="2026-06", estado=None)], "usados": [usado()]}
         b = v.construir(datos, HOY, semilla=Path("/no/existe.toml"))
         f = b["proyectos"][0]
         self.assertEqual(f["entrega_estado"]["estado"], "confirmada")
@@ -70,15 +91,6 @@ class TestNuevoVsReventa(unittest.TestCase):
     def test_fuera_de_zona_lejos_no_entra(self):
         datos = {"proyectos": [proyecto(fuera_de_zona=True, distancia_zona_m=400)], "usados": []}
         self.assertEqual(v.construir(datos, HOY, semilla=Path("/no/existe.toml"))["proyectos"], [])
-
-    def test_prima_automatica_fincaraiz(self):
-        lat, lng = 4.70, -74.05
-        us = [usado(id="c", lat=lat, lng=lng, edificio="e1", publicador="builder", precio=400e6, area=40.0),
-              usado(id="r", lat=lat, lng=lng, edificio="e1", publicador="owner", precio=360e6, area=40.0)]
-        auto = v.prima_automatica(us, [])
-        self.assertEqual(len(auto), 1)
-        self.assertAlmostEqual(auto[0]["prima"]["v"], -0.10, places=4)
-        self.assertEqual(v.prima_automatica(us, [(lat, lng)]), [])   # ya es un proyecto del radar
 
     def test_semilla(self):
         toml = """

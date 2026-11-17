@@ -1286,8 +1286,7 @@ function renderNvr(){
   const tipAttr = h => `data-tip="${stEsc(h)}"`;
 
   /* ---- 1 · prima de "nuevo" ---- */
-  const PR = [...filas.filter(f=>f.metricas.prima).map(f=>({n:f.nombre, zona:nvZona(f.zona), tipo:f.manual?'manual · semilla':'proyecto del radar', p:f.metricas.prima})),
-              ...NVR.prima_auto.map(a=>({n:'Edificio en '+(a.barrio||nvZona(a.zona)), zona:nvZona(a.zona), tipo:`automático · ${a.n_constructora} de la constructora / ${a.n_reventa} reventa${a.n_reventa>1?'s':''}`, p:a.prima, url:a.url}))]
+  const PR = [...filas.filter(f=>f.metricas.prima).map(f=>({n:f.nombre, zona:nvZona(f.zona), tipo:f.manual?'manual · semilla':'proyecto del radar', p:f.metricas.prima}))]
              .sort((a,b)=>a.p.v-b.p.v);
   let c0 = '<div class="empty">Aún no hay edificios con reventas y lista de la constructora a la vez.</div>';
   if(PR.length){
@@ -1307,7 +1306,7 @@ function renderNvr(){
     c0 = `<div class="nv-leg"><span><i class="dot" style="background:var(--st-used)"></i>Mediana de reventas vs. lista</span><span><i class="band" style="background:color-mix(in srgb,var(--st-used) 35%,transparent)"></i>Rango</span><span><i class="dot" style="background:var(--panel);outline:2px solid var(--warn)"></i>Incluye precio por verificar</span></div><svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
   }
   const pm = R.prima_mediana;
-  const k0 = PR.length ? `<b>Lectura:</b> en ${PR.length} edificio${PR.length>1?'s':''} con reventas, los dueños piden en mediana <b>${nvP(pm,0)}</b> frente a la lista de la constructora.${pm!=null&&pm<0?` Revender al entregar lo comprado hoy sobre planos implicaría vender por debajo de la lista: el negocio está en la renta o en negociar descuento al comprar.`:''}${PR.length<5?' Muestra pequeña: señal, no conclusión.':''}` : 'Se llena solo a medida que Fincaraíz publique edificios nuevos con anuncios de la constructora y de dueños en el mismo punto.';
+  const k0 = PR.length ? `<b>Lectura:</b> en ${PR.length} edificio${PR.length>1?'s':''} con reventas, los dueños piden en mediana <b>${nvP(pm,0)}</b> frente a la lista de la constructora.${pm!=null&&pm<0?` Revender al entregar lo comprado hoy sobre planos implicaría vender por debajo de la lista: el negocio está en la renta o en negociar descuento al comprar.`:''}${PR.length<5?' Muestra pequeña: señal, no conclusión.':''}` : 'Se llena solo a medida que los proyectos del radar se entreguen y aparezcan reventas en su edificio.';
 
   /* ---- 1b · comparación por edad del edificio ---- */
   const conPin = filas.filter(f=>f.lat!=null && f.base.length);
@@ -1385,7 +1384,7 @@ function renderNvr(){
       return `<tr><td class="l">${stEsc(f.nombre)}<br><small>${stEsc(f.constructora||'')}</small></td><td class="l">${nvZona(f.zona)}</td>
         <td>${b.area.toLocaleString('es-CO')} m² · ${nvM(b.precio)}<br><small>desde · ${stEsc(b.origen||'')}</small></td><td>${nvM(nvM2(b))}</td>
         <td>${f.cotizacion?`<span class="nv-chip mid">${nvM(f.cotizacion)}</span>`:'<small>—</small>'}</td><td>${varC}</td><td>${anual}</td>
-        <td>${nvFecha(f.entrega)}<br><span class="nv-chip ${e[0]}" ${tipAttr(f.entrega_estado.senales.length?f.entrega_estado.senales.join('<br>'):'Sin señales de entrega todavía')}>${e[1]}</span></td>
+        <td>${nvFecha(f.entrega)}<br><span class="nv-chip ${e[0]}" ${tipAttr(f.entrega_estado.senales.length?f.entrega_estado.senales.join('<br>'):'Sin señales de entrega todavía')}>${e[1]}</span>${f.entrega_estado.aviso?`<br><span class="nv-chip w" ${tipAttr(f.entrega_estado.aviso)}>revisar fecha</span>`:''}</td>
         <td class="l" style="min-width:130px">${f.contacto?stEsc(f.contacto):'<small>sin dato</small>'}</td></tr>`; }).join('')+'</table>';
 
   /* ---- 3 · tres momentos ---- */
@@ -1457,22 +1456,22 @@ function renderNvr(){
   /* ---- KPIs ---- */
   const posts = filas.filter(f=>f.metricas.post).map(f=>f.metricas.post.anual);
   const kp = [
-    ['② Prima de "nuevo"', nvP(pm,0), `mediana · ${R.n_prima} edificio${R.n_prima===1?'':'s'} (${R.n_prima_auto} automático${R.n_prima_auto===1?'':'s'})`],
+    ['② Prima de "nuevo"', nvP(pm,0), `mediana · ${R.n_prima} edificio${R.n_prima===1?'':'s'}${R.n_prima<5?' · muestra pequeña':''}`],
     ['① Lista durante la obra', R.obra_mediana!=null?nvP(R.obra_mediana):'—', R.n_obra?`${R.n_obra} proyecto${R.n_obra===1?'':'s'} con 6+ meses de historia`:'se mide al cumplir 6 meses de historia'],
-    ['Edificios nuevos con reventas', String(R.n_prima_auto), 'detectados en Fincaraíz'],
+    ['Proyectos del radar con reventas', String(R.n_con_reventas), 'anuncios en su edificio, en Fincaraíz'],
     ['Proyectos del radar seguidos', String(radar.length), `lista revisada cada día · ${R.entregas.probable+R.entregas.confirmada} con entrega detectada`],
     ['③ Después de entregar', posts.length?nvP(nvMed(posts))+'/año':'pendiente', posts.length?`${posts.length} edificio${posts.length>1?'s':''}`:'requiere reventas en dos fechas 6+ meses'],
   ];
 
   el.innerHTML = `<div class="page nv">
   <h2>Nuevo vs Reventa</h2>
-  <p class="nv-intro">Cuánto se paga por estrenar y cómo se mueve el precio en el tiempo. Compara la lista de la constructora con las reventas del mismo edificio, sigue la lista de los proyectos del radar mientras se construyen y, a largo plazo, arma los tres momentos de cada proyecto (base → entrega → hoy). Todo sale de lo que ya se descarga (Estrenar y Fincaraíz); solo Open C60 está cargado a mano como semilla. No usa los segmentos Estándar / Micro (filtros propios pendientes).</p>
+  <p class="nv-intro">Cuánto se paga por estrenar y cómo se mueve el precio en el tiempo. Compara la lista de la constructora con las reventas del mismo edificio, sigue la lista de los proyectos del radar mientras se construyen y, a largo plazo, arma los tres momentos de cada proyecto (base → entrega → hoy). Todo sale de lo que ya se descarga (Estrenar y Fincaraíz); solo Open C60 está cargado a mano como semilla. Fincaraíz no identifica constructoras, así que la prima solo se mide en proyectos del radar ya entregados. No usa los segmentos Estándar / Micro (filtros propios pendientes).</p>
   <div class="nv-kpis">${kp.map(k=>`<div class="nv-kpi"><div class="l">${k[0]}</div><div class="v">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('')}</div>
 
   <div class="nv-sec">1 · Lo que ya sabemos: cuánto se paga por estrenar</div>
   <div class="nv-card">
     <h3>Prima de "nuevo": reventas vs. lista de la constructora, mismo edificio</h3>
-    <p class="nv-q">Automático: en los usados de Fincaraíz, edificios donde el mismo pin tiene anuncios <b>de la constructora</b> (lista) y <b>de dueños o inmobiliarias</b> (reventas). Se comparan unidades parecidas (±25 % de área) publicadas con menos de 9 meses de diferencia. Más los proyectos del radar cuando se entreguen y Open C60 (semilla). Punto = mediana; barra = rango.</p>
+    <p class="nv-q">Proyectos del radar ya entregados con reventas en su edificio (anuncios de Fincaraíz que nombran el proyecto, o de menos de 1 año en un pin sin edificios más viejos), más Open C60 (semilla). Se comparan unidades parecidas (±25 % de área) con menos de 9 meses de diferencia. Punto = mediana; barra = rango.</p>
     <div class="nv-proj"><div>${c0}</div>
       <div><div class="nv-ph">Por qué las reventas suelen pedir menos</div>
         <ul class="nv-exp" style="margin-top:4px">
@@ -1504,7 +1503,7 @@ function renderNvr(){
       <li><b>Cotización:</b> precio real de una unidad pedido a la sala de ventas (manual). Si existe, manda sobre la unidad base.</li>
       <li><b>Variación del precio:</b> cuánto ha subido o bajado el $/m² base desde el primer día que vimos el proyecto. Si cambia el área desde, se marca "cambió la unidad base" y no cuenta como subida.</li>
       <li><b>Variación anual:</b> lo mismo llevado a un año. Aparece al cumplir 180 días de historia; antes es ruido.</li>
-      <li><b>Entrega:</b> estimada (sin señales) · probable (pasó la fecha, "entrega inmediata" o anuncios con administración en el edificio) · confirmada (dos señales, una de ellas una reventa).</li>
+      <li><b>Entrega:</b> estimada (sin señales) · probable (pasó la fecha, "entrega inmediata" o reventas con administración en el edificio) · confirmada (dos señales, una de ellas una reventa). "Revisar fecha" = la fecha pasó pero el proyecto sigue "en construcción".</li>
     </ul>
     <div style="overflow:auto">${t5}</div>
   </div>

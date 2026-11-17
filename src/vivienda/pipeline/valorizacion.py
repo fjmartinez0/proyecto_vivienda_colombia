@@ -13,14 +13,16 @@ Una tasa solo se calcula entre precios de la MISMA fuente:
   ② prima de "nuevo"     mercado vs. constructora, área ±25 %, a menos de 9 meses (diferencia, no tasa anual)
   ③ después de entregar  mercado -> mercado, mismo metraje ±10 %, 6+ meses
 
-② también sale automático de Fincaraíz para cualquier edificio nuevo de las zonas: en un mismo punto, anuncios de
-la constructora (publicador builder/developer) frente a anuncios de dueños o inmobiliarias.
+Reventa = anuncio de usado a <= 40 m del pin que nombra el proyecto, o que es "menor a 1 año" en un pin sin
+edificios más viejos (Fincaraíz ubica muchos anuncios de forma aproximada). Mientras la entrega esté a más de 6 meses
+(o sin fecha), solo cuentan los que nombran el proyecto. Fincaraíz no identifica constructoras (owner.type es siempre
+"inmobiliaria" o vacío), así que no hay prima automática fuera de los proyectos del radar.
 
 Estado de la entrega (no se da por hecha con la fecha estimada, que se corre seguido):
   estimada   ninguna señal
-  probable   >= 1 señal: la fecha estimada pasó · el portal dice "entrega inmediata" · anuncios con administración
-             en el pin del edificio
-  confirmada >= 2 señales y una es una reventa (anuncio de un dueño con administración en el edificio)
+  probable   >= 1 señal: la fecha estimada pasó (salvo que el proyecto figure "en construcción": eso es un aviso de
+             revisar la fecha) · el portal dice "entrega inmediata" · reventas con administración en el edificio
+  confirmada >= 2 señales y una es una reventa con administración
 """
 from __future__ import annotations
 
@@ -41,8 +43,7 @@ TOL_MISMO_METRAJE = 0.10
 TOL_PAREJA = 0.25
 MAX_ANIOS_PAREJA = 0.75
 MIN_ANIOS_TASA = 0.49
-MAX_ANTIG_NUEVO = 2               # años: un anuncio más viejo en el pin es de otro edificio
-PUBLICADORES_CONSTRUCTORA = {"builder", "constructora", "developer"}
+MAX_ANTIG_NUEVO = 1               # años: Fincaraíz solo da tramos; < 1 = "menor a 1 año"
 
 
 # ---------------------------------------------------------------- utilidades
@@ -120,43 +121,55 @@ def serie_base(proyecto: dict) -> list[dict]:
 
 def reventas_edificio(lat: float | None, lng: float | None, usados: list[dict], nombre: str | None = None,
                       radio_m: float = RADIO_EDIFICIO_M) -> tuple[list[dict], list[dict]]:
-    """(reventas, todos_los_anuncios_del_pin). Reventa = anuncio en el pin que no es unidad de proyecto.
-    'ok' si el anuncio nombra el edificio; si no, 'verificar'."""
+    """(reventas, anuncios_a_<=radio_m). Fincaraíz ubica muchos anuncios de forma aproximada: en un mismo pin aparecen
+    edificios de 1, 12 y 35 años. Por eso la distancia sola no basta. Un anuncio es reventa del proyecto si:
+      - nombra el proyecto en la descripción -> 'ok', o
+      - es "menor a 1 año" y el pin está limpio (ningún anuncio de 1+ años a <= radio_m) -> 'verificar'."""
     if lat is None or lng is None:
         return [], []
     nn = _norm(nombre)
-    pin, rev = [], []
-    for u in usados:
-        if u.get("lat") is None or distancia_m(lat, lng, u["lat"], u["lng"]) > radio_m:
-            continue
-        if u.get("antiguedad") is not None and u["antiguedad"] >= MAX_ANTIG_NUEVO:
-            continue                      # edificio vecino más viejo en el mismo pin: no es este proyecto
-        pin.append(u)
+    cerca = [u for u in usados if u.get("lat") is not None and distancia_m(lat, lng, u["lat"], u["lng"]) <= radio_m]
+    limpio = all(u.get("antiguedad") is None or u["antiguedad"] < MAX_ANTIG_NUEVO for u in cerca)
+    rev = []
+    for u in cerca:
         ac = area_construida(u)
         if u.get("unidad_proyecto") or not ac or not u.get("precio"):
             continue
-        texto = _norm(u.get("descripcion"))
+        nombra = bool(nn) and len(nn) >= 4 and nn in _norm(u.get("descripcion"))
+        nuevo = u.get("antiguedad") is not None and u["antiguedad"] < MAX_ANTIG_NUEVO
+        if not (nombra or (nuevo and limpio)):
+            continue
         rev.append({"fecha": (u.get("creado_portal") or u.get("detectado") or "")[:10], "area": round(ac, 1),
                     "precio": u["precio"], "fuente": "m", "id": u.get("id"), "url": u.get("url"),
-                    "admin": u.get("admin"), "piso": u.get("piso"),
-                    "estado": "ok" if nn and len(nn) >= 4 and nn in texto else "verificar",
-                    "origen": "Fincaraíz (reventa)"})
-    return sorted(rev, key=lambda r: r["fecha"]), pin
+                    "admin": u.get("admin"), "piso": u.get("piso"), "estado": "ok" if nombra else "verificar",
+                    "origen": "Fincaraíz (reventa)" + ("" if nombra else ", no nombra el edificio")})
+    return sorted(rev, key=lambda r: r["fecha"]), cerca
 
 
-def estado_entrega(p: dict, pin: list[dict], hoy: date) -> dict:
-    senales = []
+def entrega_cercana(p: dict, hoy: date) -> bool:
+    """¿Puede haber reventas ya? Solo si la entrega estimada pasó o está a <= 6 meses, o el portal dice
+    'entrega inmediata'. Si no (o sin fecha), solo cuentan anuncios que nombran el proyecto."""
     ent = fecha(p.get("entrega"))
+    return "inmediata" in (p.get("estado") or "").lower() or bool(ent and (ent - hoy).days <= 183)
+
+
+def estado_entrega(p: dict, rev: list[dict], hoy: date) -> dict:
+    senales, aviso = [], None
+    ent = fecha(p.get("entrega"))
+    estado_txt = (p.get("estado") or "").lower()
+    en_obra = any(k in estado_txt for k in ("construcci", "planos", "preventa", "lanzamiento"))
     if ent and ent <= hoy:
-        senales.append("la fecha estimada pasó")
-    if "inmediata" in (p.get("estado") or "").lower():
-        senales.append('el portal dice "entrega inmediata"')
-    con_admin = [u for u in pin if u.get("admin")]
-    reventa = any(not u.get("unidad_proyecto") for u in con_admin)
+        if en_obra:
+            aviso = f"la fecha estimada ({p['entrega']}) pasó, pero figura '{p['estado']}': revisar la fecha"
+        else:
+            senales.append("la fecha estimada pasó")
+    if "inmediata" in estado_txt:
+        senales.append("el portal dice 'entrega inmediata'")
+    con_admin = [r for r in rev if r.get("admin")]
     if con_admin:
-        senales.append(f"{len(con_admin)} anuncio(s) con administración en el edificio")
-    estado = "confirmada" if len(senales) >= 2 and reventa else "probable" if senales else "estimada"
-    return {"estado": estado, "senales": senales}
+        senales.append(f"{len(con_admin)} reventa(s) con administración en el edificio")
+    estado = "confirmada" if len(senales) >= 2 and con_admin else "probable" if senales else "estimada"
+    return {"estado": estado, "senales": senales, "aviso": aviso}
 
 
 # ---------------------------------------------------------------- los tres números
@@ -210,40 +223,6 @@ def variacion(base: list[dict], hoy: date) -> dict:
             "anual": (1 + acc) ** (365.25 / dias) - 1 if dias >= 180 else None}
 
 
-# ---------------------------------------------------------------- prima automática en Fincaraíz
-
-def prima_automatica(usados: list[dict], excluir: list[tuple[float, float]]) -> list[dict]:
-    """Edificios nuevos con anuncios de la constructora y de particulares en el mismo pin."""
-    grupos: dict[str, list[dict]] = {}
-    for u in usados:
-        if u.get("lat") is None or not u.get("zona"):
-            continue
-        grupos.setdefault(u.get("edificio") or f"{round(u['lat'], 4)},{round(u['lng'], 4)}", []).append(u)
-    out = []
-    for k, g in grupos.items():
-        lat, lng = g[0]["lat"], g[0]["lng"]
-        if any(distancia_m(lat, lng, a, b) <= RADIO_EDIFICIO_M for a, b in excluir):
-            continue
-        g = [u for u in g if area_construida(u) and (u.get("antiguedad") is None or u["antiguedad"] < MAX_ANTIG_NUEVO)]
-        C = [u for u in g if (u.get("publicador") or "").lower() in PUBLICADORES_CONSTRUCTORA]
-        M = [u for u in g if u not in C and not u.get("unidad_proyecto")]
-        if not C or not M:
-            continue
-        ratios = []
-        for m in M:
-            fm = fecha(m.get("creado_portal") or m.get("detectado"))
-            cs = [c for c in C if abs(anios(fecha(c.get("creado_portal") or c.get("detectado")), fm)) <= MAX_ANIOS_PAREJA]
-            cs.sort(key=lambda c: abs(area_construida(c) - area_construida(m)))
-            if cs and abs(area_construida(m) / area_construida(cs[0]) - 1) <= TOL_PAREJA:
-                ratios.append((m["precio"] / area_construida(m)) / (cs[0]["precio"] / area_construida(cs[0])) - 1)
-        if ratios:
-            out.append({"edificio": k, "zona": g[0]["zona"], "barrio": g[0].get("barrio"), "lat": lat, "lng": lng,
-                        "n_constructora": len(C), "n_reventa": len(M), "url": M[0].get("url"),
-                        "prima": {"v": statistics.median(ratios), "min": min(ratios), "max": max(ratios),
-                                  "n": len(ratios), "verificar": False}})
-    return sorted(out, key=lambda r: r["prima"]["v"])
-
-
 # ---------------------------------------------------------------- semilla manual
 
 def cargar_semilla(path: Path = ARCHIVO_SEMILLA) -> list[dict]:
@@ -265,15 +244,17 @@ def cargar_semilla(path: Path = ARCHIVO_SEMILLA) -> list[dict]:
 
 def construir(datos: dict, hoy: date, semilla: Path = ARCHIVO_SEMILLA) -> dict:
     usados = datos.get("usados") or []
-    filas, pines = [], []
+    filas = []
     for p in datos.get("proyectos") or []:
         if p.get("fuera_de_zona") and (p.get("distancia_zona_m") or 0) > TOL_ZONA_M:
             continue
         base = serie_base(p)
         if not base:
             continue
-        rev, pin = reventas_edificio(p.get("lat"), p.get("lng"), usados, p.get("nombre"))
-        est = estado_entrega(p, pin, hoy)
+        rev, _ = reventas_edificio(p.get("lat"), p.get("lng"), usados, p.get("nombre"))
+        if not entrega_cercana(p, hoy):
+            rev = [r for r in rev if r["estado"] == "ok"]
+        est = estado_entrega(p, rev, hoy)
         entrega = []
         if est["estado"] != "estimada":
             ent = fecha(p.get("entrega")) or hoy
@@ -282,7 +263,6 @@ def construir(datos: dict, hoy: date, semilla: Path = ARCHIVO_SEMILLA) -> dict:
                 entrega = [{**antes[-1], "estado": "ok" if est["estado"] == "confirmada" else "aprox"}]
         hoy_ = rev if est["estado"] != "estimada" else []
         fin = fecha(p.get("entrega"))
-        pines.append((p.get("lat"), p.get("lng")))
         filas.append({"id": p["id"], "nombre": p.get("nombre"), "constructora": p.get("constructora"),
                       "zona": p.get("zona"), "fuera_de_zona": p.get("fuera_de_zona"), "lat": p.get("lat"),
                       "lng": p.get("lng"), "entrega": p.get("entrega"), "entrega_estado": est,
@@ -296,18 +276,16 @@ def construir(datos: dict, hoy: date, semilla: Path = ARCHIVO_SEMILLA) -> dict:
         filas.append({"id": s["id"], "nombre": s["nombre"], "constructora": s.get("constructora"),
                       "zona": s.get("zona"), "fuera_de_zona": False, "lat": s.get("lat"), "lng": s.get("lng"),
                       "entrega": s.get("entrega"), "entrega_estado": {"estado": s.get("estado_entrega", "confirmada"),
-                                                                      "senales": ["cargado a mano"]},
+                                                                      "senales": ["cargado a mano"], "aviso": None},
                       "base": s["base"], "entrega_pts": s["entrega"], "lista": s["lista"], "hoy": s["hoy"],
                       "metricas": metricas(s["base"], s["entrega"], s["lista"], s["hoy"], fin),
                       "variacion": variacion(s["base"], hoy), "manual": True, "nota": s.get("nota"),
                       "fase": s.get("fase")})
-        if s.get("lat") is not None:
-            pines.append((s["lat"], s["lng"]))
-    auto = prima_automatica(usados, [x for x in pines if x[0] is not None])
-    primas = [f["metricas"]["prima"]["v"] for f in filas if f["metricas"]["prima"]] + [a["prima"]["v"] for a in auto]
+    primas = [f["metricas"]["prima"]["v"] for f in filas if f["metricas"]["prima"]]
     obras = [f["metricas"]["obra"]["acc"] for f in filas if f["metricas"]["obra"]]
-    return {"proyectos": filas, "prima_auto": auto, "ipc_anual": ipc_anual(),
-            "resumen": {"prima_mediana": _med(primas), "n_prima": len(primas), "n_prima_auto": len(auto),
+    return {"proyectos": filas, "ipc_anual": ipc_anual(),
+            "resumen": {"prima_mediana": _med(primas), "n_prima": len(primas),
+                        "n_con_reventas": sum(1 for f in filas if f["hoy"] and not f["manual"]),
                         "obra_mediana": _med(obras), "n_obra": len(obras),
                         "entregas": {e: sum(1 for f in filas if f["entrega_estado"]["estado"] == e)
                                      for e in ("estimada", "probable", "confirmada")}}}
@@ -320,15 +298,14 @@ def _pct(v):
 def reporte(b: dict) -> str:
     r = b["resumen"]
     lineas = [f"NUEVO VS REVENTA · prima de 'nuevo' mediana {_pct(r['prima_mediana'])} (n={r['n_prima']}, "
-              f"{r['n_prima_auto']} automáticos) · lista en obra mediana {_pct(r['obra_mediana'])} (n={r['n_obra']})",
+              f"{r['n_con_reventas']} del radar con reventas) · lista en obra mediana {_pct(r['obra_mediana'])} (n={r['n_obra']})",
               f"Entregas: {r['entregas']}"]
     for f in b["proyectos"]:
         m = f["metricas"]
         lineas.append(f"  {'*' if f['manual'] else ' '} {f['nombre']:<24} entrega {f['entrega_estado']['estado']:<10} "
                       f"① {_pct((m['obra'] or {}).get('acc'))}  ② {_pct((m['prima'] or {}).get('v'))}  "
                       f"reventas {len(f['hoy'])}")
-    for a in b["prima_auto"][:10]:
-        lineas.append(f"  auto {a['barrio'] or a['edificio']:<22} ② {_pct(a['prima']['v'])} "
-                      f"({a['n_constructora']} constructora / {a['n_reventa']} reventa)")
+        if f["entrega_estado"].get("aviso"):
+            lineas.append(f"      ! {f['entrega_estado']['aviso']}")
     lineas.append("  * = semilla manual (config/nuevo_vs_reventa.toml)")
     return "\n".join(lineas)

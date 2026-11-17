@@ -1,4 +1,4 @@
-# HANDOFF — Proyecto Vivienda Colombia (v0.17.0, 16-nov-2026)
+# HANDOFF — Proyecto Vivienda Colombia (v0.17.1, 16-nov-2026)
 
 Documento para retomar el proyecto en una conversación nueva con Claude. Contiene el contexto, las
 decisiones tomadas (y por qué), el estado real, lo que falta y cómo trabajar con el usuario.
@@ -68,7 +68,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 5. **Blueprint completo:** corrida diaria con launchd (`vivienda programar`), git + GitHub Pages
    (`vivienda publicar`) y alertas ntfy ya están implementados (v0.10+).
 
-## 4. Estado actual (v0.17.0, 16-nov-2026)
+## 4. Estado actual (v0.17.1, 16-nov-2026)
 
 | Módulo | Estado |
 |---|---|
@@ -90,7 +90,7 @@ comparable** en zonas específicas, para decidir dónde comprar para arrendar (r
 | Segunda fuente de usados (Metrocuadrado/Ciencuadras) + dedupe entre portales | ❌ siguiente módulo recomendado |
 | Instagram de constructoras | ❌ solo plan (Graph API Business Discovery) |
 
-109 pruebas pasan: `PYTHONPATH=src python3 -m unittest discover -s tests` (los fixtures HTML no se publican en el repo).
+112 pruebas pasan: `PYTHONPATH=src python3 -m unittest discover -s tests` (los fixtures HTML no se publican en el repo).
 
 ## 5. Mapa del código
 
@@ -285,6 +285,15 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
   crea vendedores apurados, la lista incluye plan de pagos/descuentos privados, listas viejas que siguen publicadas.
   Oportunidades: el primer resultado era Pasadena "803 m²" a $550 M (error de digitación) → filtro en
   `usados.motivo_sospechoso` y comparación por zona × rango de tamaño (el $/m² baja con el tamaño).
+- **v0.17.1 (16-nov): falsos positivos de Nuevo vs Reventa.** La primera corrida real dio 5 entregas "probables"
+  falsas y 0 edificios automáticos. Diagnóstico con los datos: (1) Albura, Cortteza y Flora (Parque Central Los
+  Robles) comparten pin y tomaron el mismo anuncio de Morato (37 m², $375 M, "menor a 1 año"), con entregas 2028-09;
+  (2) Torres del Valle: 13 anuncios a ≤ 24 m con antigüedades de 0,5 a 12 años (ubicación aproximada de Fincaraíz);
+  (3) Edificio Balmes: entrega 2026-03 vencida pero el manual dice "En construcción"; (4) `publicador` es siempre
+  "inmobiliaria" o vacío (5.131 usados) y los anuncios `isProject` se descartan al descargar → la prima automática
+  por publicador es imposible y se quitó. Reglas nuevas: reventa = nombra el proyecto, o "menor a 1 año" en pin
+  limpio; con entrega a > 6 meses o sin fecha, solo las que nombran el proyecto; fecha vencida + "en construcción" =
+  aviso, no señal; la señal de administración sale solo de reventas aceptadas.
 - **Instagram (pendiente, solo plan):** ver respuesta del 30-oct; camino legal = Graph API Business Discovery, no scraping.
 - Street 52: cotización apto 303 $365,5 M; entrega 2028-01 INFERIDA (cuota inicial termina ~dic-2027).
 - Estado de obra: Estrenar no lo publica; el tooltip muestra la fecha de entrega cuando no hay estado.
@@ -303,7 +312,9 @@ Solo `ubicar` y la lectura asistida de brochures consumen Claude (haiku); el res
 
 ## 8. Próximos pasos
 
-0. **Nuevo vs Reventa:** revisar tras unas corridas que las reventas detectadas por pin sean del edificio (si hay
+0. **Nuevo vs Reventa:** corregir la fecha de entrega de Edificio Balmes (y ponerle una a Torres del Valle) en el
+   manual. Opción v0.18: guardar los anuncios `isProject` de Fincaraíz (hoy se descartan) para tener la lista de
+   constructoras en el mismo portal que las reventas → prima automática real. Revisar tras unas corridas que las reventas detectadas por pin sean del edificio (si hay
    falsos positivos, subir la exigencia a que el anuncio nombre el edificio). Filtros propios de la pestaña (ciudad,
    zona) pendientes. Borrar la semilla de Open C60 cuando haya ≥ 5 edificios automáticos.
 1. **Verificar v0.14** con la salida de `vivienda nuevos && vivienda geocodificar && vivienda publicar`: que Novus

@@ -237,14 +237,16 @@ tiempo. `vivienda exportar` la calcula (`pipeline/valorizacion.py`) y `vivienda 
 - **Entran solos** los proyectos del radar (Estrenar + manuales) dentro de las zonas o a ≤ 150 m. Lo único manual es
   la semilla `config/nuevo_vs_reventa.toml` (Open C60), que se puede borrar cuando haya datos automáticos.
 - **Cada día:** (1) se guarda un punto si cambia la lista de la constructora (historial de tipologías); (2) se buscan
-  reventas en el edificio de cada proyecto (usados a ≤ 40 m del pin, no unidades de proyecto, antigüedad < 2 años);
-  (3) se revisan señales de entrega: estimada → probable (pasó la fecha, "entrega inmediata" o anuncios con
-  administración en el pin) → confirmada (dos señales, una de ellas una reventa).
+  reventas en el edificio de cada proyecto: usados a ≤ 40 m del pin que nombran el proyecto, o "menor a 1 año" en un
+  pin sin edificios más viejos (Fincaraíz ubica muchos anuncios de forma aproximada). Si la entrega está a más de 6
+  meses o no tiene fecha, solo cuentan los que nombran el proyecto; (3) se revisan señales de entrega: estimada →
+  probable (pasó la fecha, "entrega inmediata" o reventas con administración) → confirmada (dos señales, una de ellas
+  una reventa). Fecha vencida con el proyecto "en construcción" no cuenta: sale como aviso "revisar fecha".
 - **Tres números**, siempre entre precios de la misma fuente: ① lista en obra (constructora → constructora, mismo
   metraje ± 10 %, 6+ meses); ② prima de "nuevo" (reventas vs. lista, área ± 25 %, < 9 meses); ③ después de entregar
   (reventas → reventas).
-- **② automática:** edificios de Fincaraíz donde el mismo punto tiene anuncios de la constructora (publicador
-  builder/developer) y de dueños o inmobiliarias.
+- **Sin prima automática:** Fincaraíz no identifica constructoras (`owner.type` es "inmobiliaria" o vacío) y el
+  scraper descarta los anuncios de proyecto (`isProject`); ② solo se mide en proyectos del radar entregados.
 - `contacto` (opcional) en `proyectos_manuales.toml` sale en la tabla de detalle.
 
 ## Cómo agregar o corregir un sector

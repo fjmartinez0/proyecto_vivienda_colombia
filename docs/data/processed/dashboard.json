@@ -1,5 +1,5 @@
 {
- "generado": "2026-11-16T19:40:00-05:00",
+ "generado": "2026-11-16T19:47:51-05:00",
  "zonas": {
   "type": "FeatureCollection",
   "features": [
@@ -311998,7 +311998,8 @@
     "entrega": "2029-03",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312037,10 +312038,9 @@
     "lng": -74.070813,
     "entrega": "2028-09",
     "entrega_estado": {
-     "estado": "probable",
-     "senales": [
-      "1 anuncio(s) con administración en el edificio"
-     ]
+     "estado": "estimada",
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312052,40 +312052,12 @@
       "origen": "Estrenar Vivienda"
      }
     ],
-    "entrega_pts": [
-     {
-      "fecha": "2026-10-25",
-      "area": 37.0,
-      "precio": 329100000,
-      "fuente": "c",
-      "estado": "aprox",
-      "origen": "Estrenar Vivienda"
-     }
-    ],
+    "entrega_pts": [],
     "lista": [],
-    "hoy": [
-     {
-      "fecha": "2026-11-08",
-      "area": 37,
-      "precio": 375000000,
-      "fuente": "m",
-      "id": "FR-194520974",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-morato-bogota/194520974",
-      "admin": 240000,
-      "piso": 24,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     }
-    ],
+    "hoy": [],
     "metricas": {
      "obra": null,
-     "prima": {
-      "v": 0.13947128532360975,
-      "min": 0.13947128532360975,
-      "max": 0.13947128532360975,
-      "n": 1,
-      "verificar": true
-     },
+     "prima": null,
      "post": null
     },
     "variacion": {
@@ -312108,7 +312080,8 @@
     "entrega": "2029-03",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312154,10 +312127,9 @@
     "lng": -74.070813,
     "entrega": "2028-09",
     "entrega_estado": {
-     "estado": "probable",
-     "senales": [
-      "1 anuncio(s) con administración en el edificio"
-     ]
+     "estado": "estimada",
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312169,40 +312141,12 @@
       "origen": "Estrenar Vivienda"
      }
     ],
-    "entrega_pts": [
-     {
-      "fecha": "2026-10-25",
-      "area": 38.0,
-      "precio": 492600000,
-      "fuente": "c",
-      "estado": "aprox",
-      "origen": "Estrenar Vivienda"
-     }
-    ],
+    "entrega_pts": [],
     "lista": [],
-    "hoy": [
-     {
-      "fecha": "2026-11-08",
-      "area": 37,
-      "precio": 375000000,
-      "fuente": "m",
-      "id": "FR-194520974",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-morato-bogota/194520974",
-      "admin": 240000,
-      "piso": 24,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     }
-    ],
+    "hoy": [],
     "metricas": {
      "obra": null,
-     "prima": {
-      "v": -0.21815847516212927,
-      "min": -0.21815847516212927,
-      "max": -0.21815847516212927,
-      "n": 1,
-      "verificar": true
-     },
+     "prima": null,
      "post": null
     },
     "variacion": {
@@ -312224,10 +312168,9 @@
     "lng": -74.070813,
     "entrega": null,
     "entrega_estado": {
-     "estado": "probable",
-     "senales": [
-      "1 anuncio(s) con administración en el edificio"
-     ]
+     "estado": "estimada",
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312239,40 +312182,12 @@
       "origen": "Estrenar Vivienda"
      }
     ],
-    "entrega_pts": [
-     {
-      "fecha": "2026-10-27",
-      "area": 36.0,
-      "precio": 309200000,
-      "fuente": "c",
-      "estado": "aprox",
-      "origen": "Estrenar Vivienda"
-     }
-    ],
+    "entrega_pts": [],
     "lista": [],
-    "hoy": [
-     {
-      "fecha": "2026-11-08",
-      "area": 37,
-      "precio": 375000000,
-      "fuente": "m",
-      "id": "FR-194520974",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-morato-bogota/194520974",
-      "admin": 240000,
-      "piso": 24,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     }
-    ],
+    "hoy": [],
     "metricas": {
      "obra": null,
-     "prima": {
-      "v": 0.1800286703262124,
-      "min": 0.1800286703262124,
-      "max": 0.1800286703262124,
-      "n": 1,
-      "verificar": true
-     },
+     "prima": null,
      "post": null
     },
     "variacion": {
@@ -312295,7 +312210,8 @@
     "entrega": "2027-06",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312335,7 +312251,8 @@
     "entrega": "2028-03",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312382,7 +312299,8 @@
     "entrega": "2028-09",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312429,7 +312347,8 @@
     "entrega": "2028-12",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312469,7 +312388,8 @@
     "entrega": "2027-10",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312517,7 +312437,8 @@
     "entrega": "2029-04",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312557,7 +312478,8 @@
     "entrega": "2028-01",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312596,10 +312518,9 @@
     "lng": -73.1151028,
     "entrega": null,
     "entrega_estado": {
-     "estado": "probable",
-     "senales": [
-      "1 anuncio(s) con administración en el edificio"
-     ]
+     "estado": "estimada",
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312611,64 +312532,12 @@
       "origen": "Manual"
      }
     ],
-    "entrega_pts": [
-     {
-      "fecha": "2026-10-30",
-      "area": 77.0,
-      "precio": 549000000,
-      "fuente": "c",
-      "estado": "aprox",
-      "origen": "Manual"
-     }
-    ],
+    "entrega_pts": [],
     "lista": [],
-    "hoy": [
-     {
-      "fecha": "2026-05-08",
-      "area": 105.7,
-      "precio": 630000000,
-      "fuente": "m",
-      "id": "FR-193724646",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-canaveral-floridablanca/193724646",
-      "admin": null,
-      "piso": 0,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     },
-     {
-      "fecha": "2026-05-08",
-      "area": 87.5,
-      "precio": 522000000,
-      "fuente": "m",
-      "id": "FR-193724577",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-canaveral-floridablanca/193724577",
-      "admin": null,
-      "piso": 0,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     },
-     {
-      "fecha": "2026-10-24",
-      "area": 123.9,
-      "precio": 850000000,
-      "fuente": "m",
-      "id": "FR-194452077",
-      "url": "https://www.fincaraiz.com.co/apartamento-en-venta-en-canaveral-floridablanca/194452077",
-      "admin": 785000,
-      "piso": 12,
-      "estado": "verificar",
-      "origen": "Fincaraíz (reventa)"
-     }
-    ],
+    "hoy": [],
     "metricas": {
      "obra": null,
-     "prima": {
-      "v": -0.16327868852459015,
-      "min": -0.16327868852459015,
-      "max": -0.16327868852459015,
-      "n": 1,
-      "verificar": true
-     },
+     "prima": null,
      "post": null
     },
     "variacion": {
@@ -312691,7 +312560,8 @@
     "entrega": "2027-12",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312738,7 +312608,8 @@
     "entrega": "2027-02",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312777,10 +312648,9 @@
     "lng": -74.039368,
     "entrega": "2026-03",
     "entrega_estado": {
-     "estado": "probable",
-     "senales": [
-      "la fecha estimada pasó"
-     ]
+     "estado": "estimada",
+     "senales": [],
+     "aviso": "la fecha estimada (2026-03) pasó, pero figura 'En construcción': revisar la fecha"
     },
     "base": [
      {
@@ -312792,16 +312662,7 @@
       "origen": "Manual"
      }
     ],
-    "entrega_pts": [
-     {
-      "fecha": "2026-11-01",
-      "area": 24.88,
-      "precio": 311000000,
-      "fuente": "c",
-      "estado": "aprox",
-      "origen": "Manual"
-     }
-    ],
+    "entrega_pts": [],
     "lista": [],
     "hoy": [],
     "metricas": {
@@ -312829,7 +312690,8 @@
     "entrega": null,
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312869,7 +312731,8 @@
     "entrega": "2028-06",
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312909,7 +312772,8 @@
     "entrega": null,
     "entrega_estado": {
      "estado": "estimada",
-     "senales": []
+     "senales": [],
+     "aviso": null
     },
     "base": [
      {
@@ -312951,7 +312815,8 @@
      "estado": "confirmada",
      "senales": [
       "cargado a mano"
-     ]
+     ],
+     "aviso": null
     },
     "base": [
      {
@@ -313030,17 +312895,16 @@
     "fase": "etapa 1 entregada (jun-2025) · etapa 2 en obra"
    }
   ],
-  "prima_auto": [],
   "ipc_anual": 0.051,
   "resumen": {
    "prima_mediana": -0.06232366929771305,
-   "n_prima": 5,
-   "n_prima_auto": 0,
+   "n_prima": 1,
+   "n_con_reventas": 0,
    "obra_mediana": -0.03140087554721693,
    "n_obra": 1,
    "entregas": {
-    "estimada": 14,
-    "probable": 5,
+    "estimada": 19,
+    "probable": 0,
     "confirmada": 1
    }
   }
